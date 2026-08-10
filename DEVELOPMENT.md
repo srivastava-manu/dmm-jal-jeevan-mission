@@ -122,12 +122,35 @@ the application code, enforces the boundary. See
 npm run typecheck
 ```
 
+## The state assessment flow (step 3)
+
+Sign in as a state assessor to reach `/home`:
+
+- **Home / History** — saved assessments, the in-progress draft (with progress + discard),
+  a maturity-over-time chart, and the systems card.
+- **Start** (`/home/start`) — start blank or pre-filled from the last submitted assessment.
+  Pre-fill writes **real `scores` rows** for the new assessment (and carries evidence
+  forward); it does not merely display the old values.
+- **Assess** (`/assessment/:id`) — the three-column screen: layer nav, capability cards
+  with 0–4 scoring and autosave, the evidence block on scores of 3 and 4, and the score
+  rail. A **score of 0 is a real answer** — "answered" is `value IS NOT NULL` everywhere,
+  never a truthiness check.
+- **Systems dialog** — capture the state's systems once, reused as evidence.
+
+Counts are derived from the capability rows for the assessment's model version — nothing
+hardcodes 48/6/24/192 (the only scale constant is the 0–4 ceiling).
+
+To exercise pre-fill locally you need a prior submitted assessment for your state; the
+optional `npm run db:seed:demo` seeds those (and gives you assessor logins such as
+`raghavendra@apswsm.gov.in`). API and RLS for the write path are in
+[`server/src/routes/assessments.ts`](server/src/routes/assessments.ts) and
+[migration 005](migrations/005_assessment_flow.sql).
+
 ## What is intentionally NOT here yet
 
-Step 1 (auth/RLS/redirect) is complete, plus a vertical slice to make the national
-dashboard real (schema for `model_versions`/`capabilities`/`assessments`/`scores`, the
-model + submitted-assessment seed, and the dashboard read path). Still not built: the state
-assessment flow (layer nav, scoring, autosave, evidence), the review + submit + 7-day-lock
-*write* path, results / compare / PDF, the Centre's state-assessors and requests screens,
-and dashboard cell drill-down. The production user-provisioning flow (Centre creates
-assessors; no self-signup) also lands in a later step — today's users come from the seeds.
+Built so far: step 1 (auth/RLS/redirect), a slice for the national dashboard, and step 3
+(the assessment flow above). Still not built: **review + submit + the 7-day-lock write
+path** (the lock is already enforced by RLS, but there is no submit UI yet), results /
+compare / PDF, the matrix re-assessment mode, the Centre's state-assessors and requests
+screens, and dashboard cell drill-down. The production user-provisioning flow (Centre
+creates assessors; no self-signup) also lands in a later step.

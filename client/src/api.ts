@@ -43,4 +43,56 @@ export const api = {
   centreDashboard(): Promise<import("./model").NationalDashboard> {
     return request("/api/centre/dashboard");
   },
+
+  assessments: {
+    list(): Promise<{ assessments: import("./model").AssessmentSummary[] }> {
+      return request("/api/assessments");
+    },
+    start(mode: "blank" | "prefill"): Promise<{ id: string; prefilledFrom: string | null }> {
+      return request("/api/assessments", {
+        method: "POST",
+        body: JSON.stringify({ mode }),
+      });
+    },
+    get(id: string): Promise<import("./model").AssessmentDetail> {
+      return request(`/api/assessments/${id}`);
+    },
+    remove(id: string): Promise<{ ok: true }> {
+      return request(`/api/assessments/${id}`, { method: "DELETE" });
+    },
+    saveScore(
+      id: string,
+      capabilityId: string,
+      value: number | null,
+      note?: string | null,
+    ): Promise<{ score_id: string; value: number | null }> {
+      return request(`/api/assessments/${id}/scores/${capabilityId}`, {
+        method: "PUT",
+        body: JSON.stringify({ value, note: note ?? null }),
+      });
+    },
+    saveEvidence(
+      id: string,
+      capabilityId: string,
+      ev: { system_id: string | null; districts_live: number | null; go_live: string | null },
+    ): Promise<{ ok: true }> {
+      return request(`/api/assessments/${id}/scores/${capabilityId}/evidence`, {
+        method: "PUT",
+        body: JSON.stringify(ev),
+      });
+    },
+  },
+
+  systems: {
+    list(): Promise<{ systems: import("./model").SystemRow[] }> {
+      return request("/api/systems");
+    },
+    create(input: {
+      name: string;
+      districts_live: number | null;
+      go_live: string | null;
+    }): Promise<{ system: import("./model").SystemRow }> {
+      return request("/api/systems", { method: "POST", body: JSON.stringify(input) });
+    },
+  },
 };

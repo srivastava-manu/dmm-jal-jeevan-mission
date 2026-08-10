@@ -1,6 +1,11 @@
 import pg from "pg";
 import { DATABASE_URL } from "../config.js";
 
+// Return SQL DATE (oid 1082) as a plain 'YYYY-MM-DD' string instead of a JS Date at local
+// midnight, which would shift across timezones (e.g. IST +05:30). This is process-global
+// to the pg module, so it applies to every pool. go-live months etc. stay exact.
+pg.types.setTypeParser(1082, (v) => v);
+
 // The single application pool. This is the ONLY connection the request path uses, and
 // it authenticates as the unprivileged `dmm_app` role so row-level security is enforced.
 export const pool = new pg.Pool({

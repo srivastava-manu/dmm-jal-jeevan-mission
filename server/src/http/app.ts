@@ -3,6 +3,8 @@ import { attachSession } from "./session.js";
 import { authRouter } from "../routes/auth.js";
 import { statesRouter } from "../routes/states.js";
 import { centreRouter } from "../routes/centre.js";
+import { assessmentsRouter } from "../routes/assessments.js";
+import { systemsRouter } from "../routes/systems.js";
 
 export function createApp() {
   const app = express();
@@ -19,6 +21,8 @@ export function createApp() {
   app.use("/api/auth", authRouter);
   app.use("/api/states", statesRouter);
   app.use("/api/centre", centreRouter);
+  app.use("/api/assessments", assessmentsRouter);
+  app.use("/api/systems", systemsRouter);
 
   return app;
 }

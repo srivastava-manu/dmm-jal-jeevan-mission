@@ -44,5 +44,5 @@ export function useAuth(): AuthState {
 
 /** The single source of truth for where each role lands after sign-in. */
 export function homePathFor(role: SessionUser["role"]): string {
-  return role === "centre" ? "/dashboard" : "/assess";
+  return role === "centre" ? "/dashboard" : "/home";
 }

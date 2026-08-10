@@ -14,7 +14,7 @@ const loginSchema = z.object({
 
 /** One app, one login, two roles — the landing surface is decided here by role. */
 function redirectFor(role: Role): string {
-  return role === "centre" ? "/dashboard" : "/assess";
+  return role === "centre" ? "/dashboard" : "/home";
 }
 
 authRouter.post("/login", async (req, res) => {

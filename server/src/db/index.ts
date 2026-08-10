@@ -217,3 +217,326 @@ export async function countActiveAssessorStates(ctx: RlsContext): Promise<number
     return rows[0]?.n ?? 0;
   });
 }
+
+// ── State assessment flow (state_assessor) ───────────────────────────────────
+// Everything here runs in the assessor's RLS context, scoped to their own state. Counts
+// (total, answered, score) are derived from the capability/score rows, never hardcoded.
+// "answered" = count(value) = number of non-null scores, so 0 counts as answered.
+
+export interface Capability {
+  id: string;
+  layer_index: number;
+  layer_name: string;
+  layer_covers: string;
+  order_in_layer: number;
+  name: string;
+  measure: string;
+  includes: string[];
+}
+
+export interface AssessmentSummary {
+  id: string;
+  status: "draft" | "submitted";
+  created_at: string;
+  submitted_at: string | null;
+  assessor_name: string | null;
+  model_version: string;
+  total: number;
+  answered: number;
+  score_so_far: number;
+}
+
+export interface EvidenceRow {
+  system_id: string | null;
+  districts_live: number | null;
+  go_live: string | null;
+}
+
+export interface ScoreRow {
+  score_id: string;
+  capability_id: string;
+  value: number | null;
+  note: string | null;
+  evidence: EvidenceRow | null;
+}
+
+export interface SystemRow {
+  id: string;
+  name: string;
+  districts_live: number | null;
+  go_live: string | null;
+}
+
+export interface AssessmentDetail {
+  assessment: {
+    id: string;
+    status: "draft" | "submitted";
+    created_at: string;
+    submitted_at: string | null;
+    model_version_id: string;
+    model_version: string;
+  };
+  capabilities: Capability[];
+  scores: ScoreRow[];
+  previous: { assessment_id: string; submitted_at: string; values: Record<string, number> } | null;
+}
+
+const CAP_COLS =
+  "id, layer_index, layer_name, layer_covers, order_in_layer, name, measure, includes";
+
+export async function listCapabilities(
+  ctx: RlsContext,
+  modelVersionId: string,
+): Promise<Capability[]> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<Capability>(
+      `SELECT ${CAP_COLS} FROM capabilities WHERE model_version_id = $1
+       ORDER BY layer_index, order_in_layer`,
+      [modelVersionId],
+    );
+    return rows;
+  });
+}
+
+export async function listAssessments(ctx: RlsContext): Promise<AssessmentSummary[]> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<AssessmentSummary>(
+      `SELECT a.id, a.status, a.created_at, a.submitted_at, a.assessor_name,
+              mv.version AS model_version,
+              (SELECT count(*)::int FROM capabilities cap
+                 WHERE cap.model_version_id = a.model_version_id) AS total,
+              (SELECT count(sc.value)::int FROM scores sc
+                 WHERE sc.assessment_id = a.id) AS answered,
+              (SELECT coalesce(sum(sc.value), 0)::int FROM scores sc
+                 WHERE sc.assessment_id = a.id) AS score_so_far
+       FROM assessments a
+       JOIN model_versions mv ON mv.id = a.model_version_id
+       ORDER BY (a.status = 'draft') DESC, coalesce(a.submitted_at, a.created_at) DESC`,
+    );
+    return rows;
+  });
+}
+
+/**
+ * Start a new draft. Any existing draft for the state is replaced. When mode = 'prefill',
+ * real `scores` rows are written by copying the latest submitted assessment's values (and
+ * its evidence is carried forward) — the new assessment stands on its own rows, it does not
+ * merely display the old ones.
+ */
+export async function createAssessment(
+  ctx: RlsContext,
+  mode: "blank" | "prefill",
+): Promise<{ id: string; prefilledFrom: string | null }> {
+  return withRlsTx(ctx, async (c) => {
+    // Replace any existing draft (one draft per state).
+    await c.query("DELETE FROM assessments WHERE status = 'draft'");
+
+    const mv = await c.query<{ id: string }>(
+      "SELECT id FROM model_versions ORDER BY published_at DESC LIMIT 1",
+    );
+    const modelVersionId = mv.rows[0]?.id;
+    if (!modelVersionId) throw new Error("No model version published.");
+
+    const ins = await c.query<{ id: string }>(
+      `INSERT INTO assessments (state_id, assessor_user_id, model_version_id, status)
+       VALUES ($1, $2, $3, 'draft')
+       RETURNING id`,
+      [ctx.stateId, ctx.userId, modelVersionId],
+    );
+    const newId = ins.rows[0]!.id;
+
+    let prefilledFrom: string | null = null;
+    if (mode === "prefill") {
+      const prev = await c.query<{ id: string; submitted_at: string }>(
+        `SELECT id, submitted_at FROM assessments
+         WHERE status = 'submitted' ORDER BY submitted_at DESC LIMIT 1`,
+      );
+      const prevId = prev.rows[0]?.id;
+      if (prevId) {
+        prefilledFrom = prev.rows[0]!.submitted_at;
+        // Copy real score rows.
+        await c.query(
+          `INSERT INTO scores (assessment_id, capability_id, value, note)
+           SELECT $1, capability_id, value, note FROM scores WHERE assessment_id = $2`,
+          [newId, prevId],
+        );
+        // Carry evidence forward, mapping old score -> new score by capability.
+        await c.query(
+          `INSERT INTO score_evidence (score_id, system_id, districts_live, go_live)
+           SELECT ns.id, e.system_id, e.districts_live, e.go_live
+           FROM score_evidence e
+           JOIN scores os ON os.id = e.score_id
+           JOIN scores ns ON ns.assessment_id = $1 AND ns.capability_id = os.capability_id
+           WHERE os.assessment_id = $2`,
+          [newId, prevId],
+        );
+      }
+    }
+    return { id: newId, prefilledFrom };
+  });
+}
+
+export async function deleteDraft(ctx: RlsContext, id: string): Promise<boolean> {
+  return withRlsTx(ctx, async (c) => {
+    // RLS restricts this to the assessor's own-state draft.
+    const res = await c.query("DELETE FROM assessments WHERE id = $1 AND status = 'draft'", [id]);
+    return (res.rowCount ?? 0) > 0;
+  });
+}
+
+export async function getAssessmentDetail(
+  ctx: RlsContext,
+  id: string,
+): Promise<AssessmentDetail | null> {
+  return withRlsTx(ctx, async (c) => {
+    const a = await c.query<{
+      id: string;
+      status: "draft" | "submitted";
+      created_at: string;
+      submitted_at: string | null;
+      model_version_id: string;
+      model_version: string;
+    }>(
+      `SELECT a.id, a.status, a.created_at, a.submitted_at, a.model_version_id,
+              mv.version AS model_version
+       FROM assessments a JOIN model_versions mv ON mv.id = a.model_version_id
+       WHERE a.id = $1`,
+      [id],
+    );
+    const assessment = a.rows[0];
+    if (!assessment) return null; // not visible under RLS, or does not exist
+
+    const caps = await c.query<Capability>(
+      `SELECT ${CAP_COLS} FROM capabilities WHERE model_version_id = $1
+       ORDER BY layer_index, order_in_layer`,
+      [assessment.model_version_id],
+    );
+
+    const scoreRows = await c.query<{
+      score_id: string;
+      capability_id: string;
+      value: number | null;
+      note: string | null;
+      system_id: string | null;
+      districts_live: number | null;
+      go_live: string | null;
+    }>(
+      `SELECT s.id AS score_id, s.capability_id, s.value, s.note,
+              e.system_id, e.districts_live, e.go_live
+       FROM scores s LEFT JOIN score_evidence e ON e.score_id = s.id
+       WHERE s.assessment_id = $1`,
+      [id],
+    );
+    const scores: ScoreRow[] = scoreRows.rows.map((r) => ({
+      score_id: r.score_id,
+      capability_id: r.capability_id,
+      value: r.value,
+      note: r.note,
+      evidence:
+        r.system_id || r.districts_live !== null || r.go_live
+          ? { system_id: r.system_id, districts_live: r.districts_live, go_live: r.go_live }
+          : null,
+    }));
+
+    // Previous submitted snapshot for this state (for "Was N on <date>").
+    const prev = await c.query<{ id: string; submitted_at: string }>(
+      `SELECT id, submitted_at FROM assessments
+       WHERE status = 'submitted' AND id <> $1
+       ORDER BY submitted_at DESC LIMIT 1`,
+      [id],
+    );
+    let previous: AssessmentDetail["previous"] = null;
+    if (prev.rows[0]) {
+      const pv = await c.query<{ capability_id: string; value: number | null }>(
+        "SELECT capability_id, value FROM scores WHERE assessment_id = $1",
+        [prev.rows[0].id],
+      );
+      const values: Record<string, number> = {};
+      for (const r of pv.rows) if (r.value !== null) values[r.capability_id] = r.value;
+      previous = {
+        assessment_id: prev.rows[0].id,
+        submitted_at: prev.rows[0].submitted_at,
+        values,
+      };
+    }
+
+    return { assessment, capabilities: caps.rows, scores, previous };
+  });
+}
+
+/** Upsert a single capability's score. value may be null (unanswered); 0 is a real answer. */
+export async function upsertScore(
+  ctx: RlsContext,
+  assessmentId: string,
+  capabilityId: string,
+  value: number | null,
+  note: string | null,
+): Promise<{ score_id: string; value: number | null }> {
+  return withRlsTx(ctx, async (c) => {
+    const res = await c.query<{ id: string; value: number | null }>(
+      `INSERT INTO scores (assessment_id, capability_id, value, note)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (assessment_id, capability_id)
+         DO UPDATE SET value = EXCLUDED.value, note = EXCLUDED.note
+       RETURNING id, value`,
+      [assessmentId, capabilityId, value, note],
+    );
+    const row = res.rows[0]!;
+    // Evidence only belongs to scores of 3 or 4; clear it if the score dropped below 3.
+    if (value === null || value < 3) {
+      await c.query(
+        "UPDATE score_evidence SET system_id = NULL, districts_live = NULL, go_live = NULL WHERE score_id = $1",
+        [row.id],
+      );
+    }
+    return { score_id: row.id, value: row.value };
+  });
+}
+
+/** Upsert evidence for a capability's score, resolving the score row server-side. */
+export async function saveEvidence(
+  ctx: RlsContext,
+  assessmentId: string,
+  capabilityId: string,
+  ev: { system_id: string | null; districts_live: number | null; go_live: string | null },
+): Promise<boolean> {
+  return withRlsTx(ctx, async (c) => {
+    const res = await c.query(
+      `INSERT INTO score_evidence (score_id, system_id, districts_live, go_live)
+       SELECT s.id, $3, $4, $5 FROM scores s
+       WHERE s.assessment_id = $1 AND s.capability_id = $2
+       ON CONFLICT (score_id) DO UPDATE SET
+         system_id = EXCLUDED.system_id,
+         districts_live = EXCLUDED.districts_live,
+         go_live = EXCLUDED.go_live`,
+      [assessmentId, capabilityId, ev.system_id, ev.districts_live, ev.go_live],
+    );
+    return (res.rowCount ?? 0) > 0;
+  });
+}
+
+export async function listSystems(ctx: RlsContext): Promise<SystemRow[]> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<SystemRow>(
+      "SELECT id, name, districts_live, go_live FROM systems ORDER BY name",
+    );
+    return rows;
+  });
+}
+
+export async function createSystem(
+  ctx: RlsContext,
+  input: { name: string; districts_live: number | null; go_live: string | null },
+): Promise<SystemRow> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<SystemRow>(
+      `INSERT INTO systems (state_id, name, districts_live, go_live)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (state_id, name) DO UPDATE SET
+         districts_live = EXCLUDED.districts_live, go_live = EXCLUDED.go_live
+       RETURNING id, name, districts_live, go_live`,
+      [ctx.stateId, input.name, input.districts_live, input.go_live],
+    );
+    return rows[0]!;
+  });
+}

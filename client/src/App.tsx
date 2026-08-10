@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth, homePathFor } from "./auth";
 import { SignIn } from "./pages/SignIn";
+import { Home } from "./pages/Home";
+import { StartAssessment } from "./pages/StartAssessment";
 import { Assess } from "./pages/Assess";
 import { Dashboard } from "./pages/Dashboard";
 import type { Role } from "./api";
@@ -35,14 +37,34 @@ export function App() {
           )
         }
       />
+
+      {/* State assessor flow */}
       <Route
-        path="/assess"
+        path="/home"
+        element={
+          <RequireRole role="state_assessor">
+            <Home />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/home/start"
+        element={
+          <RequireRole role="state_assessor">
+            <StartAssessment />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/assessment/:id"
         element={
           <RequireRole role="state_assessor">
             <Assess />
           </RequireRole>
         }
       />
+
+      {/* Centre */}
       <Route
         path="/dashboard"
         element={
@@ -51,7 +73,7 @@ export function App() {
           </RequireRole>
         }
       />
-      {/* Land everyone through the role-aware redirect. */}
+
       <Route
         path="*"
         element={
