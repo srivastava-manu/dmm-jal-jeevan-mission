@@ -4,6 +4,7 @@ import { SignIn } from "./pages/SignIn";
 import { Home } from "./pages/Home";
 import { StartAssessment } from "./pages/StartAssessment";
 import { Assess } from "./pages/Assess";
+import { Review } from "./pages/Review";
 import { Dashboard } from "./pages/Dashboard";
 import type { Role } from "./api";
 
@@ -60,6 +61,14 @@ export function App() {
         element={
           <RequireRole role="state_assessor">
             <Assess />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/assessment/:id/review"
+        element={
+          <RequireRole role="state_assessor">
+            <Review />
           </RequireRole>
         }
       />

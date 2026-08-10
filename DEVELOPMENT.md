@@ -146,11 +146,32 @@ optional `npm run db:seed:demo` seeds those (and gives you assessor logins such 
 [`server/src/routes/assessments.ts`](server/src/routes/assessments.ts) and
 [migration 005](migrations/005_assessment_flow.sql).
 
+## Review, submit & the 7-day lock (step 4)
+
+The last layer's "Review & submit →" opens `/assessment/:id/review`:
+
+- Progress and the "still unanswered" list come from **one** server response
+  (`GET /api/assessments/:id/review`) — `answered`/`total`/`canSubmit` are computed
+  server-side by counting `value IS NOT NULL` against the capability count for the
+  assessment's model version. The front end never recomputes them, so the unanswered list
+  and the submit button can't disagree.
+- Blocks: unanswered (blocking, `--danger-bg`), evidence gaps (advisory, `--warning-bg`),
+  and "worth a second look" consistency flags (advisory).
+- **Submit** (`POST /api/assessments/:id/submit`) re-checks completeness server-side, sets
+  `status='submitted'`, `submitted_at=now()`, `locked_at=+7 days`, and **snapshots** the
+  submitter's name + designation onto the row (reassigning the state never rewrites a past
+  round's submitter).
+
+The **7-day lock** is enforced in two independent places: the API returns a clear dated
+error on score/evidence writes once `now() >= locked_at`, and the RLS policies refuse the
+same write regardless of the API. `npm run test:lock` proves the RLS half by writing
+directly with the API check bypassed (0 rows affected, value unchanged); `npm test` runs it
+alongside the isolation test.
+
 ## What is intentionally NOT here yet
 
-Built so far: step 1 (auth/RLS/redirect), a slice for the national dashboard, and step 3
-(the assessment flow above). Still not built: **review + submit + the 7-day-lock write
-path** (the lock is already enforced by RLS, but there is no submit UI yet), results /
-compare / PDF, the matrix re-assessment mode, the Centre's state-assessors and requests
-screens, and dashboard cell drill-down. The production user-provisioning flow (Centre
-creates assessors; no self-signup) also lands in a later step.
+Built so far: steps 1–4 (auth/RLS/redirect, the national-dashboard slice, the assessment
+flow, and review + submit + lock). Still not built: results / compare / PDF, the matrix
+re-assessment mode, the Centre's state-assessors and requests screens, and dashboard cell
+drill-down. The production user-provisioning flow (Centre creates assessors; no
+self-signup) also lands in a later step.

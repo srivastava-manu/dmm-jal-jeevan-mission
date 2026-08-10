@@ -87,6 +87,19 @@ export interface SystemRow {
   go_live: string | null;
 }
 
+export interface ReviewResult {
+  total: number;
+  answered: number;
+  status: "draft" | "submitted";
+  canSubmit: boolean;
+  unanswered: { capability_id: string; name: string; layer_index: number; layer_name: string }[];
+  evidenceGaps: {
+    count: number;
+    items: { capability_id: string; name: string; layer_name: string; value: number }[];
+  };
+  consistencyFlags: string[];
+}
+
 export interface BandDef {
   max: number;
   name: string;

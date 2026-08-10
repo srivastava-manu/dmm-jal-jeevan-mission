@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import {
   SCALE,
@@ -25,10 +25,16 @@ const ADD_SYSTEM = "__add_system__";
 export function Assess() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const [detail, setDetail] = useState<AssessmentDetail | null>(null);
   const [scores, setScores] = useState<Record<string, ScoreState>>({});
   const [systems, setSystems] = useState<SystemRow[]>([]);
-  const [layerIndex, setLayerIndex] = useState(0);
+  // Deep-link support: /assessment/:id?layer=N opens straight to that layer (used by the
+  // Review screen's "unanswered" rows).
+  const [layerIndex, setLayerIndex] = useState(() => {
+    const n = Number(params.get("layer"));
+    return Number.isInteger(n) && n >= 0 ? n : 0;
+  });
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dialog, setDialog] = useState<{ capabilityId: string; capabilityName: string } | null>(null);
@@ -119,9 +125,10 @@ export function Assess() {
   if (error) return <div className="centered"><p className="error">{error}</p></div>;
   if (!detail) return <div className="centered"><p className="muted">Loading assessment…</p></div>;
 
-  const layer = layers[layerIndex]!;
+  const safeLayerIndex = Math.min(Math.max(layerIndex, 0), layers.length - 1);
+  const layer = layers[safeLayerIndex]!;
   const ls = layerStats(layer.caps);
-  const isLastLayer = layerIndex === layers.length - 1;
+  const isLastLayer = safeLayerIndex === layers.length - 1;
 
   return (
     <div className="assess">
@@ -149,7 +156,7 @@ export function Assess() {
           </div>
           {layers.map((l) => {
             const st = layerStats(l.caps);
-            const active = l.index === layerIndex;
+            const active = l.index === safeLayerIndex;
             return (
               <button
                 key={l.index}
@@ -197,20 +204,20 @@ export function Assess() {
           <div className="layer-nav-btns">
             <button
               className="ghost"
-              disabled={layerIndex === 0}
-              onClick={() => setLayerIndex((i) => Math.max(0, i - 1))}
+              disabled={safeLayerIndex === 0}
+              onClick={() => setLayerIndex(safeLayerIndex - 1)}
             >
               ← Previous layer
             </button>
             {isLastLayer ? (
               <button
                 className="primary-btn"
-                onClick={() => setSavedAt("Review & submit is built in the next step.")}
+                onClick={() => navigate(`/assessment/${id}/review`)}
               >
                 Review & submit →
               </button>
             ) : (
-              <button className="primary-btn" onClick={() => setLayerIndex((i) => i + 1)}>
+              <button className="primary-btn" onClick={() => setLayerIndex(safeLayerIndex + 1)}>
                 Next layer →
               </button>
             )}

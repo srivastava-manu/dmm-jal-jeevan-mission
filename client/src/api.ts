@@ -81,6 +81,12 @@ export const api = {
         body: JSON.stringify(ev),
       });
     },
+    review(id: string): Promise<import("./model").ReviewResult> {
+      return request(`/api/assessments/${id}/review`);
+    },
+    submit(id: string): Promise<{ submitted_at: string; locked_at: string }> {
+      return request(`/api/assessments/${id}/submit`, { method: "POST" });
+    },
   },
 
   systems: {

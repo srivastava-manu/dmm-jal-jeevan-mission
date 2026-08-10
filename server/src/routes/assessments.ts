@@ -8,7 +8,12 @@ import {
   getAssessmentDetail,
   upsertScore,
   saveEvidence,
+  reviewAssessment,
+  submitAssessment,
+  AssessmentLockedError,
+  IncompleteAssessmentError,
 } from "../db/index.js";
+import { computeConsistencyFlags } from "../services/assessment-review.js";
 
 export const assessmentsRouter = Router();
 
@@ -38,6 +43,47 @@ assessmentsRouter.get("/:id", async (req, res) => {
     return;
   }
   res.json(detail);
+});
+
+// Authoritative review data — the front end trusts these counts, never its own.
+assessmentsRouter.get("/:id/review", async (req, res) => {
+  const review = await reviewAssessment(req.auth!.ctx, req.params.id);
+  if (!review) {
+    res.status(404).json({ error: "Assessment not found." });
+    return;
+  }
+  res.json({
+    total: review.total,
+    answered: review.answered,
+    status: review.status,
+    canSubmit: review.status === "draft" && review.answered === review.total,
+    unanswered: review.unanswered,
+    evidenceGaps: { count: review.evidenceGaps.length, items: review.evidenceGaps },
+    consistencyFlags: computeConsistencyFlags(review.valuesByName),
+  });
+});
+
+assessmentsRouter.post("/:id/submit", async (req, res) => {
+  const profile = req.auth!.profile;
+  try {
+    const result = await submitAssessment(
+      req.auth!.ctx,
+      req.params.id,
+      profile.name,
+      profile.designation,
+    );
+    res.json(result);
+  } catch (e) {
+    if (e instanceof IncompleteAssessmentError) {
+      res.status(409).json({
+        error: "A partial assessment distorts the index — answer every capability before submitting.",
+        answered: e.answered,
+        total: e.total,
+      });
+      return;
+    }
+    res.status(400).json({ error: (e as Error).message });
+  }
 });
 
 assessmentsRouter.delete("/:id", async (req, res) => {
@@ -70,8 +116,12 @@ assessmentsRouter.put("/:id/scores/:capabilityId", async (req, res) => {
       parsed.data.note ?? null,
     );
     res.json(saved);
-  } catch {
-    // RLS rejects writes to a locked/foreign assessment.
+  } catch (e) {
+    if (e instanceof AssessmentLockedError) {
+      res.status(403).json({ error: e.message, lockedAt: e.lockedAt });
+      return;
+    }
+    // RLS also rejects writes to a locked/foreign assessment independently.
     res.status(403).json({ error: "This assessment can no longer be edited." });
   }
 });
@@ -88,15 +138,23 @@ assessmentsRouter.put("/:id/scores/:capabilityId/evidence", async (req, res) => 
     res.status(400).json({ error: "Invalid evidence." });
     return;
   }
-  const ok = await saveEvidence(
-    req.auth!.ctx,
-    req.params.id,
-    req.params.capabilityId,
-    parsed.data,
-  );
-  if (!ok) {
-    res.status(404).json({ error: "Score the capability before adding evidence." });
-    return;
+  try {
+    const ok = await saveEvidence(
+      req.auth!.ctx,
+      req.params.id,
+      req.params.capabilityId,
+      parsed.data,
+    );
+    if (!ok) {
+      res.status(404).json({ error: "Score the capability before adding evidence." });
+      return;
+    }
+    res.json({ ok: true });
+  } catch (e) {
+    if (e instanceof AssessmentLockedError) {
+      res.status(403).json({ error: e.message, lockedAt: e.lockedAt });
+      return;
+    }
+    res.status(403).json({ error: "This assessment can no longer be edited." });
   }
-  res.json({ ok: true });
 });

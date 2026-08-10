@@ -1,4 +1,37 @@
+import type { PoolClient } from "pg";
 import { withRlsTx, type RlsContext, type Role } from "./rls.js";
+
+/** Thrown when a write targets an assessment past its 7-day lock. */
+export class AssessmentLockedError extends Error {
+  constructor(public readonly lockedAt: string) {
+    super(`This assessment locked on ${lockedAt} and can no longer be edited.`);
+    this.name = "AssessmentLockedError";
+  }
+}
+
+/** Thrown when a submit is attempted with capabilities still unanswered. */
+export class IncompleteAssessmentError extends Error {
+  constructor(public readonly answered: number, public readonly total: number) {
+    super(`Assessment is incomplete: ${answered} of ${total} answered.`);
+    this.name = "IncompleteAssessmentError";
+  }
+}
+
+/**
+ * API-level lock guard (the RLS policies are the independent backstop). Reads the
+ * assessment in the caller's RLS context, so a foreign/invisible assessment reads as
+ * "not found". Throws AssessmentLockedError once now() >= locked_at.
+ */
+async function assertEditable(c: PoolClient, assessmentId: string): Promise<void> {
+  const { rows } = await c.query<{ locked_at: string | null; locked: boolean }>(
+    `SELECT locked_at, (locked_at IS NOT NULL AND now() >= locked_at) AS locked
+     FROM assessments WHERE id = $1`,
+    [assessmentId],
+  );
+  const row = rows[0];
+  if (!row) throw new Error("Assessment not found.");
+  if (row.locked) throw new AssessmentLockedError(row.locked_at!);
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // The ONLY module that writes SQL. Route handlers call these scoped functions and
@@ -473,6 +506,7 @@ export async function upsertScore(
   note: string | null,
 ): Promise<{ score_id: string; value: number | null }> {
   return withRlsTx(ctx, async (c) => {
+    await assertEditable(c, assessmentId); // clear API error; RLS also enforces the lock
     const res = await c.query<{ id: string; value: number | null }>(
       `INSERT INTO scores (assessment_id, capability_id, value, note)
        VALUES ($1, $2, $3, $4)
@@ -501,6 +535,7 @@ export async function saveEvidence(
   ev: { system_id: string | null; districts_live: number | null; go_live: string | null },
 ): Promise<boolean> {
   return withRlsTx(ctx, async (c) => {
+    await assertEditable(c, assessmentId);
     const res = await c.query(
       `INSERT INTO score_evidence (score_id, system_id, districts_live, go_live)
        SELECT s.id, $3, $4, $5 FROM scores s
@@ -538,5 +573,151 @@ export async function createSystem(
       [ctx.stateId, input.name, input.districts_live, input.go_live],
     );
     return rows[0]!;
+  });
+}
+
+// ── Review & submit ──────────────────────────────────────────────────────────
+
+export interface UnansweredCapability {
+  capability_id: string;
+  name: string;
+  layer_index: number;
+  layer_name: string;
+}
+
+export interface EvidenceGap {
+  capability_id: string;
+  name: string;
+  layer_name: string;
+  value: number;
+}
+
+export interface ReviewData {
+  id: string;
+  status: "draft" | "submitted";
+  locked_at: string | null;
+  total: number; // capability count for THIS assessment's model version
+  answered: number; // count(value) — 0 counts, nulls/missing do not
+  unanswered: UnansweredCapability[];
+  evidenceGaps: EvidenceGap[];
+  valuesByName: Record<string, number>; // answered capability -> value, for consistency checks
+}
+
+/**
+ * The single authoritative source for the review screen. `answered` and `total` are
+ * computed here by querying THIS assessment's rows against the capability count for its
+ * model version — the front end must trust these, never recompute them. That is what
+ * prevents "unanswered list empty but submit disabled" disagreements.
+ */
+export async function reviewAssessment(
+  ctx: RlsContext,
+  id: string,
+): Promise<ReviewData | null> {
+  return withRlsTx(ctx, async (c) => {
+    const a = await c.query<{ status: "draft" | "submitted"; model_version_id: string; locked_at: string | null }>(
+      "SELECT status, model_version_id, locked_at FROM assessments WHERE id = $1",
+      [id],
+    );
+    if (!a.rows[0]) return null;
+    const { status, model_version_id, locked_at } = a.rows[0];
+
+    const total = (
+      await c.query<{ n: number }>(
+        "SELECT count(*)::int AS n FROM capabilities WHERE model_version_id = $1",
+        [model_version_id],
+      )
+    ).rows[0]!.n;
+
+    const answered = (
+      await c.query<{ n: number }>(
+        "SELECT count(value)::int AS n FROM scores WHERE assessment_id = $1",
+        [id],
+      )
+    ).rows[0]!.n;
+
+    const unanswered = (
+      await c.query<UnansweredCapability>(
+        `SELECT cap.id AS capability_id, cap.name, cap.layer_index, cap.layer_name
+         FROM capabilities cap
+         LEFT JOIN scores s ON s.capability_id = cap.id AND s.assessment_id = $2
+         WHERE cap.model_version_id = $1 AND s.value IS NULL
+         ORDER BY cap.layer_index, cap.order_in_layer`,
+        [model_version_id, id],
+      )
+    ).rows;
+
+    const evidenceGaps = (
+      await c.query<EvidenceGap>(
+        `SELECT cap.id AS capability_id, cap.name, cap.layer_name, s.value
+         FROM scores s
+         JOIN capabilities cap ON cap.id = s.capability_id
+         LEFT JOIN score_evidence e ON e.score_id = s.id
+         WHERE s.assessment_id = $1 AND s.value >= 3 AND e.system_id IS NULL
+         ORDER BY cap.layer_index, cap.order_in_layer`,
+        [id],
+      )
+    ).rows;
+
+    const valueRows = (
+      await c.query<{ name: string; value: number }>(
+        `SELECT cap.name, s.value FROM scores s
+         JOIN capabilities cap ON cap.id = s.capability_id
+         WHERE s.assessment_id = $1 AND s.value IS NOT NULL`,
+        [id],
+      )
+    ).rows;
+    const valuesByName: Record<string, number> = {};
+    for (const r of valueRows) valuesByName[r.name] = r.value;
+
+    return { id, status, locked_at, total, answered, unanswered, evidenceGaps, valuesByName };
+  });
+}
+
+/**
+ * Submit a draft. Re-checks completeness server-side (independent of any client state),
+ * stamps submitted_at / locked_at, and SNAPSHOTS the submitter's name + designation onto
+ * the row so reassigning the state later never rewrites who submitted a past round.
+ */
+export async function submitAssessment(
+  ctx: RlsContext,
+  id: string,
+  assessorName: string,
+  assessorDesignation: string | null,
+): Promise<{ submitted_at: string; locked_at: string }> {
+  return withRlsTx(ctx, async (c) => {
+    const a = await c.query<{ status: string; model_version_id: string }>(
+      "SELECT status, model_version_id FROM assessments WHERE id = $1",
+      [id],
+    );
+    if (!a.rows[0]) throw new Error("Assessment not found.");
+    if (a.rows[0].status !== "draft") throw new Error("Assessment is already submitted.");
+
+    const total = (
+      await c.query<{ n: number }>(
+        "SELECT count(*)::int AS n FROM capabilities WHERE model_version_id = $1",
+        [a.rows[0].model_version_id],
+      )
+    ).rows[0]!.n;
+    const answered = (
+      await c.query<{ n: number }>(
+        "SELECT count(value)::int AS n FROM scores WHERE assessment_id = $1",
+        [id],
+      )
+    ).rows[0]!.n;
+    if (answered !== total) throw new IncompleteAssessmentError(answered, total);
+
+    const upd = await c.query<{ submitted_at: string; locked_at: string }>(
+      `UPDATE assessments
+       SET status = 'submitted',
+           submitted_at = now(),
+           locked_at = now() + interval '7 days',
+           assessor_name = $2,
+           assessor_designation = $3
+       WHERE id = $1 AND status = 'draft'
+       RETURNING submitted_at, locked_at`,
+      [id, assessorName, assessorDesignation],
+    );
+    if (!upd.rows[0]) throw new Error("Could not submit (assessment not editable).");
+    return upd.rows[0];
   });
 }
