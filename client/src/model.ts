@@ -28,6 +28,25 @@ export const SCALE = [
 /** The rating ceiling (scores run 0..MAX_SCORE). The only scale constant; counts derive. */
 export const MAX_SCORE = 4;
 
+// ── Public model (About page) ──
+export interface PublicModelLayer {
+  index: number;
+  name: string;
+  covers: string;
+  capabilities: string[];
+}
+export interface PublicModelVersion {
+  version: string;
+  published_at: string;
+  notes: string | null;
+}
+export interface PublicModel {
+  version: string;
+  totalCapabilities: number;
+  layers: PublicModelLayer[];
+  versions: PublicModelVersion[];
+}
+
 // ── Assessment flow types (mirror server db/index.ts) ──
 export interface AssessmentSummary {
   id: string;

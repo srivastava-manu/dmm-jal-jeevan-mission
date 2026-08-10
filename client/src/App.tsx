@@ -100,14 +100,8 @@ export function App() {
           </RequireRole>
         }
       />
-      <Route
-        path="/about"
-        element={
-          <RequireRole role="state_assessor">
-            <About />
-          </RequireRole>
-        }
-      />
+      {/* About the model is public — reachable without signing in (README §10). */}
+      <Route path="/about" element={<About />} />
 
       {/* Centre */}
       <Route

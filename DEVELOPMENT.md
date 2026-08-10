@@ -198,10 +198,20 @@ To try cross-version compare locally: `npm run db:seed:demo` then
 `npm run db:seed:compare-demo` (adds an earlier v2.0 with one renamed capability and a v2.0
 round for Andhra Pradesh), then open a v2.1 assessment's Compare.
 
+## About the model (public)
+
+`/about` (README §10) is public — reachable without signing in. It is data-driven from the
+public `GET /api/model` endpoint (current version's layers + capabilities + version history),
+so the layer/capability counts and per-layer maximum are never hardcoded; the rating scale
+and maturity bands are presentation constants. Signed-in assessors see the full nav; a
+signed-out visitor sees a "Start the assessment" prompt. The assessor nav order is Results,
+History, About.
+
 ## What is intentionally NOT here yet
 
 Built so far: steps 1–5 (auth/RLS/redirect, the national-dashboard slice, the assessment
-flow, review + submit + lock, and results / dashboard / compare / PDF). Still not built: the
+flow, review + submit + lock, and results / dashboard / compare / PDF) plus the public About
+page. Still not built: the
 matrix re-assessment mode (screen 5), and the Centre's state-assessors and requests screens.
 The production user-provisioning flow (Centre creates assessors; no self-signup) also lands
 in a later step.

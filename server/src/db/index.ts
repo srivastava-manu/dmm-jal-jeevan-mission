@@ -151,6 +151,64 @@ export interface DbState {
   is_ut: boolean;
 }
 
+// ── Public model (for the About page; no auth — capabilities/versions are public) ──
+export interface PublicModelLayer {
+  index: number;
+  name: string;
+  covers: string;
+  capabilities: string[];
+}
+export interface PublicModelVersion {
+  version: string;
+  published_at: string;
+  notes: string | null;
+}
+export interface PublicModel {
+  version: string;
+  totalCapabilities: number;
+  layers: PublicModelLayer[];
+  versions: PublicModelVersion[];
+}
+
+export async function getPublicModel(): Promise<PublicModel | null> {
+  return withRlsTx(null, async (c) => {
+    const mv = (
+      await c.query<{ id: string; version: string }>(
+        "SELECT id, version FROM model_versions ORDER BY published_at DESC LIMIT 1",
+      )
+    ).rows[0];
+    if (!mv) return null;
+
+    const caps = (
+      await c.query<{ layer_index: number; layer_name: string; layer_covers: string; name: string }>(
+        `SELECT layer_index, layer_name, layer_covers, name
+         FROM capabilities WHERE model_version_id = $1
+         ORDER BY layer_index, order_in_layer`,
+        [mv.id],
+      )
+    ).rows;
+
+    const byLayer = new Map<number, PublicModelLayer>();
+    for (const r of caps) {
+      let layer = byLayer.get(r.layer_index);
+      if (!layer) {
+        layer = { index: r.layer_index, name: r.layer_name, covers: r.layer_covers, capabilities: [] };
+        byLayer.set(r.layer_index, layer);
+      }
+      layer.capabilities.push(r.name);
+    }
+    const layers = [...byLayer.values()].sort((a, b) => a.index - b.index);
+
+    const versions = (
+      await c.query<PublicModelVersion>(
+        "SELECT version, published_at, notes FROM model_versions ORDER BY published_at DESC",
+      )
+    ).rows;
+
+    return { version: mv.version, totalCapabilities: caps.length, layers, versions };
+  });
+}
+
 export async function listStates(): Promise<DbState[]> {
   return withRlsTx(null, async (c) => {
     const { rows } = await c.query<DbState>(

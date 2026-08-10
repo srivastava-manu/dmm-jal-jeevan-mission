@@ -26,9 +26,9 @@ async function main(): Promise<void> {
       await c.query<{ id: string }>(
         `INSERT INTO model_versions (version, published_at, notes)
          VALUES ('v2.0',
-                 (SELECT published_at FROM model_versions WHERE version = 'v2.1') - interval '1 day',
-                 'Demo: earlier version for cross-version compare')
-         ON CONFLICT (version) DO UPDATE SET notes = EXCLUDED.notes
+                 (SELECT published_at FROM model_versions WHERE version = 'v2.1') - interval '5 months',
+                 'Measure text revised after stakeholder review.')
+         ON CONFLICT (version) DO UPDATE SET notes = EXCLUDED.notes, published_at = EXCLUDED.published_at
          RETURNING id`,
       )
     ).rows[0]!.id;

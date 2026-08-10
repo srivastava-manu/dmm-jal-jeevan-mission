@@ -43,6 +43,9 @@ export const api = {
   centreDashboard(): Promise<import("./model").NationalDashboard> {
     return request("/api/centre/dashboard");
   },
+  model(): Promise<import("./model").PublicModel> {
+    return request("/api/model");
+  },
 
   assessments: {
     list(): Promise<{ assessments: import("./model").AssessmentSummary[] }> {
