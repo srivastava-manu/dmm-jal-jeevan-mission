@@ -168,10 +168,40 @@ same write regardless of the API. `npm run test:lock` proves the RLS half by wri
 directly with the API check bypassed (0 rows affected, value unchanged); `npm test` runs it
 alongside the isolation test.
 
+## Results, dashboard, compare & PDF (step 5)
+
+Read-only screens for a submitted (or draft) assessment:
+
+- **Results** `/assessment/:id/results` (screen 7) — executive summary. Every number comes
+  from `server/src/lib/scoring.ts`, the single module that computes total / percent / band /
+  per-layer index / strongest+weakest / top-four strengths / bottom-four focus / consistency
+  flags (ties break by layer then capability position). The front end renders, computes
+  nothing. Maxima derive from the capability count × the scale ceiling — never a hardcoded
+  192/24.
+- **Dashboard** `/assessment/:id/dashboard` (screen 8) — the 8×6 grid + a detail rail
+  (measure, evidence, and the capability's value across submitted rounds).
+- **Compare** `/assessment/:id/compare?to=<earlierId>` (screen 9) — matches capabilities by
+  **name** across model versions; names in only one version are `notComparable` (added /
+  retired) and are excluded from moves and from the improved/same/slipped counts. Default
+  `to` = the most recent submitted round older than `:id`.
+
+Endpoints (`server/src/routes/assessment-read.ts`, `requireAuth` only): `/results`,
+`/history`, `/compare`. Visibility (same-state assessors + the Centre, submitted-only for the
+Centre) is enforced by **RLS**, not the route — a cross-state read returns no rows → 404.
+`npm run test:read` (part of `npm test`) proves this at the database layer.
+
+**PDF is print CSS** — no library, no headless browser. `@page A4 portrait; margin: 12mm`,
+the Export buttons call `window.print()`. Results prints as two pages: the summary, then the
+labelled maturity grid, forced to page 2 with `break-before: page`.
+
+To try cross-version compare locally: `npm run db:seed:demo` then
+`npm run db:seed:compare-demo` (adds an earlier v2.0 with one renamed capability and a v2.0
+round for Andhra Pradesh), then open a v2.1 assessment's Compare.
+
 ## What is intentionally NOT here yet
 
-Built so far: steps 1–4 (auth/RLS/redirect, the national-dashboard slice, the assessment
-flow, and review + submit + lock). Still not built: results / compare / PDF, the matrix
-re-assessment mode, the Centre's state-assessors and requests screens, and dashboard cell
-drill-down. The production user-provisioning flow (Centre creates assessors; no
-self-signup) also lands in a later step.
+Built so far: steps 1–5 (auth/RLS/redirect, the national-dashboard slice, the assessment
+flow, review + submit + lock, and results / dashboard / compare / PDF). Still not built: the
+matrix re-assessment mode (screen 5), and the Centre's state-assessors and requests screens.
+The production user-provisioning flow (Centre creates assessors; no self-signup) also lands
+in a later step.

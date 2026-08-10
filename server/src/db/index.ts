@@ -721,3 +721,182 @@ export async function submitAssessment(
     return upd.rows[0];
   });
 }
+
+// ── Read-only views (results / dashboard / compare) ──────────────────────────
+// These run under RLS: a state assessor sees only their own state; the Centre sees only
+// submitted assessments. A cross-state read simply returns null / no rows — the block is at
+// the database layer, not in the route.
+
+export interface ReadAssessment {
+  id: string;
+  status: "draft" | "submitted";
+  submitted_at: string | null;
+  created_at: string;
+  assessor_name: string | null;
+  assessor_designation: string | null;
+  model_version_id: string;
+  model_version: string;
+  state_id: string;
+  state_name: string;
+}
+
+export async function getReadAssessment(
+  ctx: RlsContext,
+  id: string,
+): Promise<ReadAssessment | null> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<ReadAssessment>(
+      `SELECT a.id, a.status, a.submitted_at, a.created_at, a.assessor_name,
+              a.assessor_designation, a.model_version_id, mv.version AS model_version,
+              a.state_id, st.name AS state_name
+       FROM assessments a
+       JOIN model_versions mv ON mv.id = a.model_version_id
+       JOIN states st ON st.id = a.state_id
+       WHERE a.id = $1`,
+      [id],
+    );
+    return rows[0] ?? null;
+  });
+}
+
+export interface CapScoreRow {
+  capability_id: string;
+  layer_index: number;
+  layer_name: string;
+  layer_covers: string;
+  order_in_layer: number;
+  name: string;
+  measure: string;
+  includes: string[];
+  value: number | null;
+  evidence: {
+    system_id: string | null;
+    system_name: string | null;
+    districts_live: number | null;
+    go_live: string | null;
+  } | null;
+}
+
+export async function getCapScoresForRead(
+  ctx: RlsContext,
+  assessmentId: string,
+  modelVersionId: string,
+): Promise<CapScoreRow[]> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<{
+      capability_id: string;
+      layer_index: number;
+      layer_name: string;
+      layer_covers: string;
+      order_in_layer: number;
+      name: string;
+      measure: string;
+      includes: string[];
+      value: number | null;
+      system_id: string | null;
+      system_name: string | null;
+      districts_live: number | null;
+      go_live: string | null;
+    }>(
+      `SELECT cap.id AS capability_id, cap.layer_index, cap.layer_name, cap.layer_covers,
+              cap.order_in_layer, cap.name, cap.measure, cap.includes,
+              s.value, e.system_id, sys.name AS system_name, e.districts_live, e.go_live
+       FROM capabilities cap
+       LEFT JOIN scores s ON s.capability_id = cap.id AND s.assessment_id = $2
+       LEFT JOIN score_evidence e ON e.score_id = s.id
+       LEFT JOIN systems sys ON sys.id = e.system_id
+       WHERE cap.model_version_id = $1
+       ORDER BY cap.layer_index, cap.order_in_layer`,
+      [modelVersionId, assessmentId],
+    );
+    return rows.map((r) => ({
+      capability_id: r.capability_id,
+      layer_index: r.layer_index,
+      layer_name: r.layer_name,
+      layer_covers: r.layer_covers,
+      order_in_layer: r.order_in_layer,
+      name: r.name,
+      measure: r.measure,
+      includes: r.includes,
+      value: r.value,
+      evidence:
+        r.system_id || r.districts_live !== null || r.go_live
+          ? {
+              system_id: r.system_id,
+              system_name: r.system_name,
+              districts_live: r.districts_live,
+              go_live: r.go_live,
+            }
+          : null,
+    }));
+  });
+}
+
+/** The most recent SUBMITTED assessment for this state older than `id` (compare default). */
+export async function getPreviousSubmitted(
+  ctx: RlsContext,
+  id: string,
+): Promise<{ id: string; submitted_at: string } | null> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<{ id: string; submitted_at: string }>(
+      `SELECT id, submitted_at FROM assessments
+       WHERE state_id = (SELECT state_id FROM assessments WHERE id = $1)
+         AND status = 'submitted'
+         AND id <> $1
+         AND submitted_at < COALESCE(
+               (SELECT submitted_at FROM assessments WHERE id = $1),
+               (SELECT created_at FROM assessments WHERE id = $1))
+       ORDER BY submitted_at DESC
+       LIMIT 1`,
+      [id],
+    );
+    return rows[0] ?? null;
+  });
+}
+
+export interface HistoryData {
+  rounds: { assessment_id: string; submitted_at: string; model_version: string }[];
+  // capability name -> its value in each submitted round (chronological)
+  byCapabilityName: Record<string, { assessment_id: string; submitted_at: string; value: number }[]>;
+}
+
+/** Per-capability score across every submitted round for this assessment's state. */
+export async function getStateHistory(ctx: RlsContext, id: string): Promise<HistoryData> {
+  return withRlsTx(ctx, async (c) => {
+    const rounds = (
+      await c.query<{ assessment_id: string; submitted_at: string; model_version: string }>(
+        `SELECT a.id AS assessment_id, a.submitted_at, mv.version AS model_version
+         FROM assessments a
+         JOIN model_versions mv ON mv.id = a.model_version_id
+         WHERE a.state_id = (SELECT state_id FROM assessments WHERE id = $1)
+           AND a.status = 'submitted'
+         ORDER BY a.submitted_at`,
+        [id],
+      )
+    ).rows;
+
+    const rows = (
+      await c.query<{ assessment_id: string; submitted_at: string; name: string; value: number }>(
+        `SELECT a.id AS assessment_id, a.submitted_at, cap.name, s.value
+         FROM assessments a
+         JOIN scores s ON s.assessment_id = a.id
+         JOIN capabilities cap ON cap.id = s.capability_id
+         WHERE a.state_id = (SELECT state_id FROM assessments WHERE id = $1)
+           AND a.status = 'submitted'
+           AND s.value IS NOT NULL
+         ORDER BY a.submitted_at, cap.layer_index, cap.order_in_layer`,
+        [id],
+      )
+    ).rows;
+
+    const byCapabilityName: HistoryData["byCapabilityName"] = {};
+    for (const r of rows) {
+      (byCapabilityName[r.name] ??= []).push({
+        assessment_id: r.assessment_id,
+        submitted_at: r.submitted_at,
+        value: r.value,
+      });
+    }
+    return { rounds, byCapabilityName };
+  });
+}

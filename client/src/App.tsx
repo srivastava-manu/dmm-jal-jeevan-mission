@@ -5,6 +5,9 @@ import { Home } from "./pages/Home";
 import { StartAssessment } from "./pages/StartAssessment";
 import { Assess } from "./pages/Assess";
 import { Review } from "./pages/Review";
+import { Results } from "./pages/Results";
+import { AssessorDashboard } from "./pages/AssessorDashboard";
+import { Compare } from "./pages/Compare";
 import { Dashboard } from "./pages/Dashboard";
 import type { Role } from "./api";
 
@@ -69,6 +72,30 @@ export function App() {
         element={
           <RequireRole role="state_assessor">
             <Review />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/assessment/:id/results"
+        element={
+          <RequireRole role="state_assessor">
+            <Results />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/assessment/:id/dashboard"
+        element={
+          <RequireRole role="state_assessor">
+            <AssessorDashboard />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/assessment/:id/compare"
+        element={
+          <RequireRole role="state_assessor">
+            <Compare />
           </RequireRole>
         }
       />

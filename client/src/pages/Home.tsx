@@ -134,7 +134,11 @@ export function Home() {
                 const pct = pctOf(a);
                 const col = colorForMean(pct / 25); // map 0..100% onto the 0..4 ramp
                 return (
-                  <div className="saved-row" key={a.id}>
+                  <button
+                    className="saved-row"
+                    key={a.id}
+                    onClick={() => navigate(`/assessment/${a.id}/results`)}
+                  >
                     <span
                       className="pct-square mono"
                       style={{ background: col.bg, color: col.fg }}
@@ -148,8 +152,8 @@ export function Home() {
                         {a.assessor_name ?? user?.name}
                       </span>
                     </div>
-                    <span className="muted small">Results in a later step</span>
-                  </div>
+                    <span className="chevron">›</span>
+                  </button>
                 );
               })}
             </div>

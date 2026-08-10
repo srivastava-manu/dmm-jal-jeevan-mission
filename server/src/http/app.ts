@@ -4,6 +4,7 @@ import { authRouter } from "../routes/auth.js";
 import { statesRouter } from "../routes/states.js";
 import { centreRouter } from "../routes/centre.js";
 import { assessmentsRouter } from "../routes/assessments.js";
+import { assessmentReadRouter } from "../routes/assessment-read.js";
 import { systemsRouter } from "../routes/systems.js";
 
 export function createApp() {
@@ -21,6 +22,9 @@ export function createApp() {
   app.use("/api/auth", authRouter);
   app.use("/api/states", statesRouter);
   app.use("/api/centre", centreRouter);
+  // Read router first: results/history/compare are open to any authenticated user (RLS
+  // scopes them), while the assessments router below gates writes to state_assessor.
+  app.use("/api/assessments", assessmentReadRouter);
   app.use("/api/assessments", assessmentsRouter);
   app.use("/api/systems", systemsRouter);
 

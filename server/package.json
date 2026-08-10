@@ -13,11 +13,13 @@
     "gen:model": "tsx src/scripts/gen-model-migration.ts",
     "seed": "tsx src/scripts/seed.ts",
     "seed:demo": "tsx src/scripts/seed-demo.ts",
+    "seed:compare-demo": "tsx src/scripts/seed-compare-demo.ts",
     "db:setup": "tsx src/scripts/db-setup.ts",
     "db:reset": "tsx src/scripts/db-setup.ts --reset && tsx src/scripts/migrate.ts && tsx src/scripts/seed.ts",
     "test": "tsx --test src/test/*.test.ts",
     "test:isolation": "tsx --test src/test/isolation.test.ts",
-    "test:lock": "tsx --test src/test/lock.test.ts"
+    "test:lock": "tsx --test src/test/lock.test.ts",
+    "test:read": "tsx --test src/test/read-access.test.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.0.2",

@@ -87,6 +87,16 @@ export const api = {
     submit(id: string): Promise<{ submitted_at: string; locked_at: string }> {
       return request(`/api/assessments/${id}/submit`, { method: "POST" });
     },
+    results(id: string): Promise<import("./model").ResultsResponse> {
+      return request(`/api/assessments/${id}/results`);
+    },
+    history(id: string): Promise<import("./model").HistoryResponse> {
+      return request(`/api/assessments/${id}/history`);
+    },
+    compare(id: string, to?: string): Promise<import("./model").CompareResponse> {
+      const q = to ? `?to=${encodeURIComponent(to)}` : "";
+      return request(`/api/assessments/${id}/compare${q}`);
+    },
   },
 
   systems: {

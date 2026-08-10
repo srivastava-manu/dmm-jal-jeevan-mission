@@ -13,7 +13,7 @@ import {
   AssessmentLockedError,
   IncompleteAssessmentError,
 } from "../db/index.js";
-import { computeConsistencyFlags } from "../services/assessment-review.js";
+import { consistencyFlagsFromValues } from "../lib/scoring.js";
 
 export const assessmentsRouter = Router();
 
@@ -59,7 +59,7 @@ assessmentsRouter.get("/:id/review", async (req, res) => {
     canSubmit: review.status === "draft" && review.answered === review.total,
     unanswered: review.unanswered,
     evidenceGaps: { count: review.evidenceGaps.length, items: review.evidenceGaps },
-    consistencyFlags: computeConsistencyFlags(review.valuesByName),
+    consistencyFlags: consistencyFlagsFromValues(new Map(Object.entries(review.valuesByName))),
   });
 });
 

@@ -87,6 +87,99 @@ export interface SystemRow {
   go_live: string | null;
 }
 
+// ── Results / dashboard / compare (server-computed; the client renders, computes nothing) ──
+export interface CapScoreRow {
+  capability_id: string;
+  layer_index: number;
+  layer_name: string;
+  layer_covers: string;
+  order_in_layer: number;
+  name: string;
+  measure: string;
+  includes: string[];
+  value: number | null;
+  evidence: {
+    system_id: string | null;
+    system_name: string | null;
+    districts_live: number | null;
+    go_live: string | null;
+  } | null;
+}
+
+export interface LayerIndexRow {
+  layer_index: number;
+  layer_name: string;
+  score: number;
+  max: number;
+  pct: number;
+  band: string;
+}
+
+export interface CapRef {
+  capability_id: string;
+  name: string;
+  layer_name: string;
+  value: number;
+}
+
+export interface ResultsSummary {
+  total: number;
+  answered: number;
+  overallScore: number;
+  overallMax: number;
+  overallPct: number;
+  overallBand: string;
+  layers: LayerIndexRow[];
+  strongestLayer: LayerIndexRow;
+  weakestLayer: LayerIndexRow;
+  strengths: CapRef[];
+  focus: CapRef[];
+  consistencyFlags: string[];
+}
+
+export interface ResultsResponse {
+  assessment: {
+    id: string;
+    status: "draft" | "submitted";
+    submitted_at: string | null;
+    created_at: string;
+    assessor_name: string | null;
+    assessor_designation: string | null;
+    model_version: string;
+    state_name: string;
+  };
+  capabilities: CapScoreRow[];
+  summary: ResultsSummary;
+  since: {
+    previousId: string;
+    previousDate: string;
+    deltaPoints: number;
+    fromBand: string;
+    toBand: string;
+    improved: number;
+    slipped: number;
+  } | null;
+}
+
+export interface HistoryResponse {
+  rounds: { assessment_id: string; submitted_at: string; model_version: string }[];
+  byCapabilityName: Record<string, { assessment_id: string; submitted_at: string; value: number }[]>;
+}
+
+export interface CompareResponse {
+  current: { id: string; submitted_at: string | null; created_at: string; model_version: string };
+  earlier: { id: string; submitted_at: string | null; model_version: string };
+  compare: {
+    comparableCount: number;
+    improved: number;
+    same: number;
+    slipped: number;
+    biggestMoves: { name: string; layer_name: string; from: number; to: number; delta: number }[];
+    notComparable: { name: string; layer_name: string; status: "added" | "retired" }[];
+    transition: { from: number; to: number; delta: number; fromBand: string; toBand: string; max: number };
+  };
+}
+
 export interface ReviewResult {
   total: number;
   answered: number;
