@@ -1,0 +1,24 @@
+{
+  "name": "dmm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Digital Maturity Model — Jal Jeevan Mission. Monorepo: React (Vite) client + Node/Express API + plain PostgreSQL.",
+  "type": "module",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "db:setup": "npm run db:setup -w server",
+    "db:migrate": "npm run migrate -w server",
+    "db:seed": "npm run seed -w server",
+    "db:reset": "npm run db:reset -w server",
+    "test:isolation": "npm run test:isolation -w server",
+    "dev:server": "npm run dev -w server",
+    "dev:client": "npm run dev -w client",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client"
+  }
+}

@@ -1,0 +1,148 @@
+/* Minimal step-1 styling. The full GramVikas design tokens are applied when the real
+   screens are built. This nods to the palette (accent green, slate ink) without
+   pretending to be the finished UI. */
+:root {
+  --accent: #1f8a5b;
+  --accent-hover: #187049;
+  --accent-soft: #e6f2ec;
+  --bg: #f1f5f7;
+  --surface: #ffffff;
+  --surface-2: #f5f8fa;
+  --border: #dbe3e8;
+  --text: #1a2329;
+  --text-2: #4a565f;
+  --text-3: #8794a0;
+  --danger-fg: #c83a2b;
+  --shadow-sm: 0 1px 2px rgba(20, 26, 31, 0.06), 0 4px 16px rgba(20, 26, 31, 0.05);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.centered {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  padding: 44px 40px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.signin .mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--accent);
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+
+h1 .muted { color: var(--text-3); font-weight: 500; }
+
+.intro {
+  font-size: 15px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin: 0 0 24px;
+  max-width: 36ch;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-bottom: 14px;
+}
+
+input {
+  display: block;
+  width: 100%;
+  height: 42px;
+  margin-top: 6px;
+  padding: 0 12px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+input:focus {
+  outline: 3px solid var(--accent-soft);
+  border-color: var(--accent);
+}
+
+button {
+  width: 100%;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+button:hover { background: var(--accent-hover); }
+button:disabled { opacity: 0.6; cursor: default; }
+
+button.ghost {
+  width: auto;
+  padding: 0 18px;
+  height: 40px;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  margin-top: 20px;
+}
+button.ghost:hover { background: var(--accent-soft); }
+
+.error {
+  color: var(--danger-fg);
+  font-size: 12.5px;
+  margin: 0 0 12px;
+}
+
+.footnote {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.5;
+  margin: 24px 0 0;
+}
+
+.landing { max-width: 480px; }
+.muted { color: var(--text-3); font-size: 13px; }
