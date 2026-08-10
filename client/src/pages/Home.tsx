@@ -10,6 +10,7 @@ import {
   type AssessmentSummary,
 } from "../model";
 import { SystemsDialog } from "../components/SystemsDialog";
+import { AssessorNav } from "../components/AssessorNav";
 
 function pctOf(a: AssessmentSummary): number {
   const max = a.total * MAX_SCORE; // derived, no hardcoded 192
@@ -17,7 +18,7 @@ function pctOf(a: AssessmentSummary): number {
 }
 
 export function Home() {
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [assessments, setAssessments] = useState<AssessmentSummary[] | null>(null);
   const [stateName, setStateName] = useState<string>("");
@@ -49,12 +50,6 @@ export function Home() {
     [assessments],
   );
 
-  async function signOut() {
-    await api.logout();
-    setUser(null);
-    navigate("/signin", { replace: true });
-  }
-
   async function discardDraft(id: string) {
     if (armedDelete !== id) {
       setArmedDelete(id);
@@ -68,14 +63,7 @@ export function Home() {
 
   return (
     <div className="page">
-      <header className="topbar">
-        <div className="topbar-title">
-          Digital maturity <span className="muted">/ self-assessment</span>
-        </div>
-        <div className="topbar-right">
-          <button className="ghost small" onClick={signOut}>Sign out</button>
-        </div>
-      </header>
+      <AssessorNav label="self-assessment" />
 
       <main className="home">
         <div className="home-head">

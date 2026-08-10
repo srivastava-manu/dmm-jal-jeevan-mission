@@ -8,6 +8,7 @@ import { Review } from "./pages/Review";
 import { Results } from "./pages/Results";
 import { AssessorDashboard } from "./pages/AssessorDashboard";
 import { Compare } from "./pages/Compare";
+import { About } from "./pages/About";
 import { Dashboard } from "./pages/Dashboard";
 import type { Role } from "./api";
 
@@ -96,6 +97,14 @@ export function App() {
         element={
           <RequireRole role="state_assessor">
             <Compare />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/about"
+        element={
+          <RequireRole role="state_assessor">
+            <About />
           </RequireRole>
         }
       />

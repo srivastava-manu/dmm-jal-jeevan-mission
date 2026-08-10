@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { fmtDate, type CompareResponse } from "../model";
+import { AssessorNav } from "../components/AssessorNav";
 
 // Screen 9 — Compare. All figures come from the server's compare computation, which matches
 // capabilities by name across model versions and excludes added/retired ones from the counts.
 export function Compare() {
   const { id = "" } = useParams();
   const [params] = useSearchParams();
-  const navigate = useNavigate();
   const [data, setData] = useState<CompareResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,13 +24,7 @@ export function Compare() {
 
   return (
     <div className="page">
-      <header className="topbar no-print">
-        <div className="topbar-title">Digital maturity <span className="muted">/ compare</span></div>
-        <div className="topbar-right">
-          <button className="ghost small" onClick={() => navigate(`/assessment/${id}/results`)}>Results</button>
-          <button className="ghost small" onClick={() => navigate("/home")}>Home</button>
-        </div>
-      </header>
+      <AssessorNav label="compare" />
 
       <main className="compare">
         <p className="muted">

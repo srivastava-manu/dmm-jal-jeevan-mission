@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../api";
 import { fmtDate, colorForMean, type ResultsResponse } from "../model";
 import { MaturityGrid } from "../components/MaturityGrid";
+import { AssessorNav } from "../components/AssessorNav";
 
 // Screen 7 — Executive summary. Every number here comes from the server's scoring module;
 // this component only renders. Prints as two A4 pages: the summary, then the labelled grid.
@@ -24,12 +25,7 @@ export function Results() {
 
   return (
     <div className="page">
-      <header className="topbar no-print">
-        <div className="topbar-title">Digital maturity <span className="muted">/ results</span></div>
-        <div className="topbar-right">
-          <button className="ghost small" onClick={() => navigate("/home")}>Home</button>
-        </div>
-      </header>
+      <AssessorNav label="results" />
 
       <main className="results">
         <div className="results-main">

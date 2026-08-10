@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { api } from "../api";
 import {
   SCALE,
@@ -10,12 +10,12 @@ import {
   type HistoryResponse,
 } from "../model";
 import { MaturityGrid } from "../components/MaturityGrid";
+import { AssessorNav } from "../components/AssessorNav";
 
 // Screen 8 — the assessor's own dashboard: the labelled 8×6 grid plus a detail rail for the
 // selected capability (measure, evidence, and how it has moved across submitted rounds).
 export function AssessorDashboard() {
   const { id = "" } = useParams();
-  const navigate = useNavigate();
   const [data, setData] = useState<ResultsResponse | null>(null);
   const [history, setHistory] = useState<HistoryResponse | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -40,13 +40,7 @@ export function AssessorDashboard() {
 
   return (
     <div className="page">
-      <header className="topbar no-print">
-        <div className="topbar-title">Digital maturity <span className="muted">/ dashboard</span></div>
-        <div className="topbar-right">
-          <button className="ghost small" onClick={() => navigate(`/assessment/${id}/results`)}>Results</button>
-          <button className="ghost small" onClick={() => navigate("/home")}>Home</button>
-        </div>
-      </header>
+      <AssessorNav label="dashboard" />
 
       <main className="dash-screen">
         <div className="dash-main">
