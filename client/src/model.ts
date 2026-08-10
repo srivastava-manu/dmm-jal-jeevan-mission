@@ -37,18 +37,27 @@ export interface CapabilityMean {
 export interface LayerSummary {
   layerIndex: number;
   layerName: string;
+  capabilityCount: number;
   score: number;
+  outOf: number;
   pct: number;
   band: string;
 }
 
+export interface Extreme {
+  layerName: string;
+  score: number;
+  outOf: number;
+}
+
 export interface NationalDashboard {
   modelVersion: string;
+  capabilityCount: number;
   submittedStates: number;
   assessorStates: number;
   overall: { score: number; outOf: number; pct: number; band: string };
-  weakestLayer: { layerName: string; score: number } | null;
-  strongestLayer: { layerName: string; score: number } | null;
+  weakestLayer: Extreme | null;
+  strongestLayer: Extreme | null;
   layers: LayerSummary[];
   grid: CapabilityMean[];
 }

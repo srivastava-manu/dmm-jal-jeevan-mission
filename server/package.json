@@ -10,10 +10,11 @@
     "start": "node dist/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "migrate": "tsx src/scripts/migrate.ts",
+    "gen:model": "tsx src/scripts/gen-model-migration.ts",
     "seed": "tsx src/scripts/seed.ts",
-    "seed:model": "tsx src/scripts/seed-model.ts",
+    "seed:demo": "tsx src/scripts/seed-demo.ts",
     "db:setup": "tsx src/scripts/db-setup.ts",
-    "db:reset": "tsx src/scripts/db-setup.ts --reset && tsx src/scripts/migrate.ts && tsx src/scripts/seed.ts && tsx src/scripts/seed-model.ts",
+    "db:reset": "tsx src/scripts/db-setup.ts --reset && tsx src/scripts/migrate.ts && tsx src/scripts/seed.ts",
     "test:isolation": "tsx --test src/test/isolation.test.ts"
   },
   "dependencies": {

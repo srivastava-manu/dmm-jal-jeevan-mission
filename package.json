@@ -14,8 +14,9 @@
   "scripts": {
     "db:setup": "npm run db:setup -w server",
     "db:migrate": "npm run migrate -w server",
+    "db:gen:model": "npm run gen:model -w server",
     "db:seed": "npm run seed -w server",
-    "db:seed:model": "npm run seed:model -w server",
+    "db:seed:demo": "npm run seed:demo -w server",
     "db:reset": "npm run db:reset -w server",
     "test:isolation": "npm run test:isolation -w server",
     "dev:server": "npm run dev -w server",

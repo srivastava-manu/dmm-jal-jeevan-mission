@@ -75,10 +75,14 @@ export function Dashboard() {
                 of {data.assessorStates} states with an assessor
               </Kpi>
               <Kpi label="Weakest layer" big={data.weakestLayer?.layerName ?? "—"}>
-                {data.weakestLayer ? `${data.weakestLayer.score} of 24` : ""}
+                {data.weakestLayer
+                  ? `${data.weakestLayer.score} of ${data.weakestLayer.outOf}`
+                  : ""}
               </Kpi>
               <Kpi label="Strongest layer" big={data.strongestLayer?.layerName ?? "—"}>
-                {data.strongestLayer ? `${data.strongestLayer.score} of 24` : ""}
+                {data.strongestLayer
+                  ? `${data.strongestLayer.score} of ${data.strongestLayer.outOf}`
+                  : ""}
               </Kpi>
             </section>
 
@@ -104,7 +108,11 @@ export function Dashboard() {
               <div className="grid-scroll">
                 <div className="grid">
                   {rows.map(([layerIndex, cells]) => (
-                    <div className="grid-row" key={layerIndex}>
+                    <div
+                      className="grid-row"
+                      key={layerIndex}
+                      style={{ gridTemplateColumns: `150px repeat(${cells.length}, 1fr)` }}
+                    >
                       <div className="grid-rowlabel">
                         <span className="mono">{layerIndex + 1}</span>{" "}
                         {cells[0]!.layer_name}
@@ -134,7 +142,10 @@ export function Dashboard() {
             <section className="panel">
               <div className="panel-head">
                 <h2>Layer-wise national average</h2>
-                <p className="muted">Sum of a layer's six capability means, out of 24.</p>
+                <p className="muted">
+                  Each layer's score is the sum of its capability means, out of the layer
+                  maximum.
+                </p>
               </div>
               <div className="layers">
                 {data.layers.map((l) => (
@@ -143,12 +154,11 @@ export function Dashboard() {
                       <span className="mono">{l.layerIndex + 1}</span> {l.layerName}
                     </div>
                     <div className="bar">
-                      <div
-                        className="bar-fill"
-                        style={{ width: `${(l.score / 24) * 100}%` }}
-                      />
+                      <div className="bar-fill" style={{ width: `${l.pct}%` }} />
                     </div>
-                    <div className="layer-score mono">{l.score.toFixed(1)}</div>
+                    <div className="layer-score mono" title={`${l.score} of ${l.outOf}`}>
+                      {l.score.toFixed(1)}
+                    </div>
                     <div className="layer-band">{l.band}</div>
                   </div>
                 ))}
