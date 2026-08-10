@@ -59,9 +59,10 @@ cp .env.example .env   # then edit DATABASE_URL / ADMIN_DATABASE_URL / passwords
 ```bash
 npm install
 
-npm run db:setup      # create/adjust the dmm_app role + grants (idempotent)
-npm run db:migrate    # apply migrations/001, 002 (plain SQL, tracked in schema_migrations)
-npm run db:seed       # dev users: 1 centre + 2 assessors (AP, Bihar). Prints credentials.
+npm run db:setup       # create/adjust the dmm_app role + grants (idempotent)
+npm run db:migrate     # apply migrations/001–003 (plain SQL, tracked in schema_migrations)
+npm run db:seed        # dev users: 1 centre + 2 demo assessors (Sikkim, Tripura)
+npm run db:seed:model  # model v2.1 (48 capabilities) + 20 submitted assessments from the data files
 ```
 
 Reset everything and re-seed:
@@ -79,9 +80,29 @@ npm run dev:server    # API on http://localhost:3001
 npm run dev:client    # app on http://localhost:5173  (proxies /api -> :3001)
 ```
 
-Sign in with a seeded account (printed by `db:seed`). A `state_assessor` lands on
-`/assess`; the `centre` lands on `/dashboard`. Both are step-1 landing surfaces — the real
-screens come in later steps.
+Sign in with a seeded account (printed by `db:seed` / `db:seed:model`). A `state_assessor`
+lands on `/assess` (still a placeholder); the `centre` lands on `/dashboard`, which is a
+real, data-backed national dashboard once `db:seed:model` has run.
+
+## The national dashboard (data slice)
+
+`db:seed:model` loads the authoritative content from `dmm-model.js` and
+`njjm-centre-data.js` into real rows: model v2.1 with its 48 capabilities, an assessor per
+seeded state, and 20 **submitted** assessments (4 further states have an assessor but no
+submission). Sign in as `centre@njjm.gov.in` to see:
+
+- KPIs (national maturity, submitted count, weakest/strongest layer),
+- the 8×6 mean-score grid coloured by rounded mean,
+- the layer-wise national averages.
+
+The two headline business rules are enforced by the **database**, not the UI: every Centre
+query runs in the Centre's RLS context, so drafts are invisible and non-submitting states
+are simply absent from the averages (never counted as zero). The dashboard API is
+[`server/src/routes/centre.ts`](server/src/routes/centre.ts) →
+[`getNationalCapabilityMeans`](server/src/db/index.ts).
+
+Deferred to the real step 6: per-cell state distribution drill-down, the state-assessors
+screen, requests, and PDF export.
 
 ## The isolation test (the step-1 proof)
 
@@ -103,8 +124,10 @@ npm run typecheck
 
 ## What is intentionally NOT here yet
 
-Per the build order in `README.md`, this is step 1 only. Not yet built: the `capabilities`
-/ `model_versions` seed from `dmm-model.js`, the assessment flow, submission + the 7-day
-lock, results/dashboard/compare, the Centre screens, user management, and requests. The
-production user-provisioning flow (Centre creates assessors; no self-signup) also lands in
-a later step — today's users come from the dev seed.
+Step 1 (auth/RLS/redirect) is complete, plus a vertical slice to make the national
+dashboard real (schema for `model_versions`/`capabilities`/`assessments`/`scores`, the
+model + submitted-assessment seed, and the dashboard read path). Still not built: the state
+assessment flow (layer nav, scoring, autosave, evidence), the review + submit + 7-day-lock
+*write* path, results / compare / PDF, the Centre's state-assessors and requests screens,
+and dashboard cell drill-down. The production user-provisioning flow (Centre creates
+assessors; no self-signup) also lands in a later step — today's users come from the seeds.

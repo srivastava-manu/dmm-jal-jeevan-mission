@@ -34,20 +34,23 @@ async function main(): Promise<void> {
       stateName: null,
       password: seedCfg.centrePassword,
     },
+    // Two demo assessors in states OUTSIDE the njjm-24 national seed (see seed-model.ts),
+    // so the step-1 auth/isolation demo never collides with the dashboard seed's
+    // one-active-assessor-per-state rule.
     {
-      email: "assessor.ap@example.gov.in",
-      name: "A. Assessor",
+      email: "assessor.demo1@example.gov.in",
+      name: "Demo Assessor One",
       designation: "State IT Officer",
       role: "state_assessor",
-      stateName: "Andhra Pradesh",
+      stateName: "Sikkim",
       password: seedCfg.assessorPassword,
     },
     {
-      email: "assessor.br@example.gov.in",
-      name: "B. Assessor",
+      email: "assessor.demo2@example.gov.in",
+      name: "Demo Assessor Two",
       designation: "State IT Officer",
       role: "state_assessor",
-      stateName: "Bihar",
+      stateName: "Tripura",
       password: seedCfg.assessorPassword,
     },
   ];

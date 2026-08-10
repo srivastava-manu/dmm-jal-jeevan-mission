@@ -11,8 +11,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "migrate": "tsx src/scripts/migrate.ts",
     "seed": "tsx src/scripts/seed.ts",
+    "seed:model": "tsx src/scripts/seed-model.ts",
     "db:setup": "tsx src/scripts/db-setup.ts",
-    "db:reset": "tsx src/scripts/db-setup.ts --reset && tsx src/scripts/migrate.ts && tsx src/scripts/seed.ts",
+    "db:reset": "tsx src/scripts/db-setup.ts --reset && tsx src/scripts/migrate.ts && tsx src/scripts/seed.ts && tsx src/scripts/seed-model.ts",
     "test:isolation": "tsx --test src/test/isolation.test.ts"
   },
   "dependencies": {

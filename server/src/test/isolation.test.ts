@@ -37,8 +37,8 @@ before(async () => {
     email: string;
   }>("SELECT id, role, state_id, email FROM users ORDER BY email");
 
-  const a = q.rows.find((r) => r.email === "assessor.ap@example.gov.in");
-  const b = q.rows.find((r) => r.email === "assessor.br@example.gov.in");
+  const a = q.rows.find((r) => r.email === "assessor.demo1@example.gov.in");
+  const b = q.rows.find((r) => r.email === "assessor.demo2@example.gov.in");
   const c = q.rows.find((r) => r.email === "centre@njjm.gov.in");
   assert.ok(a && b && c, "Seed users must exist — run `npm run db:seed` first.");
   assert.ok(a!.state_id && b!.state_id, "Assessors must have states.");

@@ -2,6 +2,7 @@ import express from "express";
 import { attachSession } from "./session.js";
 import { authRouter } from "../routes/auth.js";
 import { statesRouter } from "../routes/states.js";
+import { centreRouter } from "../routes/centre.js";
 
 export function createApp() {
   const app = express();
@@ -17,6 +18,7 @@ export function createApp() {
 
   app.use("/api/auth", authRouter);
   app.use("/api/states", statesRouter);
+  app.use("/api/centre", centreRouter);
 
   return app;
 }

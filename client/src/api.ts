@@ -40,4 +40,7 @@ export const api = {
   logout(): Promise<{ ok: true }> {
     return request<{ ok: true }>("/api/auth/logout", { method: "POST" });
   },
+  centreDashboard(): Promise<import("./model").NationalDashboard> {
+    return request("/api/centre/dashboard");
+  },
 };
