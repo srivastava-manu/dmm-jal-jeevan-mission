@@ -243,41 +243,85 @@ export function colorForMean(mean: number | null): { bg: string; fg: string } {
   return SCORE_COLORS[idx]!;
 }
 
-// ── Dashboard payload types (mirror server/src/services/national.ts) ──
-export interface CapabilityMean {
+// ── Centre dashboard payload (mirror server/src/lib/national.ts) ──
+export interface CentreStateRef {
+  state_id: string;
+  state_name: string;
+  assessment_id: string;
+}
+export interface LevelBucket {
+  level: number;
+  count: number;
+  states: CentreStateRef[];
+}
+export interface CentreCell {
   capability_id: string;
   layer_index: number;
   order_in_layer: number;
   layer_name: string;
   name: string;
+  measure: string;
   mean: number | null;
   contributing: number;
+  distribution: LevelBucket[];
+  atOrAbove3: number;
 }
-
-export interface LayerSummary {
-  layerIndex: number;
-  layerName: string;
-  capabilityCount: number;
+export interface CentreLayerIndex {
+  layer_index: number;
+  layer_name: string;
   score: number;
   outOf: number;
   pct: number;
   band: string;
 }
-
-export interface Extreme {
-  layerName: string;
-  score: number;
-  outOf: number;
+export interface CentreDashboard {
+  modelVersion: string;
+  totalStates: number;
+  statesWithAssessor: number;
+  submittedStates: number;
+  excludedCapabilities: number;
+  overall: { score: number; outOf: number; pct: number; band: string };
+  layers: CentreLayerIndex[];
+  weakestLayer: CentreLayerIndex | null;
+  grid: CentreCell[];
+  overallDistribution: LevelBucket[];
+  openRequests: number;
+  newRequests: number;
 }
 
-export interface NationalDashboard {
-  modelVersion: string;
-  capabilityCount: number;
-  submittedStates: number;
-  assessorStates: number;
-  overall: { score: number; outOf: number; pct: number; band: string };
-  weakestLayer: Extreme | null;
-  strongestLayer: Extreme | null;
-  layers: LayerSummary[];
-  grid: CapabilityMean[];
+export interface AssessorRow {
+  id: string;
+  name: string;
+  email: string;
+  designation: string | null;
+  active: boolean;
+  state_id: string;
+  state_name: string;
+  last_submitted: string | null;
+}
+export interface AuditRow {
+  id: string;
+  actor_name: string | null;
+  action: string;
+  detail: string | null;
+  created_at: string;
+}
+export interface SupportRequestRow {
+  id: string;
+  state_id: string;
+  state_name: string;
+  capability_id: string;
+  capability_name: string;
+  layer_name: string;
+  score_value: number | null;
+  message: string | null;
+  status: "new" | "in_progress" | "closed";
+  reply: string | null;
+  created_at: string;
+  updated_at: string;
+}
+export interface StateRef {
+  id: string;
+  name: string;
+  is_ut: boolean;
 }

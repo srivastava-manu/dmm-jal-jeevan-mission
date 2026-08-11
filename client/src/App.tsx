@@ -10,6 +10,9 @@ import { AssessorDashboard } from "./pages/AssessorDashboard";
 import { Compare } from "./pages/Compare";
 import { About } from "./pages/About";
 import { Dashboard } from "./pages/Dashboard";
+import { CentreAssessors } from "./pages/CentreAssessors";
+import { CentreRequests } from "./pages/CentreRequests";
+import { StateDetail } from "./pages/StateDetail";
 import type { Role } from "./api";
 
 function FullPage({ children }: { children: React.ReactNode }) {
@@ -109,6 +112,30 @@ export function App() {
         element={
           <RequireRole role="centre">
             <Dashboard />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/centre/assessors"
+        element={
+          <RequireRole role="centre">
+            <CentreAssessors />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/centre/requests"
+        element={
+          <RequireRole role="centre">
+            <CentreRequests />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/state/:id"
+        element={
+          <RequireRole role="centre">
+            <StateDetail />
           </RequireRole>
         }
       />

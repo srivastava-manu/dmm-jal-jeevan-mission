@@ -198,6 +198,11 @@ export function Assess() {
               onScore={(v) => setScore(cap, v)}
               onEvidence={(patch) => setEvidence(cap, patch)}
               onAddSystem={() => setDialog({ capabilityId: cap.id, capabilityName: cap.name })}
+              onRequestSupport={(message) =>
+                api.requests
+                  .create({ assessmentId: id, capabilityId: cap.id, scoreValue: valueOf(cap.id), message })
+                  .then(() => setSavedAt("Support request sent."))
+              }
             />
           ))}
 
@@ -274,6 +279,7 @@ function CapabilityCard({
   onScore,
   onEvidence,
   onAddSystem,
+  onRequestSupport,
 }: {
   cap: Capability;
   state: ScoreState;
@@ -283,10 +289,15 @@ function CapabilityCard({
   onScore: (v: number) => void;
   onEvidence: (patch: Partial<EvidenceRow>) => void;
   onAddSystem: () => void;
+  onRequestSupport: (message: string) => Promise<void>;
 }) {
   const value = state.value;
   const showEvidence = value !== null && value >= 3;
+  const showSupport = value !== null && value <= 1;
   const ev = state.evidence;
+  const [requesting, setRequesting] = useState(false);
+  const [supportMsg, setSupportMsg] = useState("");
+  const [sent, setSent] = useState(false);
 
   return (
     <div className="cap-card">
@@ -349,6 +360,37 @@ function CapabilityCard({
               onChange={(e) => onEvidence({ go_live: e.target.value ? `${e.target.value}-01` : null })}
             />
           </div>
+        </div>
+      )}
+
+      {showSupport && (
+        <div className="support-box">
+          <p>Other states run this at level 4 and their IT teams can be connected.</p>
+          {sent ? (
+            <span className="muted small">Request sent to the Centre.</span>
+          ) : requesting ? (
+            <div className="support-form">
+              <textarea
+                rows={2}
+                value={supportMsg}
+                onChange={(e) => setSupportMsg(e.target.value)}
+                placeholder="What do you need help with?"
+              />
+              <button
+                className="primary-btn"
+                disabled={!supportMsg.trim()}
+                onClick={async () => {
+                  await onRequestSupport(supportMsg.trim());
+                  setSent(true);
+                  setRequesting(false);
+                }}
+              >
+                Send request
+              </button>
+            </div>
+          ) : (
+            <button className="ghost small" onClick={() => setRequesting(true)}>Request support</button>
+          )}
         </div>
       )}
 

@@ -7,6 +7,7 @@ import { centreRouter } from "../routes/centre.js";
 import { assessmentsRouter } from "../routes/assessments.js";
 import { assessmentReadRouter } from "../routes/assessment-read.js";
 import { systemsRouter } from "../routes/systems.js";
+import { requestsRouter } from "../routes/requests.js";
 
 export function createApp() {
   const app = express();
@@ -29,6 +30,7 @@ export function createApp() {
   app.use("/api/assessments", assessmentReadRouter);
   app.use("/api/assessments", assessmentsRouter);
   app.use("/api/systems", systemsRouter);
+  app.use("/api/requests", requestsRouter);
 
   return app;
 }

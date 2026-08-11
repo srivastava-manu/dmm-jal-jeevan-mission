@@ -40,11 +40,55 @@ export const api = {
   logout(): Promise<{ ok: true }> {
     return request<{ ok: true }>("/api/auth/logout", { method: "POST" });
   },
-  centreDashboard(): Promise<import("./model").NationalDashboard> {
-    return request("/api/centre/dashboard");
-  },
   model(): Promise<import("./model").PublicModel> {
     return request("/api/model");
+  },
+  states(): Promise<{ states: import("./model").StateRef[] }> {
+    return request("/api/states");
+  },
+
+  centre: {
+    dashboard(): Promise<import("./model").CentreDashboard> {
+      return request("/api/centre/dashboard");
+    },
+    assessors(): Promise<{ assessors: import("./model").AssessorRow[] }> {
+      return request("/api/centre/assessors");
+    },
+    addAssessor(body: { stateId: string; name: string; designation: string | null; email: string }): Promise<{ id: string }> {
+      return request("/api/centre/assessors", { method: "POST", body: JSON.stringify(body) });
+    },
+    setAccess(id: string, active: boolean): Promise<{ id: string; active: boolean }> {
+      return request(`/api/centre/assessors/${id}`, { method: "PATCH", body: JSON.stringify({ active }) });
+    },
+    reassign(body: { stateId: string; name: string; designation: string | null; email: string }): Promise<{ id: string; moved: number }> {
+      return request("/api/centre/reassign", { method: "POST", body: JSON.stringify(body) });
+    },
+    audit(): Promise<{ audit: import("./model").AuditRow[] }> {
+      return request("/api/centre/audit");
+    },
+    requests(): Promise<{ requests: import("./model").SupportRequestRow[] }> {
+      return request("/api/centre/requests");
+    },
+    updateRequest(id: string, body: { status?: string; reply?: string | null }): Promise<{ ok: true }> {
+      return request(`/api/centre/requests/${id}`, { method: "PATCH", body: JSON.stringify(body) });
+    },
+    capabilityStat(name: string): Promise<{ atOrAbove3: number; total: number }> {
+      return request(`/api/centre/capability-stat?name=${encodeURIComponent(name)}`);
+    },
+  },
+
+  requests: {
+    list(): Promise<{ requests: import("./model").SupportRequestRow[] }> {
+      return request("/api/requests");
+    },
+    create(body: {
+      assessmentId: string | null;
+      capabilityId: string;
+      scoreValue: number | null;
+      message: string;
+    }): Promise<{ id: string }> {
+      return request("/api/requests", { method: "POST", body: JSON.stringify(body) });
+    },
   },
 
   assessments: {

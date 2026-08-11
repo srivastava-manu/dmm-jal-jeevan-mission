@@ -9,6 +9,14 @@ export class AssessmentLockedError extends Error {
   }
 }
 
+/** Thrown when a Centre write is refused (e.g. duplicate assessor, deleting a submitter). */
+export class ConflictError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ConflictError";
+  }
+}
+
 /** Thrown when a submit is attempted with capabilities still unanswered. */
 export class IncompleteAssessmentError extends Error {
   constructor(public readonly answered: number, public readonly total: number) {
@@ -956,5 +964,356 @@ export async function getStateHistory(ctx: RlsContext, id: string): Promise<Hist
       });
     }
     return { rounds, byCapabilityName };
+  });
+}
+
+// ── Centre (NJJM) ────────────────────────────────────────────────────────────
+// All Centre reads/writes run in a Centre RLS context (role='centre', no state_id). RLS
+// keeps drafts invisible and blocks any score write; user-management writes are audited.
+
+export interface CentreDashboardData {
+  modelVersion: string;
+  rows: {
+    capability_id: string;
+    layer_index: number;
+    order_in_layer: number;
+    layer_name: string;
+    name: string;
+    measure: string;
+    value: number;
+    state_id: string;
+    state_name: string;
+    assessment_id: string;
+  }[];
+  totalStates: number;
+  statesWithAssessor: number;
+  submittedStates: number;
+  excludedCapabilities: number;
+  openRequests: number;
+  newRequests: number;
+}
+
+export async function getCentreDashboardData(ctx: RlsContext): Promise<CentreDashboardData | null> {
+  return withRlsTx(ctx, async (c) => {
+    const mv = (
+      await c.query<{ id: string; version: string }>(
+        "SELECT id, version FROM model_versions ORDER BY published_at DESC LIMIT 1",
+      )
+    ).rows[0];
+    if (!mv) return null;
+
+    // One row per (current-version capability, submitted state) using each state's LATEST
+    // submitted assessment. RLS already limits `assessments` to submitted for the Centre.
+    const rows = (
+      await c.query<CentreDashboardData["rows"][number]>(
+        `WITH latest AS (
+           SELECT DISTINCT ON (a.state_id) a.id, a.state_id
+           FROM assessments a WHERE a.status = 'submitted'
+           ORDER BY a.state_id, a.submitted_at DESC
+         )
+         SELECT cap.id AS capability_id, cap.layer_index, cap.order_in_layer, cap.layer_name,
+                cap.name, cap.measure, s.value, l.state_id, st.name AS state_name, l.id AS assessment_id
+         FROM latest l
+         JOIN scores s ON s.assessment_id = l.id AND s.value IS NOT NULL
+         JOIN capabilities cap ON cap.id = s.capability_id AND cap.model_version_id = $1
+         JOIN states st ON st.id = l.state_id
+         ORDER BY cap.layer_index, cap.order_in_layer, st.name`,
+        [mv.id],
+      )
+    ).rows;
+
+    const submittedStates = (
+      await c.query<{ n: number }>(
+        "SELECT count(DISTINCT state_id)::int AS n FROM assessments WHERE status = 'submitted'",
+      )
+    ).rows[0]!.n;
+
+    // Capability ids in states' latest submitted rounds that are NOT in the current version.
+    const excludedCapabilities = (
+      await c.query<{ n: number }>(
+        `WITH latest AS (
+           SELECT DISTINCT ON (a.state_id) a.id FROM assessments a WHERE a.status = 'submitted'
+           ORDER BY a.state_id, a.submitted_at DESC
+         )
+         SELECT count(DISTINCT s.capability_id)::int AS n
+         FROM latest l JOIN scores s ON s.assessment_id = l.id
+         JOIN capabilities cap ON cap.id = s.capability_id
+         WHERE cap.model_version_id <> $1`,
+        [mv.id],
+      )
+    ).rows[0]!.n;
+
+    const totalStates = (await c.query<{ n: number }>("SELECT count(*)::int AS n FROM states")).rows[0]!.n;
+    const statesWithAssessor = (
+      await c.query<{ n: number }>("SELECT count(*)::int AS n FROM users WHERE role = 'state_assessor' AND active")
+    ).rows[0]!.n;
+    const openRequests = (
+      await c.query<{ n: number }>("SELECT count(*)::int AS n FROM support_requests WHERE status <> 'closed'")
+    ).rows[0]!.n;
+    const newRequests = (
+      await c.query<{ n: number }>("SELECT count(*)::int AS n FROM support_requests WHERE status = 'new'")
+    ).rows[0]!.n;
+
+    return {
+      modelVersion: mv.version,
+      rows,
+      totalStates,
+      statesWithAssessor,
+      submittedStates,
+      excludedCapabilities,
+      openRequests,
+      newRequests,
+    };
+  });
+}
+
+export interface AssessorRow {
+  id: string;
+  name: string;
+  email: string;
+  designation: string | null;
+  active: boolean;
+  state_id: string;
+  state_name: string;
+  last_submitted: string | null;
+}
+
+export async function listAssessors(ctx: RlsContext): Promise<AssessorRow[]> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<AssessorRow>(
+      `SELECT u.id, u.name, u.email, u.designation, u.active, u.state_id, st.name AS state_name,
+              (SELECT max(a.submitted_at) FROM assessments a
+                 WHERE a.state_id = u.state_id AND a.status = 'submitted') AS last_submitted
+       FROM users u JOIN states st ON st.id = u.state_id
+       WHERE u.role = 'state_assessor'
+       ORDER BY st.name, u.active DESC`,
+    );
+    return rows;
+  });
+}
+
+async function audit(
+  c: import("pg").PoolClient,
+  actor: string,
+  action: string,
+  targetUser: string | null,
+  targetState: string | null,
+  detail: string,
+): Promise<void> {
+  await c.query(
+    `INSERT INTO audit_log (actor_user_id, action, target_user_id, target_state_id, detail)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [actor, action, targetUser, targetState, detail],
+  );
+}
+
+export async function centreAddAssessor(
+  ctx: RlsContext,
+  input: { stateId: string; name: string; designation: string | null; email: string },
+): Promise<{ id: string }> {
+  return withRlsTx(ctx, async (c) => {
+    let id: string;
+    try {
+      const r = await c.query<{ id: string }>(
+        `INSERT INTO users (email, name, designation, role, state_id, password_hash, active)
+         VALUES ($1, $2, $3, 'state_assessor', $4, NULL, true) RETURNING id`,
+        [input.email, input.name, input.designation, input.stateId],
+      );
+      id = r.rows[0]!.id;
+    } catch (e) {
+      if ((e as { code?: string }).code === "23505") {
+        throw new ConflictError("That state already has an assessor, or the email is in use. Use Reassign instead.");
+      }
+      throw e;
+    }
+    await audit(c, ctx.userId, "add_assessor", id, input.stateId, `Added ${input.name} <${input.email}>`);
+    return { id };
+  });
+}
+
+export async function centreSetAccess(
+  ctx: RlsContext,
+  targetUserId: string,
+  active: boolean,
+): Promise<{ id: string; active: boolean }> {
+  return withRlsTx(ctx, async (c) => {
+    let row;
+    try {
+      row = (
+        await c.query<{ id: string; active: boolean; state_id: string; name: string }>(
+          "UPDATE users SET active = $2 WHERE id = $1 AND role = 'state_assessor' RETURNING id, active, state_id, name",
+          [targetUserId, active],
+        )
+      ).rows[0];
+    } catch (e) {
+      if ((e as { code?: string }).code === "23505") {
+        throw new ConflictError("That state already has an active assessor.");
+      }
+      throw e;
+    }
+    if (!row) throw new Error("Assessor not found.");
+    await audit(c, ctx.userId, "access_toggle", row.id, row.state_id, `${active ? "Enabled" : "Disabled"} ${row.name}`);
+    return { id: row.id, active: row.active };
+  });
+}
+
+export async function centreReassign(
+  ctx: RlsContext,
+  input: { stateId: string; name: string; designation: string | null; email: string },
+): Promise<{ id: string; moved: number }> {
+  return withRlsTx(ctx, async (c) => {
+    // Deactivate the current active assessor(s) for the state first (frees the unique index).
+    await c.query(
+      "UPDATE users SET active = false WHERE state_id = $1 AND role = 'state_assessor' AND active",
+      [input.stateId],
+    );
+    let newId: string;
+    try {
+      newId = (
+        await c.query<{ id: string }>(
+          `INSERT INTO users (email, name, designation, role, state_id, password_hash, active)
+           VALUES ($1, $2, $3, 'state_assessor', $4, NULL, true) RETURNING id`,
+          [input.email, input.name, input.designation, input.stateId],
+        )
+      ).rows[0]!.id;
+    } catch (e) {
+      if ((e as { code?: string }).code === "23505") {
+        throw new ConflictError("That email is already in use.");
+      }
+      throw e;
+    }
+    // Move the state's assessments to the new assessor (SECURITY DEFINER; snapshot names on
+    // submitted rounds are untouched, so history keeps who submitted each).
+    const moved = (
+      await c.query<{ move_state_assessments: number }>("SELECT move_state_assessments($1, $2)", [
+        input.stateId,
+        newId,
+      ])
+    ).rows[0]!.move_state_assessments;
+    await audit(c, ctx.userId, "reassign", newId, input.stateId, `Reassigned to ${input.name} <${input.email}>; moved ${moved} assessment(s)`);
+    return { id: newId, moved };
+  });
+}
+
+export async function centreDeleteUser(ctx: RlsContext, targetUserId: string): Promise<void> {
+  await withRlsTx(ctx, async (c) => {
+    const submitted = (
+      await c.query<{ n: number }>(
+        "SELECT count(*)::int AS n FROM assessments WHERE assessor_user_id = $1 AND status = 'submitted'",
+        [targetUserId],
+      )
+    ).rows[0]!.n;
+    if (submitted > 0) {
+      throw new ConflictError("This assessor has submitted assessments. Use Reassign instead.");
+    }
+    await c.query("DELETE FROM users WHERE id = $1 AND role = 'state_assessor'", [targetUserId]);
+    await audit(c, ctx.userId, "delete_user", null, null, `Deleted user ${targetUserId}`);
+  });
+}
+
+export interface AuditRow {
+  id: string;
+  actor_name: string | null;
+  action: string;
+  detail: string | null;
+  created_at: string;
+}
+
+export async function listAuditLog(ctx: RlsContext, limit = 20): Promise<AuditRow[]> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<AuditRow>(
+      `SELECT al.id, u.name AS actor_name, al.action, al.detail, al.created_at
+       FROM audit_log al LEFT JOIN users u ON u.id = al.actor_user_id
+       ORDER BY al.created_at DESC LIMIT $1`,
+      [limit],
+    );
+    return rows;
+  });
+}
+
+// ── Support requests ─────────────────────────────────────────────────────────
+
+export interface SupportRequestRow {
+  id: string;
+  state_id: string;
+  state_name: string;
+  capability_id: string;
+  capability_name: string;
+  layer_name: string;
+  score_value: number | null;
+  message: string | null;
+  status: "new" | "in_progress" | "closed";
+  reply: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function listSupportRequests(ctx: RlsContext): Promise<SupportRequestRow[]> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<SupportRequestRow>(
+      `SELECT r.id, r.state_id, st.name AS state_name, r.capability_id, cap.name AS capability_name,
+              cap.layer_name, r.score_value, r.message, r.status, r.reply, r.created_at, r.updated_at
+       FROM support_requests r
+       JOIN states st ON st.id = r.state_id
+       JOIN capabilities cap ON cap.id = r.capability_id
+       ORDER BY r.created_at DESC`,
+    );
+    return rows;
+  });
+}
+
+export async function createSupportRequest(
+  ctx: RlsContext,
+  input: { assessmentId: string | null; capabilityId: string; scoreValue: number | null; message: string },
+): Promise<{ id: string }> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<{ id: string }>(
+      `INSERT INTO support_requests (state_id, assessment_id, capability_id, score_value, message)
+       VALUES (nullif(current_setting('app.state_id', true), '')::uuid, $1, $2, $3, $4)
+       RETURNING id`,
+      [input.assessmentId, input.capabilityId, input.scoreValue, input.message],
+    );
+    return { id: rows[0]!.id };
+  });
+}
+
+export async function updateSupportRequest(
+  ctx: RlsContext,
+  id: string,
+  input: { status?: "new" | "in_progress" | "closed"; reply?: string | null },
+): Promise<boolean> {
+  return withRlsTx(ctx, async (c) => {
+    const res = await c.query(
+      `UPDATE support_requests
+       SET status = COALESCE($2, status),
+           reply = COALESCE($3, reply),
+           replied_by = nullif(current_setting('app.user_id', true), '')::uuid,
+           updated_at = now()
+       WHERE id = $1`,
+      [id, input.status ?? null, input.reply ?? null],
+    );
+    return (res.rowCount ?? 0) > 0;
+  });
+}
+
+/** For the requests rail: how many submitted states are at 3+ on the same-named capability. */
+export async function capabilityNationalStat(
+  ctx: RlsContext,
+  capabilityName: string,
+): Promise<{ atOrAbove3: number; total: number }> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<{ at3: number; total: number }>(
+      `WITH mv AS (SELECT id FROM model_versions ORDER BY published_at DESC LIMIT 1),
+       cur AS (SELECT id FROM capabilities WHERE model_version_id = (SELECT id FROM mv) AND name = $1),
+       latest AS (
+         SELECT DISTINCT ON (a.state_id) a.id FROM assessments a WHERE a.status = 'submitted'
+         ORDER BY a.state_id, a.submitted_at DESC
+       )
+       SELECT count(*) FILTER (WHERE s.value >= 3)::int AS at3, count(*)::int AS total
+       FROM latest l JOIN scores s ON s.assessment_id = l.id AND s.capability_id IN (SELECT id FROM cur)
+       WHERE s.value IS NOT NULL`,
+      [capabilityName],
+    );
+    return { atOrAbove3: rows[0]?.at3 ?? 0, total: rows[0]?.total ?? 0 };
   });
 }

@@ -207,11 +207,38 @@ and maturity bands are presentation constants. Signed-in assessors see the full 
 signed-out visitor sees a "Start the assessment" prompt. The assessor nav order is Results,
 History, About.
 
-## What is intentionally NOT here yet
+## Centre (NJJM) surface (step 6)
 
-Built so far: steps 1–5 (auth/RLS/redirect, the national-dashboard slice, the assessment
-flow, review + submit + lock, and results / dashboard / compare / PDF) plus the public About
-page. Still not built: the
+Sign in as `centre@njjm.gov.in`. The Centre role has no `state_id`; RLS keeps drafts
+invisible and blocks any write to state-scoped score data (`npm run test` proves both).
+
+- **National dashboard** (`/dashboard`, screen 12) — KPIs, the 8×6 mean grid (click a cell
+  for its distribution), per-layer national index, and a rail that expands each level to the
+  states there; a chip opens that state's detail. Aggregation is `server/src/lib/national.ts`
+  (reusing `scoring.ts`) over each state's LATEST submitted assessment; the "N of M" pill
+  takes M from the `states` table. Capabilities from other model versions are excluded and
+  counted.
+- **State assessors** (`/centre/assessors`, screen 13) — table with an Active/Disabled access
+  toggle and Add / Reassign. Reassignment creates the new assessor and moves the state's
+  assessments to them (snapshot names on submitted rounds are untouched). A user with
+  submitted assessments cannot be deleted (409 + FK RESTRICT). Every toggle/reassign is
+  written to `audit_log`.
+- **Requests** (`/centre/requests`, screen 14) — filter chips, request cards, and a rail to
+  set status + reply. States raise requests from the Assess screen on a capability scored 0
+  or 1; RLS scopes them both ways (`support_requests`).
+- **State detail** (`/state/:assessmentId`, screen 15) — read-only grid. A draft id is
+  refused at the database layer (404).
+
+Optional demo data: `npm run db:seed:demo` seeds ~24 states of submissions so the dashboard,
+assessors and (via the Assess screen) requests have content.
+
+## Status
+
+All 15 screens in `README.md` are built: the state assessor flow (screens 1–9), the public
+About page (screen 10), the systems dialog (screen 11), and the Centre surface (screens
+12–15). The production user-provisioning flow (invite / set-password for Centre-created
+assessors) remains a deliberate stub — new assessors are created with no password until an
+invite flow is added. Still not built: the
 matrix re-assessment mode (screen 5), and the Centre's state-assessors and requests screens.
 The production user-provisioning flow (Centre creates assessors; no self-signup) also lands
 in a later step.
