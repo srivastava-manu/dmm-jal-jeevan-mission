@@ -106,16 +106,20 @@ export function Assess() {
     }
   }
 
-  async function setEvidence(cap: Capability, patch: Partial<EvidenceRow>) {
-    const cur = scores[cap.id]?.evidence ?? {
-      system_id: null,
-      districts_live: null,
-      go_live: null,
-    };
-    const ev = { ...cur, ...patch };
+  async function setSystem(cap: Capability, systemId: string | null) {
+    // The system carries its own districts/go-live; the score just links to it.
+    const sys = systems.find((s) => s.id === systemId) ?? null;
+    const ev = systemId
+      ? {
+          system_id: systemId,
+          system_name: sys?.name ?? null,
+          districts_live: sys?.districts_live ?? null,
+          go_live: sys?.go_live ?? null,
+        }
+      : null;
     setScores((prev) => ({ ...prev, [cap.id]: { ...prev[cap.id]!, evidence: ev } }));
     try {
-      await api.assessments.saveEvidence(id, cap.id, ev);
+      await api.assessments.setEvidence(id, cap.id, systemId);
       setSavedAt("Saved just now");
     } catch (e) {
       setError(String((e as Error).message ?? e));
@@ -196,8 +200,8 @@ export function Assess() {
               previousDate={detail.previous?.submitted_at ?? null}
               systems={systems}
               onScore={(v) => setScore(cap, v)}
-              onEvidence={(patch) => setEvidence(cap, patch)}
-              onAddSystem={() => setDialog({ capabilityId: cap.id, capabilityName: cap.name })}
+              onSetSystem={(systemId) => setSystem(cap, systemId)}
+              onOpenSystems={() => setDialog({ capabilityId: cap.id, capabilityName: cap.name })}
               onRequestSupport={(message) =>
                 api.requests
                   .create({ assessmentId: id, capabilityId: cap.id, scoreValue: valueOf(cap.id), message })
@@ -255,14 +259,14 @@ export function Assess() {
 
       <SystemsDialog
         open={dialog !== null}
+        mode="attach"
         contextCapability={dialog?.capabilityName}
         onClose={() => setDialog(null)}
         onChanged={setSystems}
-        onAdded={(system) => {
-          setSystems((prev) => [...prev.filter((s) => s.id !== system.id), system]);
+        onAttach={(systemId) => {
           if (dialog) {
             const cap = detail.capabilities.find((c) => c.id === dialog.capabilityId);
-            if (cap) void setEvidence(cap, { system_id: system.id });
+            if (cap) void setSystem(cap, systemId);
           }
         }}
       />
@@ -277,8 +281,8 @@ function CapabilityCard({
   previousDate,
   systems,
   onScore,
-  onEvidence,
-  onAddSystem,
+  onSetSystem,
+  onOpenSystems,
   onRequestSupport,
 }: {
   cap: Capability;
@@ -287,8 +291,8 @@ function CapabilityCard({
   previousDate: string | null;
   systems: SystemRow[];
   onScore: (v: number) => void;
-  onEvidence: (patch: Partial<EvidenceRow>) => void;
-  onAddSystem: () => void;
+  onSetSystem: (systemId: string | null) => void;
+  onOpenSystems: () => void;
   onRequestSupport: (message: string) => Promise<void>;
 }) {
   const value = state.value;
@@ -336,29 +340,20 @@ function CapabilityCard({
             <select
               value={ev?.system_id ?? ""}
               onChange={(e) => {
-                if (e.target.value === ADD_SYSTEM) onAddSystem();
-                else onEvidence({ system_id: e.target.value || null });
+                if (e.target.value === ADD_SYSTEM) onOpenSystems();
+                else onSetSystem(e.target.value || null);
               }}
             >
               <option value="">Select a system…</option>
               {systems.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
               <option value={ADD_SYSTEM}>+ Add a new system…</option>
             </select>
-            <input
-              type="number"
-              min={0}
-              placeholder="Districts live"
-              value={ev?.districts_live ?? ""}
-              onChange={(e) =>
-                onEvidence({ districts_live: e.target.value === "" ? null : Number(e.target.value) })
-              }
-            />
-            <input
-              type="month"
-              aria-label="Go-live month"
-              value={ev?.go_live ? ev.go_live.slice(0, 7) : ""}
-              onChange={(e) => onEvidence({ go_live: e.target.value ? `${e.target.value}-01` : null })}
-            />
+            {ev?.system_id && (
+              <span className="evidence-detail muted small">
+                {ev.districts_live !== null ? `${ev.districts_live} districts` : "—"}
+                {ev.go_live ? ` · live ${ev.go_live.slice(0, 7)}` : ""}
+              </span>
+            )}
           </div>
         </div>
       )}

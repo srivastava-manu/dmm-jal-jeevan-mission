@@ -1,10 +1,9 @@
 import { Router } from "express";
 import { z } from "zod";
 import { requireRole } from "../http/require-auth.js";
-import { listSystems, createSystem } from "../db/index.js";
+import { listSystems, createSystem, editSystem, deleteSystem, ConflictError } from "../db/index.js";
 
 export const systemsRouter = Router();
-
 systemsRouter.use(requireRole("state_assessor"));
 
 systemsRouter.get("/", async (req, res) => {
@@ -29,4 +28,39 @@ systemsRouter.post("/", async (req, res) => {
     go_live: parsed.data.go_live ?? null,
   });
   res.status(201).json({ system });
+});
+
+systemsRouter.patch("/:id", async (req, res) => {
+  const parsed = systemSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "A system name is required." });
+    return;
+  }
+  const system = await editSystem(req.auth!.ctx, req.params.id, {
+    name: parsed.data.name,
+    districts_live: parsed.data.districts_live ?? null,
+    go_live: parsed.data.go_live ?? null,
+  });
+  if (!system) {
+    res.status(404).json({ error: "System not found." });
+    return;
+  }
+  res.json({ system });
+});
+
+systemsRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const ok = await deleteSystem(req.auth!.ctx, req.params.id);
+    if (!ok) {
+      res.status(404).json({ error: "System not found." });
+      return;
+    }
+    res.json({ ok: true });
+  } catch (e) {
+    if (e instanceof ConflictError) {
+      res.status(409).json({ error: e.message });
+      return;
+    }
+    next(e);
+  }
 });

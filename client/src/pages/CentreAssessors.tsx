@@ -13,6 +13,7 @@ export function CentreAssessors() {
   const [assessors, setAssessors] = useState<AssessorRow[]>([]);
   const [states, setStates] = useState<StateRef[]>([]);
   const [dialog, setDialog] = useState<DialogState | null>(null);
+  const [tempPassword, setTempPassword] = useState<{ name: string; pw: string } | null>(null);
 
   async function load() {
     const [a, s] = await Promise.all([api.centre.assessors(), api.states()]);
@@ -28,6 +29,11 @@ export function CentreAssessors() {
     void load();
   }
 
+  async function resetPassword(a: AssessorRow) {
+    const { tempPassword } = await api.centre.resetPassword(a.id);
+    setTempPassword({ name: a.name, pw: tempPassword });
+  }
+
   return (
     <div className="page">
       <CentreNav active="assessors" />
@@ -40,10 +46,21 @@ export function CentreAssessors() {
               the name of whoever submitted them.
             </p>
           </div>
-          <button className="primary-btn" onClick={() => setDialog({ mode: "add", stateId: "" })}>
-            Add a state assessor
-          </button>
+          <div className="assessors-actions">
+            <a className="ghost small" href={api.centre.exportCsvUrl} download>Export CSV</a>
+            <button className="primary-btn" onClick={() => setDialog({ mode: "add", stateId: "" })}>
+              Add a state assessor
+            </button>
+          </div>
         </div>
+
+        {tempPassword && (
+          <div className="warn-box">
+            Temporary password for <strong>{tempPassword.name}</strong>:{" "}
+            <code>{tempPassword.pw}</code> — share it securely; they set their own on first
+            sign-in.
+          </div>
+        )}
 
         <div className="assessor-table">
           <div className="at-row at-head">
@@ -69,9 +86,12 @@ export function CentreAssessors() {
                   {a.active ? "Active" : "Disabled"}
                 </button>
               </span>
-              <span>
+              <span className="at-actions">
                 <button className="ghost small" onClick={() => setDialog({ mode: "reassign", stateId: a.state_id })}>
                   Reassign
+                </button>
+                <button className="ghost small" onClick={() => resetPassword(a)}>
+                  Reset password
                 </button>
               </span>
             </div>

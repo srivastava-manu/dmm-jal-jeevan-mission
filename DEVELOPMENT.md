@@ -232,6 +232,66 @@ invisible and blocks any write to state-scoped score data (`npm run test` proves
 Optional demo data: `npm run db:seed:demo` seeds ~24 states of submissions so the dashboard,
 assessors and (via the Assess screen) requests have content.
 
+## Deploying to NIC
+
+The app needs only Node ≥ 20 and a PostgreSQL endpoint. Nothing is bundled that assumes a
+managed platform.
+
+1. **Config** — set every variable from [`.env.example`](.env.example) in the environment.
+   In production set `NODE_ENV=production` and `SESSION_COOKIE_SECURE=true` (cookies then
+   require HTTPS). `DATABASE_URL` must point at a **non-superuser** role without BYPASSRLS
+   (the app refuses to start otherwise); `ADMIN_DATABASE_URL` (owner/admin) is used only to
+   run migrations.
+2. **Schema** — `npm run db:setup` (creates/adjusts the app role + grants), then
+   `npm run db:migrate` applies `migrations/*.sql` in order. These are the exact plain-SQL
+   files NIC can review. `npm run db:seed:model` is folded into migration `004`.
+3. **Build & run** — `npm run build -w server && npm run build -w client`, then
+   `npm start -w server` behind the reverse proxy. Serve the built `client/dist` as static
+   files. `trust proxy` is enabled so client IPs (used by the login rate limiter) are correct.
+4. **Health** — `GET /api/health` returns `{ ok, db }` and 503 if the database is
+   unreachable; point the load balancer's health check here.
+5. **Logs** — one structured JSON line per request (`method`, `path`, `status`, `ms`). No
+   bodies, query strings, scores, names or session data are ever logged.
+
+### Postgres backup
+
+```bash
+# Nightly logical backup (schema + data), compressed:
+pg_dump "$DATABASE_URL" -Fc -f dmm-$(date +%F).dump
+
+# Restore into an empty database:
+pg_restore -d "$ADMIN_DATABASE_URL" --clean --if-exists dmm-YYYY-MM-DD.dump
+```
+
+Migrations are forward-only and checked into the repo; a restore + `npm run db:migrate`
+reproduces any schema state. Because each assessment stores its `model_version_id` and scores
+are immutable snapshots, restoring never loses which model version an assessment was answered
+against.
+
+## Release hardening (step 7)
+
+- **Systems as evidence** (screen 11) — a system carries its own name, districts and go-live;
+  `scores.system_id` is the evidence link (FK `RESTRICT`). Editing a system is a factual
+  correction that propagates to every assessment citing it, including submitted ones, and is
+  written to `audit_log`. A system in use cannot be deleted (409 + the FK). Two entry points,
+  one dialog: Home → "Manage systems", and a capability's evidence block → attach mode.
+- **Model-version integrity** — bumping the model never mutates a submitted assessment;
+  `test:model-integrity` publishes a new version and asserts old assessments still resolve
+  against their own version in results, compare and the aggregate.
+- **Access control** — `test:access` hits **every** route as same-state / other-state /
+  Centre / anonymous and asserts the outcome for all four (108 checks). This is the
+  authoritative access-control test.
+- **Sessions & login** — sessions expire (`SESSION_TTL_HOURS`), logout deletes the server-side
+  session, the Centre resets a state assessor's password (no self-serve flow), and login is
+  rate-limited (10/IP/5 min).
+- **Export** — Centre-only `GET /api/centre/export.csv`, one row per capability across all
+  submitted assessments.
+- **Ops** — DB-checking `/api/health`, structured request logs (method/path/status/ms only —
+  no scores or PII), a completed `.env.example`, and the deploy + backup section above.
+- **A11y / responsive** — visible keyboard focus rings; no horizontal scroll at 1366×768.
+
+Run everything: `npm test` (19 tests) and `npm run typecheck`.
+
 ## Status
 
 All 15 screens in `README.md` are built: the state assessor flow (screens 1–9), the public

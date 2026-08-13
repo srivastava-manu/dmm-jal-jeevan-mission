@@ -7,7 +7,7 @@ import {
   deleteDraft,
   getAssessmentDetail,
   upsertScore,
-  saveEvidence,
+  setScoreSystem,
   reviewAssessment,
   submitAssessment,
   AssessmentLockedError,
@@ -126,11 +126,8 @@ assessmentsRouter.put("/:id/scores/:capabilityId", async (req, res) => {
   }
 });
 
-const evidenceSchema = z.object({
-  system_id: z.string().uuid().nullable(),
-  districts_live: z.number().int().min(0).nullable(),
-  go_live: z.string().nullable(), // YYYY-MM-DD or null
-});
+// Evidence is now just the system link; districts/go-live live on the system itself.
+const evidenceSchema = z.object({ system_id: z.string().uuid().nullable() });
 
 assessmentsRouter.put("/:id/scores/:capabilityId/evidence", async (req, res) => {
   const parsed = evidenceSchema.safeParse(req.body);
@@ -139,11 +136,11 @@ assessmentsRouter.put("/:id/scores/:capabilityId/evidence", async (req, res) => 
     return;
   }
   try {
-    const ok = await saveEvidence(
+    const ok = await setScoreSystem(
       req.auth!.ctx,
       req.params.id,
       req.params.capabilityId,
-      parsed.data,
+      parsed.data.system_id,
     );
     if (!ok) {
       res.status(404).json({ error: "Score the capability before adding evidence." });

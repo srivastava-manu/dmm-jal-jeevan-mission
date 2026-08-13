@@ -75,6 +75,10 @@ export const api = {
     capabilityStat(name: string): Promise<{ atOrAbove3: number; total: number }> {
       return request(`/api/centre/capability-stat?name=${encodeURIComponent(name)}`);
     },
+    resetPassword(id: string): Promise<{ tempPassword: string }> {
+      return request(`/api/centre/assessors/${id}/reset-password`, { method: "POST" });
+    },
+    exportCsvUrl: "/api/centre/export.csv",
   },
 
   requests: {
@@ -118,14 +122,10 @@ export const api = {
         body: JSON.stringify({ value, note: note ?? null }),
       });
     },
-    saveEvidence(
-      id: string,
-      capabilityId: string,
-      ev: { system_id: string | null; districts_live: number | null; go_live: string | null },
-    ): Promise<{ ok: true }> {
+    setEvidence(id: string, capabilityId: string, systemId: string | null): Promise<{ ok: true }> {
       return request(`/api/assessments/${id}/scores/${capabilityId}/evidence`, {
         method: "PUT",
-        body: JSON.stringify(ev),
+        body: JSON.stringify({ system_id: systemId }),
       });
     },
     review(id: string): Promise<import("./model").ReviewResult> {
@@ -156,6 +156,15 @@ export const api = {
       go_live: string | null;
     }): Promise<{ system: import("./model").SystemRow }> {
       return request("/api/systems", { method: "POST", body: JSON.stringify(input) });
+    },
+    edit(
+      id: string,
+      input: { name: string; districts_live: number | null; go_live: string | null },
+    ): Promise<{ system: import("./model").SystemRow }> {
+      return request(`/api/systems/${id}`, { method: "PATCH", body: JSON.stringify(input) });
+    },
+    remove(id: string): Promise<{ ok: true }> {
+      return request(`/api/systems/${id}`, { method: "DELETE" });
     },
   },
 };

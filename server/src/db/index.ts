@@ -347,6 +347,7 @@ export interface AssessmentSummary {
 
 export interface EvidenceRow {
   system_id: string | null;
+  system_name: string | null;
   districts_live: number | null;
   go_live: string | null;
 }
@@ -364,6 +365,7 @@ export interface SystemRow {
   name: string;
   districts_live: number | null;
   go_live: string | null;
+  in_use: boolean;
 }
 
 export interface AssessmentDetail {
@@ -453,20 +455,10 @@ export async function createAssessment(
       const prevId = prev.rows[0]?.id;
       if (prevId) {
         prefilledFrom = prev.rows[0]!.submitted_at;
-        // Copy real score rows.
+        // Copy real score rows, carrying the evidence link (system_id) forward.
         await c.query(
-          `INSERT INTO scores (assessment_id, capability_id, value, note)
-           SELECT $1, capability_id, value, note FROM scores WHERE assessment_id = $2`,
-          [newId, prevId],
-        );
-        // Carry evidence forward, mapping old score -> new score by capability.
-        await c.query(
-          `INSERT INTO score_evidence (score_id, system_id, districts_live, go_live)
-           SELECT ns.id, e.system_id, e.districts_live, e.go_live
-           FROM score_evidence e
-           JOIN scores os ON os.id = e.score_id
-           JOIN scores ns ON ns.assessment_id = $1 AND ns.capability_id = os.capability_id
-           WHERE os.assessment_id = $2`,
+          `INSERT INTO scores (assessment_id, capability_id, value, note, system_id)
+           SELECT $1, capability_id, value, note, system_id FROM scores WHERE assessment_id = $2`,
           [newId, prevId],
         );
       }
@@ -517,12 +509,13 @@ export async function getAssessmentDetail(
       value: number | null;
       note: string | null;
       system_id: string | null;
+      system_name: string | null;
       districts_live: number | null;
       go_live: string | null;
     }>(
       `SELECT s.id AS score_id, s.capability_id, s.value, s.note,
-              e.system_id, e.districts_live, e.go_live
-       FROM scores s LEFT JOIN score_evidence e ON e.score_id = s.id
+              s.system_id, sys.name AS system_name, sys.districts_live, sys.go_live
+       FROM scores s LEFT JOIN systems sys ON sys.id = s.system_id
        WHERE s.assessment_id = $1`,
       [id],
     );
@@ -531,10 +524,9 @@ export async function getAssessmentDetail(
       capability_id: r.capability_id,
       value: r.value,
       note: r.note,
-      evidence:
-        r.system_id || r.districts_live !== null || r.go_live
-          ? { system_id: r.system_id, districts_live: r.districts_live, go_live: r.go_live }
-          : null,
+      evidence: r.system_id
+        ? { system_id: r.system_id, system_name: r.system_name, districts_live: r.districts_live, go_live: r.go_live }
+        : null,
     }));
 
     // Previous submitted snapshot for this state (for "Was N on <date>").
@@ -582,44 +574,38 @@ export async function upsertScore(
       [assessmentId, capabilityId, value, note],
     );
     const row = res.rows[0]!;
-    // Evidence only belongs to scores of 3 or 4; clear it if the score dropped below 3.
+    // Evidence (a system link) only belongs to scores of 3 or 4; clear it below 3.
     if (value === null || value < 3) {
-      await c.query(
-        "UPDATE score_evidence SET system_id = NULL, districts_live = NULL, go_live = NULL WHERE score_id = $1",
-        [row.id],
-      );
+      await c.query("UPDATE scores SET system_id = NULL WHERE id = $1", [row.id]);
     }
     return { score_id: row.id, value: row.value };
   });
 }
 
-/** Upsert evidence for a capability's score, resolving the score row server-side. */
-export async function saveEvidence(
+/** Attach (or clear, with null) the evidence system on a capability's score. */
+export async function setScoreSystem(
   ctx: RlsContext,
   assessmentId: string,
   capabilityId: string,
-  ev: { system_id: string | null; districts_live: number | null; go_live: string | null },
+  systemId: string | null,
 ): Promise<boolean> {
   return withRlsTx(ctx, async (c) => {
     await assertEditable(c, assessmentId);
     const res = await c.query(
-      `INSERT INTO score_evidence (score_id, system_id, districts_live, go_live)
-       SELECT s.id, $3, $4, $5 FROM scores s
-       WHERE s.assessment_id = $1 AND s.capability_id = $2
-       ON CONFLICT (score_id) DO UPDATE SET
-         system_id = EXCLUDED.system_id,
-         districts_live = EXCLUDED.districts_live,
-         go_live = EXCLUDED.go_live`,
-      [assessmentId, capabilityId, ev.system_id, ev.districts_live, ev.go_live],
+      "UPDATE scores SET system_id = $3 WHERE assessment_id = $1 AND capability_id = $2",
+      [assessmentId, capabilityId, systemId],
     );
     return (res.rowCount ?? 0) > 0;
   });
 }
 
+const SYSTEM_COLS =
+  "id, name, districts_live, go_live, EXISTS(SELECT 1 FROM scores sc WHERE sc.system_id = systems.id) AS in_use";
+
 export async function listSystems(ctx: RlsContext): Promise<SystemRow[]> {
   return withRlsTx(ctx, async (c) => {
     const { rows } = await c.query<SystemRow>(
-      "SELECT id, name, districts_live, go_live FROM systems ORDER BY name",
+      `SELECT ${SYSTEM_COLS} FROM systems ORDER BY name`,
     );
     return rows;
   });
@@ -631,14 +617,57 @@ export async function createSystem(
 ): Promise<SystemRow> {
   return withRlsTx(ctx, async (c) => {
     const { rows } = await c.query<SystemRow>(
-      `INSERT INTO systems (state_id, name, districts_live, go_live)
-       VALUES ($1, $2, $3, $4)
-       ON CONFLICT (state_id, name) DO UPDATE SET
-         districts_live = EXCLUDED.districts_live, go_live = EXCLUDED.go_live
-       RETURNING id, name, districts_live, go_live`,
+      `WITH upserted AS (
+         INSERT INTO systems (state_id, name, districts_live, go_live)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (state_id, name) DO UPDATE SET
+           districts_live = EXCLUDED.districts_live, go_live = EXCLUDED.go_live, updated_at = now()
+         RETURNING id
+       )
+       SELECT ${SYSTEM_COLS} FROM systems WHERE id = (SELECT id FROM upserted)`,
       [ctx.stateId, input.name, input.districts_live, input.go_live],
     );
     return rows[0]!;
+  });
+}
+
+/**
+ * Edit a system. This is a factual correction that propagates to every assessment citing it
+ * (including submitted ones), so it is logged to the audit trail.
+ */
+export async function editSystem(
+  ctx: RlsContext,
+  systemId: string,
+  input: { name: string; districts_live: number | null; go_live: string | null },
+): Promise<SystemRow | null> {
+  return withRlsTx(ctx, async (c) => {
+    const upd = await c.query<{ id: string }>(
+      `UPDATE systems SET name = $2, districts_live = $3, go_live = $4, updated_at = now()
+       WHERE id = $1 RETURNING id`,
+      [systemId, input.name, input.districts_live, input.go_live],
+    );
+    if (!upd.rows[0]) return null; // not visible / not owned
+    await c.query(
+      `INSERT INTO audit_log (actor_user_id, action, target_state_id, detail)
+       VALUES ($1, 'system_edit', $2, $3)`,
+      [ctx.userId, ctx.stateId, `Edited system ${input.name}`],
+    );
+    const { rows } = await c.query<SystemRow>(`SELECT ${SYSTEM_COLS} FROM systems WHERE id = $1`, [systemId]);
+    return rows[0] ?? null;
+  });
+}
+
+export async function deleteSystem(ctx: RlsContext, systemId: string): Promise<boolean> {
+  return withRlsTx(ctx, async (c) => {
+    try {
+      const res = await c.query("DELETE FROM systems WHERE id = $1", [systemId]);
+      return (res.rowCount ?? 0) > 0; // false = not found / not owned (route -> 404)
+    } catch (e) {
+      if ((e as { code?: string }).code === "23503") {
+        throw new ConflictError("This system is cited as evidence and cannot be deleted. Edit it instead.");
+      }
+      throw e;
+    }
   });
 }
 
@@ -717,8 +746,7 @@ export async function reviewAssessment(
         `SELECT cap.id AS capability_id, cap.name, cap.layer_name, s.value
          FROM scores s
          JOIN capabilities cap ON cap.id = s.capability_id
-         LEFT JOIN score_evidence e ON e.score_id = s.id
-         WHERE s.assessment_id = $1 AND s.value >= 3 AND e.system_id IS NULL
+         WHERE s.assessment_id = $1 AND s.value >= 3 AND s.system_id IS NULL
          ORDER BY cap.layer_index, cap.order_in_layer`,
         [id],
       )
@@ -866,11 +894,10 @@ export async function getCapScoresForRead(
     }>(
       `SELECT cap.id AS capability_id, cap.layer_index, cap.layer_name, cap.layer_covers,
               cap.order_in_layer, cap.name, cap.measure, cap.includes,
-              s.value, e.system_id, sys.name AS system_name, e.districts_live, e.go_live
+              s.value, s.system_id, sys.name AS system_name, sys.districts_live, sys.go_live
        FROM capabilities cap
        LEFT JOIN scores s ON s.capability_id = cap.id AND s.assessment_id = $2
-       LEFT JOIN score_evidence e ON e.score_id = s.id
-       LEFT JOIN systems sys ON sys.id = e.system_id
+       LEFT JOIN systems sys ON sys.id = s.system_id
        WHERE cap.model_version_id = $1
        ORDER BY cap.layer_index, cap.order_in_layer`,
       [modelVersionId, assessmentId],
@@ -1315,5 +1342,56 @@ export async function capabilityNationalStat(
       [capabilityName],
     );
     return { atOrAbove3: rows[0]?.at3 ?? 0, total: rows[0]?.total ?? 0 };
+  });
+}
+
+// ── Centre: password reset + CSV export ──────────────────────────────────────
+import { hashPassword } from "../auth/password.js";
+import { randomUUID } from "node:crypto";
+
+/** Centre resets a state assessor's password (no self-serve). Returns the temp password
+ *  for the Centre to communicate out-of-band; it is never stored in cleartext. */
+export async function centreResetPassword(
+  ctx: RlsContext,
+  targetUserId: string,
+): Promise<{ tempPassword: string }> {
+  return withRlsTx(ctx, async (c) => {
+    const temp = randomUUID().replace(/-/g, "").slice(0, 12);
+    const hash = await hashPassword(temp);
+    const upd = await c.query<{ id: string; state_id: string | null; name: string }>(
+      "UPDATE users SET password_hash = $2 WHERE id = $1 AND role = 'state_assessor' RETURNING id, state_id, name",
+      [targetUserId, hash],
+    );
+    if (!upd.rows[0]) throw new Error("Assessor not found.");
+    await audit(c, ctx.userId, "password_reset", targetUserId, upd.rows[0].state_id, `Reset password for ${upd.rows[0].name}`);
+    return { tempPassword: temp };
+  });
+}
+
+export interface ExportRow {
+  state_name: string;
+  submitted_at: string;
+  assessor_name: string | null;
+  capability_id: string;
+  capability_name: string;
+  value: number | null;
+  system_name: string | null;
+}
+
+/** All submitted assessments, one row per capability, for the Centre CSV export. */
+export async function getExportRows(ctx: RlsContext): Promise<ExportRow[]> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<ExportRow>(
+      `SELECT st.name AS state_name, a.submitted_at::date::text AS submitted_at, a.assessor_name,
+              cap.id AS capability_id, cap.name AS capability_name, s.value, sys.name AS system_name
+       FROM assessments a
+       JOIN states st ON st.id = a.state_id
+       JOIN scores s ON s.assessment_id = a.id
+       JOIN capabilities cap ON cap.id = s.capability_id
+       LEFT JOIN systems sys ON sys.id = s.system_id
+       WHERE a.status = 'submitted'
+       ORDER BY st.name, a.submitted_at, cap.layer_index, cap.order_in_layer`,
+    );
+    return rows;
   });
 }

@@ -73,6 +73,7 @@ export interface Capability {
 
 export interface EvidenceRow {
   system_id: string | null;
+  system_name: string | null;
   districts_live: number | null;
   go_live: string | null;
 }
@@ -104,6 +105,7 @@ export interface SystemRow {
   name: string;
   districts_live: number | null;
   go_live: string | null;
+  in_use: boolean;
 }
 
 // ── Results / dashboard / compare (server-computed; the client renders, computes nothing) ──

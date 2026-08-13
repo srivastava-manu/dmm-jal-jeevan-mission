@@ -3,9 +3,13 @@ import { z } from "zod";
 import { getAuthProvider } from "../auth/provider.js";
 import { startSession, endSession } from "../http/session.js";
 import { requireAuth } from "../http/require-auth.js";
+import { rateLimit } from "../http/rate-limit.js";
 import type { Role } from "../db/rls.js";
 
 export const authRouter = Router();
+
+// Blunt password guessing: at most 10 login attempts per IP per 5 minutes.
+const loginLimiter = rateLimit({ windowMs: 5 * 60_000, max: 10 });
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -17,7 +21,7 @@ function redirectFor(role: Role): string {
   return role === "centre" ? "/dashboard" : "/home";
 }
 
-authRouter.post("/login", async (req, res) => {
+authRouter.post("/login", loginLimiter, async (req, res) => {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Email and password are required." });

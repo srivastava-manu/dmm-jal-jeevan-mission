@@ -12,6 +12,8 @@ import {
   listSupportRequests,
   updateSupportRequest,
   capabilityNationalStat,
+  centreResetPassword,
+  getExportRows,
   ConflictError,
 } from "../db/index.js";
 import { computeNationalDashboard } from "../lib/national.js";
@@ -52,7 +54,7 @@ const assessorSchema = z.object({
   email: z.string().email(),
 });
 
-centreRouter.post("/assessors", async (req, res) => {
+centreRouter.post("/assessors", async (req, res, next) => {
   const parsed = assessorSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "State, name and a valid email are required." });
@@ -71,11 +73,11 @@ centreRouter.post("/assessors", async (req, res) => {
       res.status(409).json({ error: e.message });
       return;
     }
-    throw e;
+    next(e);
   }
 });
 
-centreRouter.patch("/assessors/:id", async (req, res) => {
+centreRouter.patch("/assessors/:id", async (req, res, next) => {
   const parsed = z.object({ active: z.boolean() }).safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "active (boolean) is required." });
@@ -88,11 +90,11 @@ centreRouter.patch("/assessors/:id", async (req, res) => {
       res.status(409).json({ error: e.message });
       return;
     }
-    throw e;
+    next(e);
   }
 });
 
-centreRouter.post("/reassign", async (req, res) => {
+centreRouter.post("/reassign", async (req, res, next) => {
   const parsed = assessorSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "State, name and a valid email are required." });
@@ -112,11 +114,11 @@ centreRouter.post("/reassign", async (req, res) => {
       res.status(409).json({ error: e.message });
       return;
     }
-    throw e;
+    next(e);
   }
 });
 
-centreRouter.delete("/assessors/:id", async (req, res) => {
+centreRouter.delete("/assessors/:id", async (req, res, next) => {
   try {
     await centreDeleteUser(req.auth!.ctx, req.params.id);
     res.json({ ok: true });
@@ -125,12 +127,47 @@ centreRouter.delete("/assessors/:id", async (req, res) => {
       res.status(409).json({ error: e.message });
       return;
     }
-    throw e;
+    next(e);
   }
 });
 
 centreRouter.get("/audit", async (req, res) => {
   res.json({ audit: await listAuditLog(req.auth!.ctx) });
+});
+
+// Centre-initiated password reset (no self-serve flow). Returns a temp password for the
+// Centre to hand over out-of-band.
+centreRouter.post("/assessors/:id/reset-password", async (req, res) => {
+  try {
+    res.json(await centreResetPassword(req.auth!.ctx, req.params.id));
+  } catch {
+    res.status(404).json({ error: "Assessor not found." });
+  }
+});
+
+// CSV export of every submitted assessment, one row per capability.
+centreRouter.get("/export.csv", async (req, res) => {
+  const rows = await getExportRows(req.auth!.ctx);
+  const esc = (v: unknown) => {
+    const s = v === null || v === undefined ? "" : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const header = ["state", "submitted_at", "assessor", "capability_id", "capability", "score", "evidence_system"];
+  const lines = [header.join(",")];
+  for (const r of rows) {
+    lines.push([
+      esc(r.state_name),
+      esc(r.submitted_at),
+      esc(r.assessor_name),
+      esc(r.capability_id),
+      esc(r.capability_name),
+      esc(r.value),
+      esc(r.system_name),
+    ].join(","));
+  }
+  res.setHeader("Content-Type", "text/csv; charset=utf-8");
+  res.setHeader("Content-Disposition", 'attachment; filename="dmm-submitted-assessments.csv"');
+  res.send(lines.join("\n") + "\n");
 });
 
 // ── Requests ──────────────────────────────────────────────────────────────────
