@@ -1,0 +1,1 @@
+- [Production database app role](production-database-app-role.md) — production schema copies may not carry app-role privileges; bootstrap must resync least-privilege grants.

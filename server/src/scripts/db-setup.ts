@@ -57,7 +57,56 @@ async function main(): Promise<void> {
 
     await client.query(`GRANT CONNECT ON DATABASE ${q(dbName)} TO ${q(appRole)}`);
     await client.query(`GRANT USAGE ON SCHEMA public TO ${q(appRole)}`);
-    console.log(`Granted CONNECT + schema USAGE to ${appRole}.`);
+
+    // The production database may be copied before the app role is created. In that case
+    // migration-time GRANT statements do not attach to the newly-created role, so replay the
+    // exact least-privilege grants here. Do not replace these with grants on all tables:
+    // sessions are intentionally reachable only through their SECURITY DEFINER functions.
+    const tableGrants = [
+      ["states", "SELECT"],
+      ["users", "SELECT, INSERT, UPDATE, DELETE"],
+      ["model_versions", "SELECT"],
+      ["capabilities", "SELECT"],
+      ["assessments", "SELECT, INSERT, UPDATE, DELETE"],
+      ["scores", "SELECT, INSERT, UPDATE"],
+      ["systems", "SELECT, INSERT, UPDATE, DELETE"],
+      ["score_evidence", "SELECT, INSERT, UPDATE"],
+      ["audit_log", "SELECT, INSERT"],
+      ["support_requests", "SELECT, INSERT, UPDATE"],
+    ] as const;
+    let grantedTables = 0;
+    for (const [table, privileges] of tableGrants) {
+      const { rows } = await client.query<{ relation: string | null }>(
+        "SELECT to_regclass($1) AS relation",
+        [`public.${table}`],
+      );
+      if (!rows[0]?.relation) continue;
+      await client.query(`GRANT ${privileges} ON TABLE ${q(table)} TO ${q(appRole)}`);
+      grantedTables += 1;
+    }
+
+    const functionGrants = [
+      "auth_lookup_by_email(text)",
+      "session_create(uuid, numeric)",
+      "session_resolve(uuid)",
+      "session_destroy(uuid)",
+      "move_state_assessments(uuid, uuid)",
+    ] as const;
+    let grantedFunctions = 0;
+    for (const fn of functionGrants) {
+      const { rows } = await client.query<{ routine: string | null }>(
+        "SELECT to_regprocedure($1) AS routine",
+        [fn],
+      );
+      if (!rows[0]?.routine) continue;
+      await client.query(`GRANT EXECUTE ON FUNCTION ${fn} TO ${q(appRole)}`);
+      grantedFunctions += 1;
+    }
+
+    console.log(
+      `Granted app role database/schema access plus privileges on ${grantedTables} table(s) ` +
+        `and ${grantedFunctions} function(s) to ${appRole}.`,
+    );
     console.log("DB setup complete.");
   } finally {
     client.release();
