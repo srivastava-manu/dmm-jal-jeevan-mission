@@ -616,18 +616,21 @@ export async function createSystem(
   input: { name: string; districts_live: number | null; go_live: string | null },
 ): Promise<SystemRow> {
   return withRlsTx(ctx, async (c) => {
+    // RETURNING the row directly. A data-modifying CTE cannot be re-SELECTed from in the
+    // same statement (the SELECT sees the pre-INSERT snapshot and finds nothing), so
+    // `in_use` is computed as its own subquery instead of via SYSTEM_COLS.
     const { rows } = await c.query<SystemRow>(
-      `WITH upserted AS (
-         INSERT INTO systems (state_id, name, districts_live, go_live)
-         VALUES ($1, $2, $3, $4)
-         ON CONFLICT (state_id, name) DO UPDATE SET
-           districts_live = EXCLUDED.districts_live, go_live = EXCLUDED.go_live, updated_at = now()
-         RETURNING id
-       )
-       SELECT ${SYSTEM_COLS} FROM systems WHERE id = (SELECT id FROM upserted)`,
+      `INSERT INTO systems (state_id, name, districts_live, go_live)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (state_id, name) DO UPDATE SET
+         districts_live = EXCLUDED.districts_live, go_live = EXCLUDED.go_live, updated_at = now()
+       RETURNING id, name, districts_live, go_live,
+                 EXISTS(SELECT 1 FROM scores sc WHERE sc.system_id = systems.id) AS in_use`,
       [ctx.stateId, input.name, input.districts_live, input.go_live],
     );
-    return rows[0]!;
+    const row = rows[0];
+    if (!row) throw new Error("Could not save the system.");
+    return row;
   });
 }
 

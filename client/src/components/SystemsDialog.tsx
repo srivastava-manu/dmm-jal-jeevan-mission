@@ -81,7 +81,8 @@ export function SystemsDialog({
         const { system } = await api.systems.create(body);
         await load();
         resetForm();
-        if (mode === "attach" && onAttach) {
+        // Defensive: only attach if the server actually returned the created system.
+        if (mode === "attach" && onAttach && system?.id) {
           onAttach(system.id);
           onClose();
         }
