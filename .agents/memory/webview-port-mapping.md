@@ -14,3 +14,5 @@ if external port 80 forwards elsewhere.
 use port 5000 as well. Avoid retaining a stale port-80 mapping to a separate development API.
 After changing `[[ports]]`, restart the Replit compute instance (not merely the application
 workflow) before testing the portless development URL.
+Do not reconfigure the workflow through the workflow API after replacing `.replit`, since that
+can restore an older port mapping; restart the existing workflow instead.

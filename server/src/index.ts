@@ -18,9 +18,9 @@ async function main(): Promise<void> {
   await assertAppRoleIsUnprivileged();
 
   const app = createApp();
-  app.listen(PORT, () => {
+  app.listen(PORT, "0.0.0.0", () => {
     // eslint-disable-next-line no-console
-    console.log(`DMM API listening on http://localhost:${PORT}`);
+    console.log(`DMM API listening on 0.0.0.0:${PORT}`);
   });
 }
 

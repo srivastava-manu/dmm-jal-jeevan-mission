@@ -1,4 +1,4 @@
-modules = ["web", "nodejs-20", "postgresql-16"]
+modules = ["web", "nodejs-20", "postgresql-16", "python-base-3.13"]
 
 # Workspace "Run" button: build the client + server, provision reviewer accounts from
 # protected seed values, then start the single service.
@@ -12,12 +12,8 @@ build = ["sh", "-c", "npm install --include=dev && npm run db:setup && npm run b
 run = ["sh", "-c", "PORT=5000 npm run start"]
 
 [[ports]]
-localPort = 3001
-externalPort = 80
-
-[[ports]]
 localPort = 5000
-externalPort = 5000
+externalPort = 80
 
 [env]
 NODE_ENV = "production"
