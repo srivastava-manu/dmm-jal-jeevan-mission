@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { asyncRouter } from "../http/async-route.js";
 import { requireAuth } from "../http/require-auth.js";
 import {
   getReadAssessment,
@@ -12,7 +12,7 @@ import { computeResults, computeCompare, type CapScore } from "../lib/scoring.js
 // Read-only screens (results / dashboard / compare). Only requireAuth — the same-state vs
 // Centre visibility rule is enforced by RLS, not here, so an out-of-state assessor's read
 // returns "not found" because the database returns no rows.
-export const assessmentReadRouter = Router();
+export const assessmentReadRouter = asyncRouter();
 assessmentReadRouter.use(requireAuth);
 
 function toCapScores(rows: CapScoreRow[]): CapScore[] {

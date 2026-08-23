@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { asyncRouter } from "../http/async-route.js";
 import { z } from "zod";
 import { getAuthProvider } from "../auth/provider.js";
 import { startSession, endSession } from "../http/session.js";
@@ -6,7 +6,7 @@ import { requireAuth } from "../http/require-auth.js";
 import { rateLimit } from "../http/rate-limit.js";
 import type { Role } from "../db/rls.js";
 
-export const authRouter = Router();
+export const authRouter = asyncRouter();
 
 // Blunt password guessing: at most 10 login attempts per IP per 5 minutes.
 const loginLimiter = rateLimit({ windowMs: 5 * 60_000, max: 10 });

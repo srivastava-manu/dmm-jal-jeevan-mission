@@ -1,7 +1,7 @@
-import { Router } from "express";
+import { asyncRouter } from "../http/async-route.js";
 import { getPublicModel } from "../db/index.js";
 
-export const modelRouter = Router();
+export const modelRouter = asyncRouter();
 
 // Public: the "About the model" page is reachable without signing in.
 modelRouter.get("/", async (_req, res) => {

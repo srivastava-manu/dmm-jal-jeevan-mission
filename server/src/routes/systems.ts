@@ -1,9 +1,9 @@
-import { Router } from "express";
+import { asyncRouter } from "../http/async-route.js";
 import { z } from "zod";
 import { requireRole } from "../http/require-auth.js";
 import { listSystems, createSystem, editSystem, deleteSystem, ConflictError } from "../db/index.js";
 
-export const systemsRouter = Router();
+export const systemsRouter = asyncRouter();
 systemsRouter.use(requireRole("state_assessor"));
 
 systemsRouter.get("/", async (req, res) => {

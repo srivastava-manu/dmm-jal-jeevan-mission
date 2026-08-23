@@ -1,11 +1,11 @@
-import { Router } from "express";
+import { asyncRouter } from "../http/async-route.js";
 import { z } from "zod";
 import { requireRole } from "../http/require-auth.js";
 import { createSupportRequest, listSupportRequests } from "../db/index.js";
 
 // State-side support requests. A state assessor raises one from a capability scored 0 or 1
 // (business rule #10) and can read only their own state's (enforced by RLS).
-export const requestsRouter = Router();
+export const requestsRouter = asyncRouter();
 requestsRouter.use(requireRole("state_assessor"));
 
 requestsRouter.get("/", async (req, res) => {

@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { asyncRouter } from "../http/async-route.js";
 import { z } from "zod";
 import { requireRole } from "../http/require-auth.js";
 import {
@@ -15,7 +15,7 @@ import {
 } from "../db/index.js";
 import { consistencyFlagsFromValues } from "../lib/scoring.js";
 
-export const assessmentsRouter = Router();
+export const assessmentsRouter = asyncRouter();
 
 // The whole assessment flow is a state_assessor capability, scoped to their own state.
 assessmentsRouter.use(requireRole("state_assessor"));

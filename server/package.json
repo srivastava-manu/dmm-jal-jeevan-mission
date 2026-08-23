@@ -21,6 +21,7 @@
     "test:lock": "tsx --test src/test/lock.test.ts",
     "test:read": "tsx --test src/test/read-access.test.ts",
     "test:access": "tsx --test --test-force-exit src/test/access-matrix.test.ts",
+    "test:resilience": "tsx --test --test-force-exit src/test/route-resilience.test.ts",
     "test:model-integrity": "tsx --test --test-force-exit src/test/model-integrity.test.ts"
   },
   "dependencies": {

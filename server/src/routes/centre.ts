@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { asyncRouter } from "../http/async-route.js";
 import { z } from "zod";
 import { requireRole } from "../http/require-auth.js";
 import {
@@ -18,7 +18,7 @@ import {
 } from "../db/index.js";
 import { computeNationalDashboard } from "../lib/national.js";
 
-export const centreRouter = Router();
+export const centreRouter = asyncRouter();
 
 // Everything here is a Centre capability. A Centre user has role='centre' and no state_id;
 // RLS keeps drafts invisible and blocks any write to state-scoped score data.
