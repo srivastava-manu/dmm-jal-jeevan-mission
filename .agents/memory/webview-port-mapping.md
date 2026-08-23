@@ -16,3 +16,5 @@ After changing `[[ports]]`, restart the Replit compute instance (not merely the 
 workflow) before testing the portless development URL.
 Do not reconfigure the workflow through the workflow API after replacing `.replit`, since that
 can restore an older port mapping; restart the existing workflow instead.
+Replit development previews use `*.replit.dev`; legacy `*.repl.co` preview hostnames may be
+retired and fail DNS resolution even when the application and port mapping are healthy.
