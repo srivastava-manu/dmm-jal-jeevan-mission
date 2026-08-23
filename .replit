@@ -8,11 +8,8 @@ run = "npm install --include=dev && npm run build && npm run db:seed && npm run 
 
 [deployment]
 deploymentTarget = "autoscale"
-# --include=dev is required: the build needs tsc and vite, which are devDependencies, and
-# npm skips devDependencies when NODE_ENV=production (which this deployment sets).
-# The built output is plain JS, so the runtime itself needs only the production deps.
-build = ["sh", "-c", "npm install --include=dev && npm run build"]
-run = ["sh", "-c", "npm run start"]
+build = ["sh", "-c", "npm install --include=dev && npm run db:setup && npm run build"]
+run = ["npm", "run", "start"]
 
 [[ports]]
 localPort = 3001

@@ -24,6 +24,27 @@ function optional(name: string, fallback: string): string {
 // A base connection string must exist. On a managed host (e.g. Replit) this is the
 // provider-injected owner URL; locally it is the dmm_app URL.
 const BASE_DATABASE_URL = required("DATABASE_URL");
+const PRODUCTION = process.env.NODE_ENV === "production";
+
+/**
+ * APP_DATABASE_URL is normally a complete dmm_app URL. Replit's development database
+ * hostname is only resolvable inside the workspace, though, so a shared secret containing
+ * that URL cannot be used unchanged by a published deployment. In production, preserve the
+ * app role credentials but take the host, database, and TLS settings from the production
+ * DATABASE_URL injected by Replit.
+ */
+function productionAppUrl(appUrl: string, baseUrl: string): string {
+  if (!PRODUCTION) return appUrl;
+
+  const app = new URL(appUrl);
+  const base = new URL(baseUrl);
+  app.protocol = base.protocol;
+  app.host = base.host;
+  app.pathname = base.pathname;
+  app.search = base.search;
+  app.hash = base.hash;
+  return app.toString();
+}
 
 /**
  * Connection the API serves requests with: MUST be a non-owner, non-superuser role so RLS
@@ -31,7 +52,10 @@ const BASE_DATABASE_URL = required("DATABASE_URL");
  * auto-injected DATABASE_URL (the owner) for migrations while the app uses the unprivileged
  * dmm_app role. Locally, only DATABASE_URL is set, so both resolve to it.
  */
-export const DATABASE_URL = optional("APP_DATABASE_URL", BASE_DATABASE_URL);
+export const DATABASE_URL = productionAppUrl(
+  optional("APP_DATABASE_URL", BASE_DATABASE_URL),
+  BASE_DATABASE_URL,
+);
 
 /** Privileged connection for migrations/seed only. Falls back to the base (owner) URL. */
 export const ADMIN_DATABASE_URL = optional("ADMIN_DATABASE_URL", BASE_DATABASE_URL);
@@ -50,4 +74,4 @@ export const seed = {
   assessorPassword: process.env.SEED_ASSESSOR_PASSWORD ?? "",
 };
 
-export const isProduction = process.env.NODE_ENV === "production";
+export const isProduction = PRODUCTION;
