@@ -1,11 +1,16 @@
 modules = ["nodejs-20"]
 
 # Workspace "Run" button: build the client + server, then start the single service.
-run = "npm run build && npm run start"
+# --include=dev because the build needs tsc/vite (devDependencies) and NODE_ENV=production
+# makes npm skip them.
+run = "npm install --include=dev && npm run build && npm run start"
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["sh", "-c", "npm install && npm run build"]
+# --include=dev is required: the build needs tsc and vite, which are devDependencies, and
+# npm skips devDependencies when NODE_ENV=production (which this deployment sets).
+# The built output is plain JS, so the runtime itself needs only the production deps.
+build = ["sh", "-c", "npm install --include=dev && npm run build"]
 run = ["sh", "-c", "npm run start"]
 
 # The Express server listens on PORT (default 3001) and also serves the built client.

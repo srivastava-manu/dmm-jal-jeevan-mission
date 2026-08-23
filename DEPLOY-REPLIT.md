@@ -1,8 +1,8 @@
 # Deploying DMM on Replit (built-in Postgres)
 
 The app runs as a **single service**: one Express process serves the built React client
-*and* the `/api` on one port, backed by Replit's built-in (Neon) PostgreSQL. The repo is
-already prepped (`.replit`, static-serving, SSL, `build`/`start`/`provision` scripts).
+*and* the `/api` on one port, backed by Replit's built-in PostgreSQL. The repo is
+already prepped (`.replit`, static-serving, `build`/`start`/`provision` scripts).
 
 ## Why the two database roles matter
 Row-level security is only enforced against a role that does **not own** the tables. Replit's
@@ -33,11 +33,11 @@ the app still boots but RLS is silently bypassed.
    detects automatically. Only set `PGSSL=true` if you use a managed database whose URL omits
    `sslmode=require`.
 
-4. **Provision the database** — in the Repl **Shell** (dev deps are present here), create the
+4. **Provision the database** — in the Repl **Shell**, create the
    role, run migrations, and seed. With the secrets from step 5 already saved, the Shell
    inherits them:
    ```bash
-   npm install
+   npm install --include=dev   # devDeps (tsx, tsc, vite) are skipped when NODE_ENV=production
    SEED_CENTRE_PASSWORD="<centre-pw>" SEED_ASSESSOR_PASSWORD="<assessor-pw>" npm run provision
    ```
    `provision` = `db:setup` (creates `dmm_app` from `APP_DATABASE_URL`, connecting as the
@@ -57,7 +57,7 @@ the app still boots but RLS is silently bypassed.
    migrations connection). `.replit` also sets `NODE_ENV`/`SESSION_COOKIE_SECURE`, but
    Secrets are the source of truth for the deployment.
 
-6. **Deploy.** Publish → **Autoscale**. Build runs `npm install && npm run build`; run runs
+6. **Deploy.** Publish → **Autoscale**. Build runs `npm install --include=dev && npm run build`; run runs
    `npm run start` (`node server/dist/index.js`). The server listens on the injected `PORT`
    and serves everything on one origin.
 
