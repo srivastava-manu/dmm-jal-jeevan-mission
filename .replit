@@ -15,5 +15,8 @@ externalPort = 80
 
 [env]
 NODE_ENV = "production"
-PGSSL = "true"
 SESSION_COOKIE_SECURE = "true"
+# TLS is decided by the connection string itself: a URL carrying sslmode=require (managed
+# Postgres such as Neon) turns it on. Replit's in-container development database speaks no
+# TLS (sslmode=disable), so PGSSL is deliberately NOT forced here — set the secret
+# PGSSL=true only if you move to a managed database whose URL lacks sslmode=require.

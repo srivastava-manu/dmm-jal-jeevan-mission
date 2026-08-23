@@ -19,35 +19,43 @@ the app still boots but RLS is silently bypassed.
 2. **Add PostgreSQL.** In the Repl: Tools → **Database** → create a PostgreSQL DB. This
    injects `DATABASE_URL` (owner) and `PGHOST/PGUSER/PGPASSWORD/PGDATABASE/PGPORT`.
 
-3. **Choose a `dmm_app` password** and build its URL from the injected owner URL — same host,
-   database and `?sslmode=require`, but role `dmm_app`:
+3. **Choose a `dmm_app` password** and build its URL from the injected owner URL, keeping the
+   host, database and **the same `sslmode` the injected URL uses** — only the role and
+   password change. In the Shell:
+   ```bash
+   echo "$DATABASE_URL" | sed -E 's#://[^:]+:[^@]+@#://dmm_app:<APP_PASSWORD>@#'
    ```
-   postgresql://dmm_app:<APP_PASSWORD>@<PGHOST>/<PGDATABASE>?sslmode=require
-   ```
+   The role name must be exactly `dmm_app` — the migrations grant to that literal name.
+
+   **On SSL:** Replit's *development* database runs in-container (host `helium`) and speaks no
+   TLS, so its URL carries `sslmode=disable` — keep it, and do **not** set `PGSSL`. A managed
+   database (Neon, used by Replit production DBs) carries `sslmode=require`, which the app
+   detects automatically. Only set `PGSSL=true` if you use a managed database whose URL omits
+   `sslmode=require`.
 
 4. **Provision the database** — in the Repl **Shell** (dev deps are present here), create the
-   role, run migrations, and seed:
+   role, run migrations, and seed. With the secrets from step 5 already saved, the Shell
+   inherits them:
    ```bash
    npm install
-   APP_DATABASE_URL="postgresql://dmm_app:<APP_PASSWORD>@<PGHOST>/<PGDATABASE>?sslmode=require" \
-   PGSSL=true \
-   SEED_CENTRE_PASSWORD="<centre-pw>" SEED_ASSESSOR_PASSWORD="<assessor-pw>" \
-   npm run provision
+   SEED_CENTRE_PASSWORD="<centre-pw>" SEED_ASSESSOR_PASSWORD="<assessor-pw>" npm run provision
    ```
    `provision` = `db:setup` (creates `dmm_app` from `APP_DATABASE_URL`, connecting as the
-   owner `DATABASE_URL`) → `db:migrate` → `db:seed` → `db:seed:demo`. Drop the two
-   `SEED_*` vars and the last seed step if you don't want demo data.
+   owner `DATABASE_URL`) → `db:migrate` → `db:seed` → `db:seed:demo`. For a clean UAT database
+   with no invented data, run `npm run db:setup && npm run db:migrate && npm run db:seed`
+   instead — you still get the real 48-capability model and working logins.
 
 5. **Set Secrets** (Tools → Secrets) for the running app:
    | Key | Value |
    |---|---|
    | `APP_DATABASE_URL` | the `dmm_app` URL from step 3 |
-   | `PGSSL` | `true` |
    | `SESSION_COOKIE_SECURE` | `true` |
    | `NODE_ENV` | `production` |
+   | `PGSSL` | `true` — **only** for a managed DB whose URL lacks `sslmode=require` |
+
    `DATABASE_URL` is already provided by the DB integration — leave it (it's the owner /
-   migrations connection). `.replit` also sets `NODE_ENV`/`PGSSL`/`SESSION_COOKIE_SECURE`,
-   but Secrets are the source of truth for the deployment.
+   migrations connection). `.replit` also sets `NODE_ENV`/`SESSION_COOKIE_SECURE`, but
+   Secrets are the source of truth for the deployment.
 
 6. **Deploy.** Publish → **Autoscale**. Build runs `npm install && npm run build`; run runs
    `npm run start` (`node server/dist/index.js`). The server listens on the injected `PORT`
