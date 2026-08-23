@@ -1,4 +1,4 @@
-modules = ["nodejs-20"]
+modules = ["web", "nodejs-20"]
 
 # Workspace "Run" button: build the client + server, then start the single service.
 run = "npm run build && npm run start"
@@ -16,6 +16,9 @@ externalPort = 80
 [env]
 NODE_ENV = "production"
 SESSION_COOKIE_SECURE = "true"
+
+[nix]
+channel = "stable-25_05"
 # TLS is decided by the connection string itself: a URL carrying sslmode=require (managed
 # Postgres such as Neon) turns it on. Replit's in-container development database speaks no
 # TLS (sslmode=disable), so PGSSL is deliberately NOT forced here — set the secret
