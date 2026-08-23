@@ -24,8 +24,8 @@ NODE_ENV = "production"
 SESSION_COOKIE_SECURE = "true"
 # TLS is decided by the connection string itself: a URL carrying sslmode=require (managed
 # Postgres such as Neon) turns it on. Replit's in-container development database speaks no
-# TLS (sslmode=disable), so PGSSL is deliberately NOT forced here — set the secret
-# PGSSL=true only if you move to a managed database whose URL lacks sslmode=require.
+# TLS (sslmode=disable), so PGSSL is deliberately NOT forced here — set the secret PGSSL=true
+# only if you move to a managed database whose URL lacks sslmode=require.
 
 [nix]
 channel = "stable-25_05"
@@ -46,13 +46,13 @@ args = "Start application"
 name = "Start application"
 author = "agent"
 
+[workflows.workflow.metadata]
+outputType = "webview"
+
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm install --include=dev && npm run build && npm run db:seed && PORT=5000 npm run start"
 waitForPort = 5000
-
-[workflows.workflow.metadata]
-outputType = "webview"
 
 [postMerge]
 path = "scripts/post-merge.sh"
