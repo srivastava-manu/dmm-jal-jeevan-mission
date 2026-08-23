@@ -1,4 +1,4 @@
-modules = ["web", "nodejs-20"]
+modules = ["web", "nodejs-20", "postgresql-16"]
 
 # Workspace "Run" button: build the client + server, then start the single service.
 run = "npm run build && npm run start"
