@@ -1,1 +1,2 @@
 - [Production database app role](production-database-app-role.md) — production schema copies may not carry app-role privileges; bootstrap must resync least-privilege grants.
+- [Webview port mapping](webview-port-mapping.md) — the default development URL routes through external port 80; map it to the webview server port.
