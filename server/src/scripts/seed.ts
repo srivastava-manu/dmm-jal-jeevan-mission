@@ -3,8 +3,8 @@ import { hashPassword } from "../auth/password.js";
 import { seed as seedCfg } from "../config.js";
 
 // Dev-only seed: one Centre user and two state assessors in DIFFERENT states, so the
-// isolation test has something real to cross-check. Passwords come from the (gitignored)
-// .env — never hardcoded. Idempotent: re-running upserts the same three users.
+// isolation test has something real to cross-check. Passwords come from protected environment
+// variables — never hardcoded. Idempotent: re-running upserts the same three users.
 //
 // This is NOT the production provisioning flow. In production the Centre creates
 // assessors (build step 7); there is no self-signup.
@@ -21,7 +21,7 @@ interface SeedUser {
 async function main(): Promise<void> {
   if (!seedCfg.centrePassword || !seedCfg.assessorPassword) {
     throw new Error(
-      "Set SEED_CENTRE_PASSWORD and SEED_ASSESSOR_PASSWORD in .env before seeding.",
+      "Set SEED_CENTRE_PASSWORD and SEED_ASSESSOR_PASSWORD before seeding.",
     );
   }
 
@@ -82,10 +82,10 @@ async function main(): Promise<void> {
       );
       console.log(`Seeded ${u.role.padEnd(15)} ${u.email}${u.stateName ? `  (${u.stateName})` : ""}`);
     }
-    console.log("\nSeed complete. Dev sign-in credentials:");
-    for (const u of users) {
-      console.log(`  ${u.email}  /  ${u.password}   [${u.role}]`);
-    }
+    console.log(
+      "\nSeed complete. Demo sign-in passwords were read from " +
+        "SEED_CENTRE_PASSWORD and SEED_ASSESSOR_PASSWORD.",
+    );
   } finally {
     client.release();
     await adminPool.end();

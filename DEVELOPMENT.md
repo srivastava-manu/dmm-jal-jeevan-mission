@@ -43,16 +43,20 @@ createdb dmm_dev
 ```
 
 Then copy the env template and set real values (the committed `.env` here holds local dev
-values only):
+values only). Keep the seed passwords in protected environment variables; do not commit,
+print, or document their values:
 
 ```bash
-cp .env.example .env   # then edit DATABASE_URL / ADMIN_DATABASE_URL / passwords
+cp .env.example .env   # then edit DATABASE_URL / ADMIN_DATABASE_URL
 ```
 
 - `ADMIN_DATABASE_URL` — a privileged role (owner/superuser) used **only** for migrations
   and seeding. Locally this is your superuser, e.g. `postgresql://<you>@localhost:5432/dmm_dev`.
 - `DATABASE_URL` — the unprivileged app role, e.g.
   `postgresql://dmm_app:<pw>@localhost:5432/dmm_dev`. The API uses only this.
+- `SEED_CENTRE_PASSWORD` and `SEED_ASSESSOR_PASSWORD` — protected values used by the
+  development seed. They are required for `db:seed` and are never written to the repository
+  or printed by the seed.
 
 ## Install and bring up
 
@@ -80,7 +84,8 @@ npm run dev:server    # API on http://localhost:3001
 npm run dev:client    # app on http://localhost:5173  (proxies /api -> :3001)
 ```
 
-Sign in with a seeded account (printed by `db:seed` / `db:seed:model`). A `state_assessor`
+Sign in with a seeded account using the protected password configured for its role. A
+`state_assessor`
 lands on `/assess` (still a placeholder); the `centre` lands on `/dashboard`, which is a
 real, data-backed national dashboard once `db:seed:model` has run.
 
