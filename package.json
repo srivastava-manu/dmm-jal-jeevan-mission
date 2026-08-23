@@ -12,6 +12,9 @@
     "node": ">=20"
   },
   "scripts": {
+    "build": "npm run build -w client && npm run build -w server",
+    "start": "node server/dist/index.js",
+    "provision": "npm run db:setup -w server && npm run db:migrate && npm run db:seed && npm run db:seed:demo",
     "db:setup": "npm run db:setup -w server",
     "db:migrate": "npm run migrate -w server",
     "db:gen:model": "npm run gen:model -w server",

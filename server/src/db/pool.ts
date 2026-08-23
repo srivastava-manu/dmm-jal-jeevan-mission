@@ -1,5 +1,6 @@
 import pg from "pg";
 import { DATABASE_URL } from "../config.js";
+import { poolConfig } from "./pg-config.js";
 
 // Return SQL DATE (oid 1082) as a plain 'YYYY-MM-DD' string instead of a JS Date at local
 // midnight, which would shift across timezones (e.g. IST +05:30). This is process-global
@@ -8,11 +9,7 @@ pg.types.setTypeParser(1082, (v) => v);
 
 // The single application pool. This is the ONLY connection the request path uses, and
 // it authenticates as the unprivileged `dmm_app` role so row-level security is enforced.
-export const pool = new pg.Pool({
-  connectionString: DATABASE_URL,
-  max: 10,
-  idleTimeoutMillis: 30_000,
-});
+export const pool = new pg.Pool(poolConfig(DATABASE_URL, { max: 10, idleTimeoutMillis: 30_000 }));
 
 /**
  * Startup guard. RLS is silently bypassed for superusers and roles with BYPASSRLS, so a

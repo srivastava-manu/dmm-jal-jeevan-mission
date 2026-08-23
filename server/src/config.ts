@@ -21,11 +21,20 @@ function optional(name: string, fallback: string): string {
   return v && v.trim() !== "" ? v : fallback;
 }
 
-/** Connection the API serves requests with: a non-superuser role, RLS enforced. */
-export const DATABASE_URL = required("DATABASE_URL");
+// A base connection string must exist. On a managed host (e.g. Replit) this is the
+// provider-injected owner URL; locally it is the dmm_app URL.
+const BASE_DATABASE_URL = required("DATABASE_URL");
 
-/** Privileged connection for migrations/seed only. Falls back to DATABASE_URL. */
-export const ADMIN_DATABASE_URL = optional("ADMIN_DATABASE_URL", DATABASE_URL);
+/**
+ * Connection the API serves requests with: MUST be a non-owner, non-superuser role so RLS
+ * is enforced. Prefer APP_DATABASE_URL when set — this lets a managed host keep its
+ * auto-injected DATABASE_URL (the owner) for migrations while the app uses the unprivileged
+ * dmm_app role. Locally, only DATABASE_URL is set, so both resolve to it.
+ */
+export const DATABASE_URL = optional("APP_DATABASE_URL", BASE_DATABASE_URL);
+
+/** Privileged connection for migrations/seed only. Falls back to the base (owner) URL. */
+export const ADMIN_DATABASE_URL = optional("ADMIN_DATABASE_URL", BASE_DATABASE_URL);
 
 export const PORT = Number(optional("PORT", "3001"));
 

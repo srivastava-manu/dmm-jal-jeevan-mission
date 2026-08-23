@@ -1,4 +1,7 @@
+import path from "node:path";
+import fs from "node:fs";
 import express from "express";
+import { REPO_ROOT } from "../config.js";
 import { pool } from "../db/pool.js";
 import { attachSession } from "./session.js";
 import { authRouter } from "../routes/auth.js";
@@ -53,6 +56,19 @@ export function createApp() {
   app.use("/api/assessments", assessmentsRouter);
   app.use("/api/systems", systemsRouter);
   app.use("/api/requests", requestsRouter);
+
+  // Production: serve the built client (client/dist) from the SAME origin as the API, so the
+  // httpOnly session cookie works and relative /api calls resolve. In dev this directory does
+  // not exist (Vite serves the client), so this is a no-op.
+  const clientDist = path.join(REPO_ROOT, "client", "dist");
+  if (fs.existsSync(clientDist)) {
+    app.use(express.static(clientDist));
+    // SPA fallback: any non-/api GET returns index.html so client-side routes (/about,
+    // /dashboard, /state/:id) survive a page refresh / deep link.
+    app.get(/^\/(?!api\/).*/, (_req, res) => {
+      res.sendFile(path.join(clientDist, "index.html"));
+    });
+  }
 
   // Safety net: any error passed to next() returns 500 instead of hanging the request. The
   // detail is logged, never sent to the client.

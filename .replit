@@ -1,0 +1,19 @@
+modules = ["nodejs-20"]
+
+# Workspace "Run" button: build the client + server, then start the single service.
+run = "npm run build && npm run start"
+
+[deployment]
+deploymentTarget = "autoscale"
+build = ["sh", "-c", "npm install && npm run build"]
+run = ["sh", "-c", "npm run start"]
+
+# The Express server listens on PORT (default 3001) and also serves the built client.
+[[ports]]
+localPort = 3001
+externalPort = 80
+
+[env]
+NODE_ENV = "production"
+PGSSL = "true"
+SESSION_COOKIE_SECURE = "true"
