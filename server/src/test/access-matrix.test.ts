@@ -18,8 +18,8 @@ let server: Server;
 let base = "";
 
 const ids = {
-  stateA: "", stateB: "", stateC: "",
-  userA: "", userB: "", centre: "",
+  stateA: "", stateB: "", stateC: "", stateD: "",
+  userA: "", userB: "", centre: "", userDel: "",
   submittedA1: "", submittedA2: "", draftA: "",
   systemA: "", reqA: "", capId: "",
   sessA: "", sessB: "", sessC: "",
@@ -52,11 +52,12 @@ before(async () => {
   const states = await adminPool.query<{ id: string }>(
     `SELECT id FROM states
      WHERE id NOT IN (SELECT state_id FROM users WHERE role='state_assessor' AND active AND state_id IS NOT NULL)
-     ORDER BY name LIMIT 3`,
+     ORDER BY name LIMIT 4`,
   );
   ids.stateA = states.rows[0]!.id;
   ids.stateB = states.rows[1]!.id;
   ids.stateC = states.rows[2]!.id;
+  ids.stateD = states.rows[3]!.id;
   const mv = (await adminPool.query<{ id: string }>("SELECT id FROM model_versions ORDER BY published_at DESC LIMIT 1")).rows[0]!.id;
   ids.capId = (await adminPool.query<{ id: string }>("SELECT id FROM capabilities WHERE model_version_id=$1 ORDER BY layer_index,order_in_layer LIMIT 1", [mv])).rows[0]!.id;
 
@@ -87,6 +88,10 @@ before(async () => {
     "INSERT INTO support_requests (state_id, capability_id, message) VALUES ($1,$2,'help') RETURNING id",
     [ids.stateA, ids.capId],
   )).rows[0]!.id;
+
+  // A throwaway assessor with no assessments, so DELETE /api/centre/assessors/:id can be
+  // exercised without hitting the "has submitted assessments" 409 guard.
+  ids.userDel = await mkUser("am_del@test.local", "state_assessor", ids.stateD);
 
   ids.sessA = (await sessionCreate(ids.userA, 1)).id;
   ids.sessB = (await sessionCreate(ids.userB, 1)).id;
@@ -128,14 +133,19 @@ function routes() {
     ["GET", `/api/assessments/${ids.submittedA1}/compare?to=${ids.submittedA2}`, undefined, [200, 404, 200, 401]],
     // A DRAFT: owner sees it, Centre must NOT (draft invisible), other-state -> 404
     ["GET", `/api/assessments/${ids.draftA}/results`, undefined, [200, 404, 404, 401]],
+    // Review is state_assessor-only (Centre is the wrong role -> 403, not 404)
+    ["GET", `/api/assessments/${ids.draftA}/review`, undefined, [200, 404, 403, 401]],
     // Centre routes (Centre only)
     ["GET", "/api/centre/dashboard", undefined, [403, 403, 200, 401]],
     ["GET", "/api/centre/assessors", undefined, [403, 403, 200, 401]],
     ["GET", "/api/centre/requests", undefined, [403, 403, 200, 401]],
     ["GET", "/api/centre/audit", undefined, [403, 403, 200, 401]],
     ["GET", "/api/centre/export.csv", undefined, [403, 403, 200, 401]],
+    ["GET", "/api/centre/capability-stat?name=Feedback%20%26%20Satisfaction", undefined, [403, 403, 200, 401]],
     // State-assessor writes
     ["PUT", `/api/assessments/${ids.draftA}/scores/${ids.capId}`, { value: 2 }, [200, 403, 403, 401]],
+    // Evidence link (the score row above must exist first). B is refused by RLS -> 403.
+    ["PUT", `/api/assessments/${ids.draftA}/scores/${ids.capId}/evidence`, { system_id: null }, [200, 403, 403, 401]],
     ["POST", "/api/systems", { name: "am-new-system" }, [201, 201, 403, 401]],
     ["PATCH", `/api/systems/${ids.systemA}`, { name: "AM System v2" }, [200, 404, 403, 401]],
     ["POST", "/api/requests", { capabilityId: ids.capId, message: "hi" }, [201, 201, 403, 401]],
@@ -145,8 +155,20 @@ function routes() {
     ["POST", "/api/centre/assessors", { stateId: ids.stateC, name: "New", email: "amc_new@test.local" }, [403, 403, 201, 401]],
     ["POST", "/api/centre/reassign", { stateId: ids.stateC, name: "Re", email: "amc_re@test.local" }, [403, 403, 200, 401]],
     ["POST", `/api/centre/assessors/${ids.userB}/reset-password`, {}, [403, 403, 200, 401]],
-    // Destructive last: delete the (still-unused) fixture system
+    // Destructive last, in dependency order.
     ["DELETE", `/api/systems/${ids.systemA}`, undefined, [200, 404, 403, 401]],
+    // Centre deletes a throwaway assessor (no assessments, so no 409 guard).
+    ["DELETE", `/api/centre/assessors/${ids.userDel}`, undefined, [403, 403, 200, 401]],
+    // Submit A's draft: A is authorised but the draft is incomplete -> 409. B cannot even
+    // see it (RLS) -> the route reports it as a bad request. Neither B nor Centre can submit.
+    ["POST", `/api/assessments/${ids.draftA}/submit`, {}, [409, 400, 403, 401]],
+    // Delete the draft (A succeeds; afterwards it is gone, so B sees 404).
+    ["DELETE", `/api/assessments/${ids.draftA}`, undefined, [200, 404, 403, 401]],
+    // Re-create a draft: each assessor may start one for their OWN state only.
+    ["POST", "/api/assessments", { mode: "blank" }, [201, 201, 403, 401]],
+    // ABSOLUTELY LAST: logout destroys each actor's session, so no row may follow it.
+    // Idempotent by design — anonymous logout is a no-op, not an error.
+    ["POST", "/api/auth/logout", {}, [200, 200, 200, 200]],
   ] as const;
 }
 

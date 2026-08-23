@@ -3,8 +3,9 @@ import assert from "node:assert/strict";
 
 import { adminPool } from "../db/admin.js";
 import { pool } from "../db/pool.js";
-import { getReadAssessment, getCapScoresForRead } from "../db/index.js";
-import { computeResults, type CapScore } from "../lib/scoring.js";
+import { getReadAssessment, getCapScoresForRead, getCentreDashboardData } from "../db/index.js";
+import { computeResults, computeCompare, type CapScore } from "../lib/scoring.js";
+import { computeNationalDashboard } from "../lib/national.js";
 import type { RlsContext } from "../db/rls.js";
 
 // Bumping MODEL_VERSION must never mutate a submitted assessment. We snapshot an assessment's
@@ -88,4 +89,71 @@ test("publishing a new model version does not mutate a submitted assessment", as
 
   const afterScore = computeResults(caps.map(toCap)).overallScore;
   assert.equal(afterScore, beforeScore, "overall score unchanged after the version bump");
+});
+
+test("compare across versions matches by name and excludes non-shared capabilities", async () => {
+  // A capability that exists ONLY in the new version (a genuinely added question) and one
+  // that was reworded (so the old name disappears) must never read as movement.
+  await adminPool.query(
+    `UPDATE capabilities SET name = name || ' (reworded)'
+     WHERE model_version_id = $1 AND layer_index = 0 AND order_in_layer = 0`,
+    [newMv],
+  );
+
+  const oldCaps = (await getCapScoresForRead(centre, assessmentId, oldMv)).map(toCap);
+  const newCaps = (
+    await adminPool.query<{
+      capability_id: string; layer_index: number; layer_name: string; order_in_layer: number; name: string;
+    }>(
+      `SELECT id AS capability_id, layer_index, layer_name, order_in_layer, name
+       FROM capabilities WHERE model_version_id = $1 ORDER BY layer_index, order_in_layer`,
+      [newMv],
+    )
+  ).rows.map((r) => ({ ...r, value: 3 as number | null }));
+
+  const cmp = computeCompare(newCaps, oldCaps);
+  // The reworded capability appears on both sides as not-comparable (added + retired) and is
+  // kept out of the improved/same/slipped tally.
+  assert.equal(
+    cmp.improved + cmp.same + cmp.slipped,
+    cmp.comparableCount,
+    "counts must cover exactly the comparable set",
+  );
+  assert.ok(cmp.notComparable.length >= 2, "the reworded capability shows as added + retired");
+  assert.ok(
+    cmp.notComparable.some((n) => n.status === "added") && cmp.notComparable.some((n) => n.status === "retired"),
+    "both sides of a rewording are reported",
+  );
+  assert.ok(
+    !cmp.biggestMoves.some((m) => m.name.includes("(reworded)")),
+    "a reworded capability is never reported as movement",
+  );
+});
+
+test("the Centre aggregate ignores assessments taken against an older version", async () => {
+  // The national picture aggregates only the CURRENT version's capabilities. Our submitted
+  // assessment is on the old version, so its capabilities are excluded and counted — the
+  // aggregate must still compute (and not silently fold old-version scores in).
+  const data = await getCentreDashboardData(centre);
+  assert.ok(data, "dashboard data must be available");
+  assert.equal(data!.modelVersion, "zz-integrity-9.9", "aggregate uses the newest published version");
+
+  const dash = computeNationalDashboard({
+    rows: data!.rows,
+    totalStates: data!.totalStates,
+    statesWithAssessor: data!.statesWithAssessor,
+    submittedStates: data!.submittedStates,
+    excludedCapabilities: data!.excludedCapabilities,
+    openRequests: data!.openRequests,
+    newRequests: data!.newRequests,
+  });
+  assert.ok(data!.excludedCapabilities > 0, "old-version capabilities are reported as excluded");
+  // Every grid cell belongs to the current version — no old-version capability leaked in.
+  const currentCapIds = new Set(
+    (await adminPool.query<{ id: string }>("SELECT id FROM capabilities WHERE model_version_id = $1", [newMv])).rows.map((r) => r.id),
+  );
+  assert.ok(
+    dash.grid.every((c) => currentCapIds.has(c.capability_id)),
+    "the aggregate contains only current-version capabilities",
+  );
 });
