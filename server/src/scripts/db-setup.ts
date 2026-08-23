@@ -34,7 +34,16 @@ async function main(): Promise<void> {
   const client = await adminPool.connect();
   try {
     // Create or update the app role — NON-superuser, NO bypassrls, so RLS applies to it.
-    const exists = await client.query("SELECT 1 FROM pg_roles WHERE rolname = $1", [appRole]);
+    const exists = await client.query<{
+      rolsuper: boolean;
+      rolbypassrls: boolean;
+      rolcreatedb: boolean;
+      rolcreaterole: boolean;
+    }>(
+      `SELECT rolsuper, rolbypassrls, rolcreatedb, rolcreaterole
+         FROM pg_roles WHERE rolname = $1`,
+      [appRole],
+    );
     if (exists.rowCount === 0) {
       await client.query(
         `CREATE ROLE ${q(appRole)} LOGIN PASSWORD ${lit(appPass)} ` +
@@ -42,9 +51,22 @@ async function main(): Promise<void> {
       );
       console.log(`Created role ${appRole}.`);
     } else {
+      const role = exists.rows[0];
+      if (!role) {
+        throw new Error(`Could not load existing app role ${appRole}.`);
+      }
+      if (role.rolsuper || role.rolbypassrls || role.rolcreatedb || role.rolcreaterole) {
+        throw new Error(
+          `Existing app role ${appRole} has privileged attributes. Recreate it as a ` +
+            "non-superuser with NOCREATEDB, NOCREATEROLE, and NOBYPASSRLS before publishing.",
+        );
+      }
+
+      // Replit's managed production owner can update a non-privileged role's password,
+      // but cannot repeat ALTER ROLE ... NOSUPERUSER on an existing role. The attributes
+      // above are validated instead of being modified, preserving the production role.
       await client.query(
-        `ALTER ROLE ${q(appRole)} LOGIN PASSWORD ${lit(appPass)} ` +
-          `NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS`,
+        `ALTER ROLE ${q(appRole)} LOGIN PASSWORD ${lit(appPass)}`,
       );
       console.log(`Updated role ${appRole}.`);
     }

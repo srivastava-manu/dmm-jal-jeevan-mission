@@ -14,3 +14,6 @@ database/schema access without the table and function privileges the app needs.
 **How to apply:** Keep role setup idempotent and reapply only the explicit, least-privilege
 grants required by the migrations. Do not solve this with broad grants on every table, because
 some objects (such as sessions) are deliberately exposed only through controlled functions.
+On Replit-managed production databases, validate an existing role's privilege attributes before
+updating it; the provider owner may be unable to repeat `ALTER ROLE ... NOSUPERUSER` even when
+the existing application role is already safe.
