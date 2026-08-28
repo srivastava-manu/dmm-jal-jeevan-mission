@@ -379,7 +379,11 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 .caption { font-size: 12px; margin: 0 0 12px; }
 .score-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 .score-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px; background: var(--surface); border: 1px solid var(--border-strong, #cdd6dc); border-radius: 7px; cursor: pointer; height: auto; color: var(--text); }
-.score-btn:hover { border-color: var(--accent); }
+.score-btn:not(.selected):hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text);
+}
 .score-btn .num { font-size: 15px; font-weight: 600; }
 .score-btn .lbl { font-size: 10.5px; line-height: 1.15; text-align: center; color: var(--text-2); }
 .score-btn.selected .lbl { color: inherit; }
