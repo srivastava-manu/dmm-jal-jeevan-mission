@@ -69,6 +69,11 @@ export function Dashboard() {
               <Kpi label="National maturity" big={data.overall.band} accent>
                 {data.overall.score} of {data.overall.outOf} · {data.overall.pct}%
               </Kpi>
+              {/* The chain reads 36 total -> 26 have an assessor -> 20 submitted, so each
+                  denominator is labelled and none can be mistaken for another. */}
+              <Kpi label="Assessor coverage" big={String(data.statesWithAssessor)}>
+                of {data.totalStates} states and UTs have an assessor
+              </Kpi>
               <Kpi label="Submitted" big={String(data.submittedStates)}>
                 of {data.statesWithAssessor} states with an assessor
               </Kpi>

@@ -104,6 +104,11 @@ These are the rules the design encodes. Getting them wrong breaks the product's 
    appears: system (dropdown from the state's own systems list), districts live, go-live month.
    Only the system name is effectively required; the rest is encouraged. Evidence carries forward
    to the next assessment.
+   > **Revised.** Evidence is now the single link `scores.system_id`; districts-live and go-live
+   > live on the **system**, not on each score, so correcting a system corrects it everywhere it is
+   > cited (including submitted assessments) — a factual correction, logged to `audit_log`. The
+   > separate `score_evidence` table is gone. A system cited by any score cannot be deleted
+   > (foreign key + a 409 from the API); edit it instead. Dropping the score below 3 clears the link.
 6. **One assessor per state at a time.** The assessor may change between rounds. A submitted assessment
    permanently stores the name and designation of whoever submitted it — reassigning the state does not
    rewrite history.
@@ -142,18 +147,22 @@ assessments
   -- at most one draft per state
 
 scores
-  id, assessment_id, capability_id, value (0-4 | null), note (text)
+  id, assessment_id, capability_id, value (0-4 | null), note (text),
+  system_id (-> systems, the evidence link; only set on scores of 3 or 4)
 
 systems                                     -- a state's own systems, captured once
-  id, state_id, name, districts_live (int), go_live (date), created_at
+  id, state_id, name, districts_live (int), go_live (date), created_at, updated_at
 
-score_evidence
-  id, score_id, system_id, districts_live, go_live
-
-requests
+support_requests                            -- named `requests` in the original spec
   id, state_id, capability_id, assessment_id, score_value,
-  note (from state), status ('New' | 'In progress' | 'Closed'),
-  reply (from centre), created_at, updated_at
+  message (from state), status ('new' | 'in_progress' | 'closed'),
+  reply (from centre), replied_by, created_at, updated_at
+
+sessions                                    -- server-side sessions; the cookie holds only this id
+  id, user_id, created_at, expires_at
+
+audit_log                                   -- user-management actions and system edits
+  id, actor_user_id, action, target_user_id, target_state_id, detail, created_at
 ```
 
 ### Derived values (compute, never store)
@@ -318,7 +327,13 @@ inputs + Add. When opened from a capability's evidence block, the hint changes t
 ## Screens — Centre (NJJM)
 
 Top bar reads "Digital Maturity · Centre / National Jal Jeevan Mission" with three tabs —
-**Dashboard**, **State assessors**, **Requests** — and a pill "N of M submitted".
+**Dashboard**, **State assessors**, **Requests**.
+
+> **Revised.** The top bar originally carried a pill "N of M submitted". It was removed: with
+> M as the count of all states/UTs (36) it read as a contradiction next to the Submitted card's
+> "of M states with an assessor" (26), because neither denominator was labelled. The counts now
+> live only on the dashboard KPI cards, where each denominator is spelled out. Removing it also
+> stops the national aggregation running on every Centre page just to render the pill.
 
 ### 12. National dashboard
 Max-width 1560px, `1fr / 360px` grid; the rail is sticky at `top:80px`.
@@ -328,9 +343,16 @@ horizontal-scroll container with a **760px min-width floor** so cells never shri
 Meta line: "Averaged across N submitted assessments · M states and UTs have an assessor. Drafts are
 not visible to the Centre and are excluded from all averages."
 
-Four KPI cards: **National maturity** (band + "X of 192 · N%") · **Submitted** ("of M states with an
-assessor") · **Weakest layer** (layer name, with its score as the subtitle — *not* prefixed with its
-index) · **Open requests** (with "N new").
+Five KPI cards: **National maturity** (band + "X of 192 · N%") · **Assessor coverage** ("of M states
+and UTs have an assessor") · **Submitted** ("of M states with an assessor") · **Weakest layer** (layer
+name, with its score as the subtitle — *not* prefixed with its index) · **Open requests** (with "N new").
+
+The cards read as a chain — **36 states and UTs → 26 have an assessor → 20 submitted** — so every
+denominator is labelled and none can be mistaken for another. The gap between total and covered is
+deliberately visible: states with no assessor at all are a programme signal, not something to hide.
+
+> **Revised.** Originally four cards, without **Assessor coverage**; that number appeared only in
+> the meta line and (with a different denominator) in the removed top-bar pill.
 
 **National maturity grid** — the 8×6 grid with each cell showing the capability name and its **mean
 score to one decimal** across submitted states, coloured by the rounded mean. Header caption: "Each
@@ -517,10 +539,13 @@ Policy sketch:
   may `insert`/`update` only where that matches **and** (`status = 'draft'` or `now() < locked_at`).
   The `centre` role may `select` only where `status = 'submitted'`.
 - `scores` — inherit the same rules through `assessment_id`.
-- `systems`, `score_evidence` — scoped to the owning state; `centre` reads only those belonging to
-  submitted assessments.
-- `requests` — an assessor sees and creates only their own state's; `centre` sees all and is the only
-  role permitted to write `status` and `reply`.
+- `systems` — scoped to the owning state; `centre` reads only (state detail and the export).
+- `support_requests` — an assessor sees and creates only their own state's; `centre` sees all and is
+  the only role permitted to write `status` and `reply`.
+- `audit_log` — `centre` reads and writes; a state assessor may only insert (its own system edits).
+- `sessions` — no policy and no grant at all: the app role cannot touch the table directly. Its whole
+  lifecycle goes through `SECURITY DEFINER` functions, so even SQL injection reaching
+  `SELECT * FROM sessions` returns nothing.
 - `capabilities`, `model_versions`, `states` — readable by all authenticated users.
 
 Enforce the 7-day lock in **both** places: the API rejects the write with a clear error, and the RLS

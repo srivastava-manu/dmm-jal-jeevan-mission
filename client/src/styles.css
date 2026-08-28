@@ -201,9 +201,11 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 .dash { max-width: 1400px; margin: 0 auto; padding: 24px; }
 .meta { font-size: 13px; color: var(--text-2); line-height: 1.5; max-width: 90ch; margin: 4px 0 20px; }
 
+/* Flows to as many equal columns as fit, so the row works whether there are four or five
+   KPI cards and stays readable down to a 1366px NIC desktop. */
 .kpis {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }

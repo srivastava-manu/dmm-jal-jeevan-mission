@@ -1,21 +1,14 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
 
-// Centre top bar: title, the three tabs, and the "N of M submitted" pill (M from the states
-// table, computed server-side).
+// Centre top bar: title and the three tabs. Coverage/submission counts live on the dashboard
+// KPI cards, where each denominator is labelled — the bar deliberately carries no figure, so
+// there is no unexplained "N of M" to contradict them. (This also means the bar no longer
+// runs the full national aggregation on every Centre page just to render two numbers.)
 export function CentreNav({ active }: { active: "dashboard" | "assessors" | "requests" }) {
   const navigate = useNavigate();
   const { setUser } = useAuth();
-  const [pill, setPill] = useState<{ submitted: number; total: number } | null>(null);
-
-  useEffect(() => {
-    api.centre
-      .dashboard()
-      .then((d) => setPill({ submitted: d.submittedStates, total: d.totalStates }))
-      .catch(() => {});
-  }, []);
 
   async function signOut() {
     await api.logout();
@@ -39,7 +32,6 @@ export function CentreNav({ active }: { active: "dashboard" | "assessors" | "req
         {tab("dashboard", "Dashboard", "/dashboard")}
         {tab("assessors", "State assessors", "/centre/assessors")}
         {tab("requests", "Requests", "/centre/requests")}
-        {pill && <span className="pill">{pill.submitted} of {pill.total} submitted</span>}
         <button className="ghost small" onClick={signOut}>Sign out</button>
       </nav>
     </header>
