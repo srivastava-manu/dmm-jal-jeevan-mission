@@ -12,6 +12,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "check:secrets": "bash scripts/check-secrets.sh",
     "build": "npm run build -w client && npm run build -w server",
     "start": "node server/dist/index.js",
     "provision": "npm run db:setup -w server && npm run db:migrate && npm run db:seed && npm run db:seed:demo",
