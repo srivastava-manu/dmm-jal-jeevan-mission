@@ -36,6 +36,15 @@ fi
 # 4. .gitignore must still cover .env.
 grep -qE '^\.env$' .gitignore || note ".gitignore no longer ignores .env"
 
+# 5. The lockfile must resolve from the public registry. Replit's workspace installs rewrite
+#    "resolved" to its internal package-firewall host, which resolves ONLY inside Replit — a
+#    lockfile carrying those URLs breaks `npm install` everywhere else (local, CI, NIC).
+if grep -q "package-firewall.replit.local" package-lock.json 2>/dev/null; then
+  count=$(grep -c "package-firewall.replit.local" package-lock.json)
+  note "package-lock.json has $count entries pointing at Replit's private registry."
+  echo "      Fix: sed -i '' 's#http://package-firewall\\.replit\\.local/npm/#https://registry.npmjs.org/#g' package-lock.json"
+fi
+
 if [ "$fail" -eq 0 ]; then
   echo "  ✓ no secrets found in tracked files or history"
   exit 0
