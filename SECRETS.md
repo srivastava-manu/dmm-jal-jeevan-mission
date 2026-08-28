@@ -70,3 +70,25 @@ it — the browser never sees a database credential, and sessions are unaffected
 
 Rotate it first (assume it is compromised the moment it lands on GitHub), then remove it from
 history. Changing the file in a later commit is **not** enough — the value stays in history.
+
+## Portability: the lockfile registry
+
+Replit installs packages through an internal proxy and records **its** host in
+`package-lock.json`'s `"resolved"` fields (`package-firewall.replit.local`). That host
+resolves only inside Replit, so a lockfile carrying those URLs makes `npm install` fail
+everywhere else with `ENOTFOUND` — local development, CI, and any future NIC deployment.
+
+This is handled automatically: `postinstall` runs
+[`scripts/normalize-lockfile.mjs`](scripts/normalize-lockfile.mjs) after **every** install, so
+whichever environment installs, the recorded URLs are rewritten back to the public registry
+before the file is ever committed. It does not change which registry npm fetches *from* —
+Replit keeps using its proxy, which is what makes installs work there; only the recorded URL
+is normalised. Rewriting the host is safe because the paths are identical to npm's and the
+integrity hashes describe the tarball contents, not its location.
+
+`npm run check:secrets` fails if private URLs slip through anyway (e.g. the lockfile was edited
+without an install). To fix by hand:
+
+```bash
+node scripts/normalize-lockfile.mjs
+```

@@ -36,6 +36,13 @@ fi
 # 4. .gitignore must still cover .env.
 grep -qE '^\.env$' .gitignore || note ".gitignore no longer ignores .env"
 
+# 5. Backstop for the lockfile. `postinstall` (scripts/normalize-lockfile.mjs) normally keeps
+#    this clean; this catches the case where the lockfile was changed without an install.
+if grep -q "package-firewall.replit.local" package-lock.json 2>/dev/null; then
+  note "package-lock.json points at Replit's private registry ($(grep -c 'package-firewall.replit.local' package-lock.json) entries) — it will not install elsewhere."
+  echo "      Fix: node scripts/normalize-lockfile.mjs"
+fi
+
 if [ "$fail" -eq 0 ]; then
   echo "  ✓ no secrets found in tracked files or history"
   exit 0
