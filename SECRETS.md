@@ -70,19 +70,3 @@ it — the browser never sees a database credential, and sessions are unaffected
 
 Rotate it first (assume it is compromised the moment it lands on GitHub), then remove it from
 history. Changing the file in a later commit is **not** enough — the value stays in history.
-
-## Portability: the lockfile registry
-
-Replit's workspace installs rewrite `"resolved"` in `package-lock.json` to its internal
-`package-firewall.replit.local` host. That host resolves **only inside Replit**, so a lockfile
-carrying those URLs makes `npm install` fail everywhere else with `ENOTFOUND` — local
-development, CI, and any future NIC deployment.
-
-`npm run check:secrets` now fails if those URLs are present. To fix:
-
-```bash
-sed -i '' 's#http://package-firewall\.replit\.local/npm/#https://registry.npmjs.org/#g' package-lock.json
-```
-
-The paths are identical to npm's, so versions and integrity hashes stay valid. Re-run
-`npm install` afterwards to confirm.
