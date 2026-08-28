@@ -51,7 +51,9 @@ before(async () => {
     const res = await fetch(`${base}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password: process.env.SEED_ASSESSOR_PASSWORD ?? "assessor-dev-pass" }),
+      // No hardcoded fallback: the password comes from the environment or the sign-in simply
+      // fails, and the test still runs its hostile requests anonymously.
+      body: JSON.stringify({ email, password: process.env.SEED_ASSESSOR_PASSWORD ?? "" }),
     });
     const setCookie = res.headers.get("set-cookie");
     if (setCookie) cookie = setCookie.split(";")[0]!;
