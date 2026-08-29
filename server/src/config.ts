@@ -74,4 +74,17 @@ export const seed = {
   assessorPassword: process.env.SEED_ASSESSOR_PASSWORD ?? "",
 };
 
+/**
+ * Optional features, off unless explicitly enabled.
+ *
+ * `supportRequests` — a state raising a support request from a low-scored capability, and the
+ * Centre answering it. Built and tested, but out of scope for the current release, so it is
+ * disabled by default for BOTH roles. The routes 404 while it is off, so the feature is not
+ * merely hidden in the UI; the `support_requests` table and its RLS policies stay in place, so
+ * enabling it later is this one variable and nothing else.
+ */
+export const features = {
+  supportRequests: optional("FEATURE_SUPPORT_REQUESTS", "false") === "true",
+};
+
 export const isProduction = PRODUCTION;

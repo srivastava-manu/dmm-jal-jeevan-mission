@@ -28,8 +28,22 @@ function RequireRole({ role, children }: { role: Role; children: React.ReactNode
   return <>{children}</>;
 }
 
+/** Sends the user away from a route whose feature is switched off. */
+function RequireFeature({
+  enabled,
+  fallback,
+  children,
+}: {
+  enabled: boolean;
+  fallback: string;
+  children: React.ReactNode;
+}) {
+  if (!enabled) return <Navigate to={fallback} replace />;
+  return <>{children}</>;
+}
+
 export function App() {
-  const { user, loading } = useAuth();
+  const { user, loading, features } = useAuth();
 
   return (
     <Routes>
@@ -127,7 +141,9 @@ export function App() {
         path="/centre/requests"
         element={
           <RequireRole role="centre">
-            <CentreRequests />
+            <RequireFeature enabled={features.supportRequests} fallback="/dashboard">
+              <CentreRequests />
+            </RequireFeature>
           </RequireRole>
         }
       />

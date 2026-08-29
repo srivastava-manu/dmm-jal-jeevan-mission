@@ -1,11 +1,16 @@
 import { asyncRouter } from "../http/async-route.js";
 import { z } from "zod";
 import { requireRole } from "../http/require-auth.js";
+import { requireFeature } from "../http/feature-gate.js";
+import { features } from "../config.js";
 import { createSupportRequest, listSupportRequests } from "../db/index.js";
 
 // State-side support requests. A state assessor raises one from a capability scored 0 or 1
 // (business rule #10) and can read only their own state's (enforced by RLS).
 export const requestsRouter = asyncRouter();
+// Feature gate first: while support requests are off, these routes 404 for everyone —
+// including an authenticated assessor — rather than existing but refusing.
+requestsRouter.use(requireFeature(features.supportRequests));
 requestsRouter.use(requireRole("state_assessor"));
 
 requestsRouter.get("/", async (req, res) => {

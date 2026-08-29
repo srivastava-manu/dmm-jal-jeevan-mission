@@ -7,7 +7,7 @@ import { createApp } from "../http/app.js";
 import { adminPool } from "../db/admin.js";
 import { pool } from "../db/pool.js";
 import { sessionCreate } from "../db/index.js";
-import { session as sessionCfg } from "../config.js";
+import { session as sessionCfg, features } from "../config.js";
 
 // The access-control matrix: for every API route, hit it as a same-state assessor (A), an
 // other-state assessor (B), a Centre user, and anonymous, and assert the status for all four.
@@ -112,6 +112,14 @@ after(async () => {
   await adminPool.end();
 });
 
+// Support requests are an optional feature. When it is off the routes must 404 for EVERY
+// actor; when on, normal role/RLS rules apply. Expressing it this way keeps the matrix
+// correct under either setting — and `npm run test:access` turns the feature on so the
+// support_requests RLS policies stay exercised even while the feature is dormant.
+const SR = features.supportRequests;
+const sr = (whenOn: readonly [number, number, number, number]) =>
+  (SR ? whenOn : [404, 404, 404, 404]) as unknown as readonly [number, number, number, number];
+
 // Each row: [method, path, body, [expectA, expectB, expectCentre, expectAnon]]. GET routes
 // listed before the mutations that would change the fixtures they read.
 function routes() {
@@ -124,7 +132,7 @@ function routes() {
     // State-assessor collections (Centre is wrong role -> 403; anon -> 401)
     ["GET", "/api/assessments", undefined, [200, 200, 403, 401]],
     ["GET", "/api/systems", undefined, [200, 200, 403, 401]],
-    ["GET", "/api/requests", undefined, [200, 200, 403, 401]],
+    ["GET", "/api/requests", undefined, sr([200, 200, 403, 401])],
     // Assessment detail (state_assessor only): other-state hidden by RLS -> 404
     ["GET", `/api/assessments/${ids.submittedA1}`, undefined, [200, 404, 403, 401]],
     // Read routes (requireAuth): Centre may read submitted; other-state -> 404
@@ -138,20 +146,20 @@ function routes() {
     // Centre routes (Centre only)
     ["GET", "/api/centre/dashboard", undefined, [403, 403, 200, 401]],
     ["GET", "/api/centre/assessors", undefined, [403, 403, 200, 401]],
-    ["GET", "/api/centre/requests", undefined, [403, 403, 200, 401]],
+    ["GET", "/api/centre/requests", undefined, sr([403, 403, 200, 401])],
     ["GET", "/api/centre/audit", undefined, [403, 403, 200, 401]],
     ["GET", "/api/centre/export.csv", undefined, [403, 403, 200, 401]],
-    ["GET", "/api/centre/capability-stat?name=Feedback%20%26%20Satisfaction", undefined, [403, 403, 200, 401]],
+    ["GET", "/api/centre/capability-stat?name=Feedback%20%26%20Satisfaction", undefined, sr([403, 403, 200, 401])],
     // State-assessor writes
     ["PUT", `/api/assessments/${ids.draftA}/scores/${ids.capId}`, { value: 2 }, [200, 403, 403, 401]],
     // Evidence link (the score row above must exist first). B is refused by RLS -> 403.
     ["PUT", `/api/assessments/${ids.draftA}/scores/${ids.capId}/evidence`, { system_id: null }, [200, 403, 403, 401]],
     ["POST", "/api/systems", { name: "am-new-system" }, [201, 201, 403, 401]],
     ["PATCH", `/api/systems/${ids.systemA}`, { name: "AM System v2" }, [200, 404, 403, 401]],
-    ["POST", "/api/requests", { capabilityId: ids.capId, message: "hi" }, [201, 201, 403, 401]],
+    ["POST", "/api/requests", { capabilityId: ids.capId, message: "hi" }, sr([201, 201, 403, 401])],
     // Centre writes (reassign/add target throwaway state C; reset targets userB)
     ["PATCH", `/api/centre/assessors/${ids.userA}`, { active: true }, [403, 403, 200, 401]],
-    ["PATCH", `/api/centre/requests/${ids.reqA}`, { status: "in_progress" }, [403, 403, 200, 401]],
+    ["PATCH", `/api/centre/requests/${ids.reqA}`, { status: "in_progress" }, sr([403, 403, 200, 401])],
     ["POST", "/api/centre/assessors", { stateId: ids.stateC, name: "New", email: "amc_new@test.local" }, [403, 403, 201, 401]],
     ["POST", "/api/centre/reassign", { stateId: ids.stateC, name: "Re", email: "amc_re@test.local" }, [403, 403, 200, 401]],
     ["POST", `/api/centre/assessors/${ids.userB}/reset-password`, {}, [403, 403, 200, 401]],

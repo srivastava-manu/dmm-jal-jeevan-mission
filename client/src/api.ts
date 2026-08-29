@@ -9,9 +9,15 @@ export interface SessionUser {
   stateId: string | null;
 }
 
+/** Optional features, decided by the server so the UI can never offer what the API refuses. */
+export interface Features {
+  supportRequests: boolean;
+}
+
 export interface AuthResult {
   user: SessionUser;
   redirect: string;
+  features: Features;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {

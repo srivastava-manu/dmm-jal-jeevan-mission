@@ -13,6 +13,7 @@ import {
   type SystemRow,
 } from "../model";
 import { SystemsDialog } from "../components/SystemsDialog";
+import { useAuth } from "../auth";
 
 interface ScoreState {
   value: number | null;
@@ -25,6 +26,7 @@ const ADD_SYSTEM = "__add_system__";
 export function Assess() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const { features } = useAuth();
   const [params] = useSearchParams();
   const [detail, setDetail] = useState<AssessmentDetail | null>(null);
   const [scores, setScores] = useState<Record<string, ScoreState>>({});
@@ -202,6 +204,7 @@ export function Assess() {
               onScore={(v) => setScore(cap, v)}
               onSetSystem={(systemId) => setSystem(cap, systemId)}
               onOpenSystems={() => setDialog({ capabilityId: cap.id, capabilityName: cap.name })}
+              supportEnabled={features.supportRequests}
               onRequestSupport={(message) =>
                 api.requests
                   .create({ assessmentId: id, capabilityId: cap.id, scoreValue: valueOf(cap.id), message })
@@ -284,6 +287,7 @@ function CapabilityCard({
   onSetSystem,
   onOpenSystems,
   onRequestSupport,
+  supportEnabled,
 }: {
   cap: Capability;
   state: ScoreState;
@@ -294,10 +298,11 @@ function CapabilityCard({
   onSetSystem: (systemId: string | null) => void;
   onOpenSystems: () => void;
   onRequestSupport: (message: string) => Promise<void>;
+  supportEnabled: boolean;
 }) {
   const value = state.value;
   const showEvidence = value !== null && value >= 3;
-  const showSupport = value !== null && value <= 1;
+  const showSupport = supportEnabled && value !== null && value <= 1;
   const ev = state.evidence;
   const [requesting, setRequesting] = useState(false);
   const [supportMsg, setSupportMsg] = useState("");

@@ -4,6 +4,7 @@ import { getAuthProvider } from "../auth/provider.js";
 import { startSession, endSession } from "../http/session.js";
 import { requireAuth } from "../http/require-auth.js";
 import { rateLimit } from "../http/rate-limit.js";
+import { features } from "../config.js";
 import type { Role } from "../db/rls.js";
 
 export const authRouter = asyncRouter();
@@ -44,6 +45,7 @@ authRouter.post("/login", loginLimiter, async (req, res) => {
       stateId: identity.stateId,
     },
     redirect: redirectFor(identity.role),
+    features,
   });
 });
 
@@ -64,5 +66,6 @@ authRouter.get("/me", requireAuth, (req, res) => {
       stateId: a.ctx.stateId,
     },
     redirect: redirectFor(a.ctx.role),
+    features,
   });
 });

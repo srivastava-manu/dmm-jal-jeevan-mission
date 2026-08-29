@@ -16,13 +16,14 @@
     "seed:compare-demo": "tsx src/scripts/seed-compare-demo.ts",
     "db:setup": "tsx src/scripts/db-setup.ts",
     "db:reset": "tsx src/scripts/db-setup.ts --reset && tsx src/scripts/migrate.ts && tsx src/scripts/seed.ts",
-    "test": "tsx --test --test-force-exit src/test/*.test.ts",
+    "test": "FEATURE_SUPPORT_REQUESTS=true tsx --test --test-force-exit --test-concurrency=1 src/test/*.test.ts",
     "test:isolation": "tsx --test src/test/isolation.test.ts",
     "test:lock": "tsx --test src/test/lock.test.ts",
     "test:read": "tsx --test src/test/read-access.test.ts",
-    "test:access": "tsx --test --test-force-exit src/test/access-matrix.test.ts",
+    "test:access": "FEATURE_SUPPORT_REQUESTS=true tsx --test --test-force-exit src/test/access-matrix.test.ts",
     "test:resilience": "tsx --test --test-force-exit src/test/route-resilience.test.ts",
-    "test:model-integrity": "tsx --test --test-force-exit src/test/model-integrity.test.ts"
+    "test:model-integrity": "tsx --test --test-force-exit src/test/model-integrity.test.ts",
+    "test:features": "tsx --test --test-force-exit src/test/feature-flags.test.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.0.2",

@@ -92,3 +92,18 @@ without an install). To fix by hand:
 ```bash
 node scripts/normalize-lockfile.mjs
 ```
+
+## Optional features
+
+| Variable | Default | Effect |
+|---|---|---|
+| `FEATURE_SUPPORT_REQUESTS` | off | Support requests (state raises, Centre answers) |
+
+Disabled features are enforced at the **API**, not just hidden in the UI: their routes return
+404 for every caller — state assessor, Centre and anonymous alike — so a disabled feature is
+indistinguishable from one that was never built. The database tables and RLS policies stay in
+place, so re-enabling is one environment variable with no migration.
+
+`npm test` runs with the feature **on**, so its RLS policies stay continuously exercised while
+the feature is dormant — otherwise they would rot silently and you would be trusting untested
+isolation on the day you switch it on.

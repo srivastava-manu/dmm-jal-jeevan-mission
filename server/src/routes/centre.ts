@@ -1,6 +1,8 @@
 import { asyncRouter } from "../http/async-route.js";
 import { z } from "zod";
 import { requireRole } from "../http/require-auth.js";
+import { requireFeature } from "../http/feature-gate.js";
+import { features } from "../config.js";
 import {
   getCentreDashboardData,
   listAssessors,
@@ -19,6 +21,12 @@ import {
 import { computeNationalDashboard } from "../lib/national.js";
 
 export const centreRouter = asyncRouter();
+
+// Support requests are an optional feature, currently off. Gate them BEFORE the role check so
+// they 404 identically for every caller while disabled. capability-stat exists only to serve
+// the requests rail, so it is gated too.
+centreRouter.use("/requests", requireFeature(features.supportRequests));
+centreRouter.use("/capability-stat", requireFeature(features.supportRequests));
 
 // Everything here is a Centre capability. A Centre user has role='centre' and no state_id;
 // RLS keeps drafts invisible and blocks any write to state-scoped score data.

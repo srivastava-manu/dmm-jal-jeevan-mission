@@ -7,7 +7,7 @@ import { useAuth, homePathFor } from "../auth";
 // (The fully-designed assessor sign-in screen from the prototype — state / name /
 // designation — belongs to the assessment flow in a later build step.)
 export function SignIn() {
-  const { setUser } = useAuth();
+  const { setUser, setFeatures } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,8 +19,9 @@ export function SignIn() {
     setError(null);
     setBusy(true);
     try {
-      const { user } = await api.login(email.trim(), password);
+      const { user, features } = await api.login(email.trim(), password);
       setUser(user);
+      setFeatures(features);
       navigate(homePathFor(user.role), { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign-in failed.");

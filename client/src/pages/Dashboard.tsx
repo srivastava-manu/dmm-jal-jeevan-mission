@@ -10,11 +10,13 @@ import {
   type LevelBucket,
 } from "../model";
 import { CentreNav } from "../components/CentreNav";
+import { useAuth } from "../auth";
 
 // Screen 12 — national dashboard. Every figure is a real count from the server aggregation
 // over each state's latest submitted assessment; nothing is simulated.
 export function Dashboard() {
   const navigate = useNavigate();
+  const { features } = useAuth();
   const [data, setData] = useState<CentreDashboard | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -80,9 +82,11 @@ export function Dashboard() {
               <Kpi label="Weakest layer" big={data.weakestLayer?.layer_name ?? "—"}>
                 {data.weakestLayer ? `${data.weakestLayer.score} of ${data.weakestLayer.outOf}` : ""}
               </Kpi>
-              <Kpi label="Open requests" big={String(data.openRequests)}>
-                {data.newRequests} new
-              </Kpi>
+              {features.supportRequests && (
+                <Kpi label="Open requests" big={String(data.openRequests)}>
+                  {data.newRequests} new
+                </Kpi>
+              )}
             </section>
 
             <section className="panel">

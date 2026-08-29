@@ -8,7 +8,7 @@ import { useAuth } from "../auth";
 // runs the full national aggregation on every Centre page just to render two numbers.)
 export function CentreNav({ active }: { active: "dashboard" | "assessors" | "requests" }) {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { setUser, features } = useAuth();
 
   async function signOut() {
     await api.logout();
@@ -31,7 +31,7 @@ export function CentreNav({ active }: { active: "dashboard" | "assessors" | "req
       <nav className="topbar-nav">
         {tab("dashboard", "Dashboard", "/dashboard")}
         {tab("assessors", "State assessors", "/centre/assessors")}
-        {tab("requests", "Requests", "/centre/requests")}
+        {features.supportRequests && tab("requests", "Requests", "/centre/requests")}
         <button className="ghost small" onClick={signOut}>Sign out</button>
       </nav>
     </header>
