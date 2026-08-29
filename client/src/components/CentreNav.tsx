@@ -2,11 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
 
-// Centre top bar: title and the three tabs. Coverage/submission counts live on the dashboard
+// Centre top bar: title and the tabs. "About" opens the same public model page the state
+// assessors see (/about) — it describes the model, not a role, so both surfaces share it.
+// Coverage/submission counts live on the dashboard
 // KPI cards, where each denominator is labelled — the bar deliberately carries no figure, so
 // there is no unexplained "N of M" to contradict them. (This also means the bar no longer
 // runs the full national aggregation on every Centre page just to render two numbers.)
-export function CentreNav({ active }: { active: "dashboard" | "assessors" | "requests" }) {
+export function CentreNav({ active }: { active: "dashboard" | "assessors" | "requests" | "about" }) {
   const navigate = useNavigate();
   const { setUser, features } = useAuth();
 
@@ -32,6 +34,7 @@ export function CentreNav({ active }: { active: "dashboard" | "assessors" | "req
         {tab("dashboard", "Dashboard", "/dashboard")}
         {tab("assessors", "State assessors", "/centre/assessors")}
         {features.supportRequests && tab("requests", "Requests", "/centre/requests")}
+        {tab("about", "About", "/about")}
         <button className="ghost small" onClick={signOut}>Sign out</button>
       </nav>
     </header>
