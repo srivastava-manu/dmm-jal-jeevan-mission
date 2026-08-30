@@ -169,6 +169,7 @@ export interface PublicModelLayer {
 export interface PublicModelVersion {
   version: string;
   published_at: string;
+  /** The PUBLIC note (model_versions.public_notes), never the internal one. */
   notes: string | null;
 }
 export interface PublicModel {
@@ -207,9 +208,17 @@ export async function getPublicModel(): Promise<PublicModel | null> {
     }
     const layers = [...byLayer.values()].sort((a, b) => a.index - b.index);
 
+    // Only versions with public_notes are listed — see migration 008. The current version is
+    // always included even if nobody has written its note yet, because a version history that
+    // omits the model in force is worse than a bland entry. `notes` (internal provenance) is
+    // deliberately not selected: it never leaves the team.
     const versions = (
       await c.query<PublicModelVersion>(
-        "SELECT version, published_at, notes FROM model_versions ORDER BY published_at DESC",
+        `SELECT version, published_at, public_notes AS notes
+           FROM model_versions
+          WHERE public_notes IS NOT NULL OR id = $1
+          ORDER BY published_at DESC`,
+        [mv.id],
       )
     ).rows;
 

@@ -38,6 +38,7 @@ export interface PublicModelLayer {
 export interface PublicModelVersion {
   version: string;
   published_at: string;
+  /** The PUBLIC note; null only for a current version with no note written yet. */
   notes: string | null;
 }
 export interface PublicModel {

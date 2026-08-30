@@ -131,7 +131,12 @@ export function About() {
                   <div className="version-row" key={v.version}>
                     <span className="version-tag mono">{v.version}</span>
                     <span className="muted">{fmtDate(v.published_at)}</span>
-                    <span>{v.notes}</span>
+                    {/* The current version is listed even when no public note has been
+                        written for it yet (see db getPublicModel), so it needs a fallback
+                        that claims nothing about what changed. */}
+                    <span className={v.notes ? undefined : "muted"}>
+                      {v.notes ?? "The model currently in use."}
+                    </span>
                   </div>
                 ))}
               </div>

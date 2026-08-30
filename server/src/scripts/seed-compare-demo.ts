@@ -24,11 +24,18 @@ async function main(): Promise<void> {
     // v2.0 published strictly before v2.1 so it is never the current version.
     const mv20 = (
       await c.query<{ id: string }>(
-        `INSERT INTO model_versions (version, published_at, notes)
+        // public_notes is left NULL on purpose, and the ON CONFLICT clause forces it back to
+        // NULL: v2.0 is a fabrication that exists only to give cross-version compare something
+        // to compare against. Listing it on the public About page would assert a release that
+        // never happened, so it must stay invisible there however this script is re-run.
+        `INSERT INTO model_versions (version, published_at, notes, public_notes)
          VALUES ('v2.0',
                  (SELECT published_at FROM model_versions WHERE version = 'v2.1') - interval '5 months',
-                 'Measure text revised after stakeholder review.')
-         ON CONFLICT (version) DO UPDATE SET notes = EXCLUDED.notes, published_at = EXCLUDED.published_at
+                 'DEMO SCAFFOLDING — not a real release. Created by seed-compare-demo.ts.',
+                 NULL)
+         ON CONFLICT (version) DO UPDATE SET notes = EXCLUDED.notes,
+                                             published_at = EXCLUDED.published_at,
+                                             public_notes = NULL
          RETURNING id`,
       )
     ).rows[0]!.id;

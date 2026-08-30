@@ -42,6 +42,15 @@ reproduced faithfully. Exact values are in *Design tokens* below.
 hardcoded constants** — the 48 capabilities and their wording will keep changing after stakeholder
 discussions, and each saved assessment must record which version it was taken against.
 
+**Revised.** A model version now carries two descriptions, because it has two audiences.
+`notes` is internal provenance ("Imported from dmm-model.js") and never leaves the server;
+`public_notes` is written for state officials and is what the About page's version history
+lists — a version with `public_notes` NULL is not listed at all. Publish a version only when it
+changed what a score *means* (a capability added, retired or renamed; a measure reworded so the
+same practice earns a different rating), and set `published_at` explicitly rather than letting
+it default to migration time. The full rule, the wording guidance and the cross-environment
+migration rules are in **`MODEL-VERSIONS.md`**.
+
 It exports:
 
 - `MODEL_VERSION` — e.g. `"v2.1"`
@@ -133,7 +142,7 @@ states
   id, name, is_ut (bool)
 
 model_versions
-  id, version ('v2.1'), published_at, notes
+  id, version ('v2.1'), published_at, notes, public_notes
 
 capabilities
   id, model_version_id, layer_index (0-7), layer_name, layer_covers,
