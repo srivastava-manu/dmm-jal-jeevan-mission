@@ -33,8 +33,8 @@ export function MaturityGrid({
           key={layerIndex}
           style={
             variant === "mini"
-              ? { gridTemplateColumns: `repeat(${cells.length}, 1fr)` }
-              : { gridTemplateColumns: `150px repeat(${cells.length}, 1fr)` }
+              ? { gridTemplateColumns: `repeat(${cells.length}, minmax(0, 1fr))` }
+              : { gridTemplateColumns: `150px repeat(${cells.length}, minmax(0, 1fr))` }
           }
         >
           {variant !== "mini" && (

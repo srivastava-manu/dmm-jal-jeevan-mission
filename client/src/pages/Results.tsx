@@ -35,6 +35,18 @@ export function Results() {
       <AssessorNav label="results" />
 
       <main className="results">
+        <aside className="results-dashboard no-print">
+          <div className="results-dashboard-actions">
+            <button className="ghost small" onClick={() => navigate(`/assessment/${id}/dashboard`)}>
+              Open full dashboard
+            </button>
+            <button className="primary-btn small" onClick={() => window.print()}>Export PDF</button>
+          </div>
+          <span className="section-label">All {s.total} capabilities</span>
+          <MaturityGrid capabilities={capabilities} variant="mini" />
+          <p className="muted small">Open the full dashboard or export this assessment as a PDF.</p>
+        </aside>
+
         <div className="results-main">
           <header className="results-head">
             <h1>{a.state_name}</h1>
@@ -123,15 +135,6 @@ export function Results() {
           </section>
         </div>
 
-        <aside className="results-sidebar no-print">
-          <span className="section-label">All {s.total} capabilities</span>
-          <MaturityGrid capabilities={capabilities} variant="mini" />
-          <button className="ghost small full" onClick={() => navigate(`/assessment/${id}/dashboard`)}>
-            Open full dashboard
-          </button>
-          <button className="primary-btn full" onClick={() => window.print()}>Export PDF</button>
-          <p className="muted small">Two A4 pages: executive summary, then the full labelled maturity grid.</p>
-        </aside>
       </main>
     </div>
   );

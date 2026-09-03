@@ -314,12 +314,6 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 /* ── Home / History ── */
 .home { max-width: 1180px; margin: 0 auto; padding: 24px; }
 .home-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
-.home-head-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-@media (max-width: 640px) {
-  .home-head { flex-direction: column; }
-  .home-head-actions { width: 100%; }
-  .home-head-actions button { flex: 1; }
-}
 .home-head h1 { font-size: 28px; margin: 0 0 4px; }
 .draft-card { max-width: none; border-color: var(--border-accent, #bfe0cf); border-left: 3px solid var(--accent); margin-bottom: 24px; padding: 20px 24px; }
 .draft-card h2 { font-size: 17px; margin: 6px 0 12px; }
@@ -449,10 +443,10 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 /* ── Maturity grid (shared) ── */
 .mgrid { display: flex; flex-direction: column; gap: 6px; }
 .mgrid-labelled, .mgrid-interactive { min-width: 760px; }
-.mgrid-row { display: grid; gap: 6px; }
+.mgrid-row { display: grid; width: 100%; gap: 6px; }
 .mgrid-rowlabel { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-2); padding-right: 8px; }
 .mgrid-rowlabel .mono { color: var(--text-3); }
-.mgrid-cell { min-height: 56px; border-radius: 6px; padding: 7px 9px; display: flex; flex-direction: column; justify-content: space-between; }
+.mgrid-cell { min-width: 0; min-height: 56px; box-sizing: border-box; border-radius: 6px; padding: 7px 9px; display: flex; flex-direction: column; justify-content: space-between; }
 .mgrid-cell.clickable { cursor: pointer; transition: opacity 150ms, transform 120ms; }
 .mgrid-cell.clickable:hover { opacity: 0.85; transform: translateY(-1px); }
 .mgrid-cell.selected { outline: 2px solid var(--slate-900, #1a2329); outline-offset: -2px; box-shadow: 0 0 0 3px rgba(31,138,91,0.28); }
@@ -462,7 +456,7 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 .mgrid-mini .mgrid-cell { min-height: 16px; border-radius: 3px; padding: 0; }
 
 /* ── Results (screen 7) ── */
-.results { max-width: 1240px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 1fr 300px; gap: 28px; align-items: start; }
+.results { max-width: 1240px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 28px; align-items: start; }
 @media (max-width: 1000px) { .results { grid-template-columns: 1fr; } }
 .results-head h1 { font-size: 27px; margin: 0 0 4px; }
 .section-h { font-size: 18px; font-weight: 600; margin: 24px 0 12px; }
@@ -483,7 +477,9 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 .strengths-card { border-color: var(--border-accent, #bfe0cf); }
 .sf-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
 .sf-row .muted.small { margin-left: auto; }
-.results-sidebar { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 10px; }
+.results-dashboard { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 10px; }
+.results-dashboard-actions { display: flex; gap: 8px; }
+.results-dashboard-actions button { flex: 1; min-width: 0; }
 .print-grid { margin-top: 24px; }
 
 /* ── Assessor dashboard (screen 8) ── */
@@ -638,6 +634,7 @@ code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-
 .print-only { display: none; }
 @media print {
   @page { size: A4 portrait; margin: 12mm; }
+  @page dashboard-grid { size: A4 landscape; margin: 10mm; }
   body {
     background: #fff;
     -webkit-print-color-adjust: exact;
@@ -652,11 +649,13 @@ code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-
   /* Results: one column, sidebar dropped, grid forced to page 2. */
   .results { display: block; max-width: none; padding: 0; }
   .results-main { max-width: none; }
-  .print-grid { break-before: page; }
-  .mgrid-labelled { min-width: 0; }
+  .print-grid { break-before: page; page: dashboard-grid; }
+  .mgrid-labelled, .mgrid-interactive { width: 100%; min-width: 0; }
+  .mgrid-row { width: 100%; gap: 4px; }
+  .mgrid-cell { overflow-wrap: anywhere; }
   .mgrid-cell.clickable { cursor: default; }
   /* Dashboard: only the grid, legend and meta line print. */
-  .dash-screen { display: block; padding: 0; }
+  .dash-screen { display: block; padding: 0; page: dashboard-grid; }
   .grid-scroll { overflow: visible; }
   .mgrid-interactive { min-width: 0; }
 }
