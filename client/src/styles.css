@@ -489,8 +489,9 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 /* ── Assessor dashboard (screen 8) ── */
 .dash-screen { max-width: 1400px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
 @media (max-width: 1100px) { .dash-screen { grid-template-columns: 1fr; } }
+.dash-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
 .dash-meta h1 { font-size: 22px; margin: 0 0 4px; }
-.dash-actions { margin: 12px 0 16px; }
+.dash-actions { flex-shrink: 0; }
 .dash-actions .primary-btn { width: auto; }
 .dash-legend { margin-bottom: 16px; }
 .dash-rail { position: sticky; top: 84px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
@@ -637,7 +638,15 @@ code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-
 .print-only { display: none; }
 @media print {
   @page { size: A4 portrait; margin: 12mm; }
-  body { background: #fff; }
+  body {
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .mgrid-cell, .swatch, .bar-fill {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
   .no-print { display: none !important; }
   .print-only { display: block; }
   /* Results: one column, sidebar dropped, grid forced to page 2. */

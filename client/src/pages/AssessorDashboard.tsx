@@ -44,14 +44,16 @@ export function AssessorDashboard() {
 
       <main className="dash-screen">
         <div className="dash-main">
-          <div className="dash-meta no-print">
-            <h1>{total} capabilities across {layerCount} layers</h1>
-            <p className="muted">{data.assessment.state_name} · {fmtDate(data.assessment.submitted_at ?? data.assessment.created_at)}</p>
-          </div>
-          <div className="dash-actions no-print">
-            <button className="primary-btn" onClick={() => window.print()}>Export PDF</button>
-          </div>
-          {/* meta line printed on the dashboard */}
+            <div className="dash-head">
+              <div className="dash-meta no-print">
+                <h1>{total} capabilities across {layerCount} layers</h1>
+                <p className="muted">{data.assessment.state_name} · {fmtDate(data.assessment.submitted_at ?? data.assessment.created_at)}</p>
+              </div>
+              <div className="dash-actions no-print">
+                <button className="primary-btn" onClick={() => window.print()}>Export PDF</button>
+              </div>
+            </div>
+            {/* meta line printed on the dashboard */}
           <p className="print-only dash-print-meta">
             {data.assessment.state_name} · {fmtDate(data.assessment.submitted_at ?? data.assessment.created_at)} · {total} capabilities
           </p>
