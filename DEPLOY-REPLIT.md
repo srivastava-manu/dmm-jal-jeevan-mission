@@ -69,8 +69,21 @@ the app still boots but RLS is silently bypassed.
   scores is refused by RLS (see `server/src/test/centre-access.test.ts`).
 
 ## Re-deploying
-Push to `master` and hit Redeploy. Migrations are **not** run automatically — re-run
-`npm run db:migrate` in the Shell (with `DATABASE_URL` = owner) when you add a migration.
+Push to `master` and hit Redeploy. **The deployment build now runs `db:migrate`**, so schema
+and code ship together — a release can never serve code that reads columns the production
+database does not have. Both build steps are safe to repeat: `db:setup` creates the role if
+absent and otherwise only re-syncs its password and replays the least-privilege grants, and it
+wipes nothing (that is the opt-in `--reset` flag, which the deployment never passes).
+
+The **development** database is separate and is not touched by a deployment. After pulling a
+migration into the workspace, run it there yourself:
+
+```sh
+npm install --include=dev && npm run db:migrate
+```
+
+`tsx` is a devDependency and `NODE_ENV=production` is set in `.replit`, so `--include=dev` is
+what keeps `db:migrate` from failing with `tsx: not found`.
 
 ## Notes / limits
 - Autoscale is fine because sessions live in Postgres, not memory.
