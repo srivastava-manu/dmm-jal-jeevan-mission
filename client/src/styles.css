@@ -314,6 +314,12 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 /* ── Home / History ── */
 .home { max-width: 1180px; margin: 0 auto; padding: 24px; }
 .home-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+.home-head-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+@media (max-width: 640px) {
+  .home-head { flex-direction: column; }
+  .home-head-actions { width: 100%; }
+  .home-head-actions button { flex: 1; }
+}
 .home-head h1 { font-size: 28px; margin: 0 0 4px; }
 .draft-card { max-width: none; border-color: var(--border-accent, #bfe0cf); border-left: 3px solid var(--accent); margin-bottom: 24px; padding: 20px 24px; }
 .draft-card h2 { font-size: 17px; margin: 6px 0 12px; }
@@ -484,6 +490,8 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 .dash-screen { max-width: 1400px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
 @media (max-width: 1100px) { .dash-screen { grid-template-columns: 1fr; } }
 .dash-meta h1 { font-size: 22px; margin: 0 0 4px; }
+.dash-actions { margin: 12px 0 16px; }
+.dash-actions .primary-btn { width: auto; }
 .dash-legend { margin-bottom: 16px; }
 .dash-rail { position: sticky; top: 84px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
 .rail-title { font-size: 17px; margin: 6px 0 10px; }

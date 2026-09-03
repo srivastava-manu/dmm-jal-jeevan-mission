@@ -49,6 +49,7 @@ export function Home() {
     () => assessments?.filter((a) => a.status === "submitted") ?? [],
     [assessments],
   );
+  const latestSubmitted = submitted[0] ?? null;
 
   async function discardDraft(id: string) {
     if (armedDelete !== id) {
@@ -75,9 +76,19 @@ export function Home() {
               {user?.designation ? `, ${user.designation}` : ""}
             </p>
           </div>
-          <button onClick={() => navigate("/home/start")} className="primary-btn">
-            {submitted.length > 0 || draft ? "Start another" : "Start assessment"}
-          </button>
+          <div className="home-head-actions">
+            {latestSubmitted && (
+              <button
+                className="ghost small"
+                onClick={() => navigate(`/assessment/${latestSubmitted.id}/results?print=1`)}
+              >
+                Export PDF
+              </button>
+            )}
+            <button onClick={() => navigate("/home/start")} className="primary-btn">
+              {submitted.length > 0 || draft ? "Start another" : "Start assessment"}
+            </button>
+          </div>
         </div>
 
         {draft && (

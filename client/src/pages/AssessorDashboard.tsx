@@ -48,6 +48,9 @@ export function AssessorDashboard() {
             <h1>{total} capabilities across {layerCount} layers</h1>
             <p className="muted">{data.assessment.state_name} · {fmtDate(data.assessment.submitted_at ?? data.assessment.created_at)}</p>
           </div>
+          <div className="dash-actions no-print">
+            <button className="primary-btn" onClick={() => window.print()}>Export PDF</button>
+          </div>
           {/* meta line printed on the dashboard */}
           <p className="print-only dash-print-meta">
             {data.assessment.state_name} · {fmtDate(data.assessment.submitted_at ?? data.assessment.created_at)} · {total} capabilities
@@ -116,9 +119,6 @@ export function AssessorDashboard() {
                   </div>
                 ))}
               </div>
-
-              <div className="rail-divider" />
-              <button className="primary-btn full" onClick={() => window.print()}>Export PDF</button>
             </>
           )}
         </aside>

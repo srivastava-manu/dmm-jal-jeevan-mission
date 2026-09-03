@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { fmtDate, colorForMean, type ResultsResponse } from "../model";
 import { MaturityGrid } from "../components/MaturityGrid";
@@ -10,12 +10,19 @@ import { AssessorNav } from "../components/AssessorNav";
 export function Results() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [data, setData] = useState<ResultsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     api.assessments.results(id).then(setData).catch((e) => setError(String(e.message ?? e)));
   }, [id]);
+
+  useEffect(() => {
+    if (!data || searchParams.get("print") !== "1") return;
+    const timer = window.setTimeout(() => window.print(), 150);
+    return () => window.clearTimeout(timer);
+  }, [data, searchParams]);
 
   if (error) return <div className="centered"><p className="error">{error}</p></div>;
   if (!data) return <div className="centered"><p className="muted">Loading results…</p></div>;
