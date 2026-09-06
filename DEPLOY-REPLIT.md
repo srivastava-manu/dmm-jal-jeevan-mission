@@ -85,6 +85,11 @@ npm install --include=dev && npm run db:migrate
 `tsx` is a devDependency and `NODE_ENV=production` is set in `.replit`, so `--include=dev` is
 what keeps `db:migrate` from failing with `tsx: not found`.
 
+## Before real users: `PRELAUNCH.md`
+This runbook gets the app deployed. **`PRELAUNCH.md` is the checklist to work through before
+real state officials sign in** — clean provisioning with no fabricated demo data, the first
+Centre account, proving RLS is actually enforced, and a backup with a restore you have tested.
+
 ## Notes / limits
 - Autoscale is fine because sessions live in Postgres, not memory.
 - Login is rate-limited and `trust proxy` is on (correct client IPs behind Replit's proxy).
