@@ -34,7 +34,7 @@ export function SignIn() {
     <div className="centered">
       <div className="card signin">
         <div className="mark" aria-hidden />
-        <h1>Digital maturity <span className="muted">/ self-assessment</span></h1>
+        <h1>Digital Maturity <span className="muted">/ self-assessment</span></h1>
         <p className="intro">
           Sign in to assess your state's digital maturity, or — for the National Jal Jeevan
           Mission — to see the consolidated national picture.
