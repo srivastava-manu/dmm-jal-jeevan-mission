@@ -123,20 +123,26 @@ export function SystemsDialog({
             <div className="system-row" key={s.id}>
               <div className="system-info">
                 <span className="system-name">{s.name}</span>
-                <span className="muted small">
-                  {s.districts_live !== null ? `${s.districts_live} districts` : "—"}
-                  {s.go_live ? ` · live ${fmtDate(s.go_live)}` : ""}
-                  {s.in_use ? " · in use" : ""}
+                <span className="system-detail muted small">
+                  {s.districts_live !== null ? `${s.districts_live} districts` : "Districts not provided"}
                 </span>
+                {s.go_live && (
+                  <span className="system-detail muted small">Live {fmtDate(s.go_live)}</span>
+                )}
+                {s.in_use && <span className="system-detail muted small">In use</span>}
               </div>
               <div className="system-actions">
                 {mode === "attach" && onAttach && (
                   <button className="ghost small" onClick={() => { onAttach(s.id); onClose(); }}>Attach</button>
                 )}
                 <button className="ghost small" onClick={() => startEdit(s)}>Edit</button>
-                {!s.in_use && (
-                  <button className="ghost small danger" onClick={() => remove(s)}>Delete</button>
-                )}
+                <button
+                  className="ghost small danger"
+                  onClick={() => remove(s)}
+                  title={s.in_use ? "This system is cited as evidence and must be unlinked before deletion." : "Delete system"}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
