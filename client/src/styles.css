@@ -586,6 +586,10 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 .evidence-head h1 { margin: 0 0 6px; font-size: 28px; }
 .evidence-head p { margin: 0; }
 .evidence-summary { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); white-space: nowrap; color: var(--text-2); }
+.evidence-filters { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 14px; }
+.evidence-filters label { display: grid; gap: 5px; min-width: 220px; color: var(--text-2); font-size: 12px; font-weight: 600; }
+.evidence-filters select { height: 36px; padding: 0 34px 0 10px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); color: var(--text); font: inherit; }
+.evidence-match-count { margin-left: auto; padding-bottom: 9px; }
 .evidence-table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
 .evidence-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .evidence-table th { padding: 11px 14px; background: var(--surface-2); color: var(--text-2); text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
@@ -600,6 +604,9 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 @media (max-width: 700px) {
   .centre-evidence { padding: 20px 16px 40px; }
   .evidence-head { flex-direction: column; }
+  .evidence-filters { align-items: stretch; flex-direction: column; }
+  .evidence-filters label { min-width: 0; }
+  .evidence-match-count { margin-left: 0; padding-bottom: 0; }
 }
 .at-row { display: grid; grid-template-columns: 1.1fr 1.5fr 120px 104px 116px; gap: 12px; align-items: center; padding: 12px 16px; border-top: 1px solid var(--border); font-size: 13px; }
 .assessors-actions { display: flex; align-items: center; gap: 10px; }

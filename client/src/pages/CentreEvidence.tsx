@@ -6,6 +6,8 @@ import { fmtDate, type CentreEvidenceRow } from "../model";
 export function CentreEvidence() {
   const [evidence, setEvidence] = useState<CentreEvidenceRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [stateFilter, setStateFilter] = useState("");
+  const [layerFilter, setLayerFilter] = useState("");
 
   useEffect(() => {
     api.centre.evidence()
@@ -20,6 +22,24 @@ export function CentreEvidence() {
   const stateCount = useMemo(
     () => new Set(evidence?.map((row) => row.state_id) ?? []).size,
     [evidence],
+  );
+  const states = useMemo(
+    () => [...new Map(evidence?.map((row) => [row.state_id, row.state_name]) ?? [])]
+      .sort((a, b) => a[1].localeCompare(b[1])),
+    [evidence],
+  );
+  const layers = useMemo(
+    () => [...new Map(evidence?.map((row) => [row.layer_index, row.layer_name]) ?? [])]
+      .sort((a, b) => a[0] - b[0]),
+    [evidence],
+  );
+  const filteredEvidence = useMemo(
+    () => evidence?.filter(
+      (row) =>
+        (!stateFilter || row.state_id === stateFilter) &&
+        (!layerFilter || String(row.layer_index) === layerFilter),
+    ) ?? [],
+    [evidence, stateFilter, layerFilter],
   );
 
   return (
@@ -52,8 +72,48 @@ export function CentreEvidence() {
         )}
 
         {evidence && evidence.length > 0 && (
-          <div className="evidence-table-wrap">
-            <table className="evidence-table">
+          <>
+            <div className="evidence-filters">
+              <label>
+                State or UT
+                <select value={stateFilter} onChange={(event) => setStateFilter(event.target.value)}>
+                  <option value="">All states and UTs</option>
+                  {states.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+                </select>
+              </label>
+              <label>
+                Layer
+                <select value={layerFilter} onChange={(event) => setLayerFilter(event.target.value)}>
+                  <option value="">All layers</option>
+                  {layers.map(([index, name]) => (
+                    <option key={index} value={index}>{index + 1} · {name}</option>
+                  ))}
+                </select>
+              </label>
+              {(stateFilter || layerFilter) && (
+                <button
+                  className="ghost small"
+                  onClick={() => {
+                    setStateFilter("");
+                    setLayerFilter("");
+                  }}
+                >
+                  Clear filters
+                </button>
+              )}
+              <span className="muted small evidence-match-count">
+                {filteredEvidence.length} {filteredEvidence.length === 1 ? "record" : "records"}
+              </span>
+            </div>
+
+            {filteredEvidence.length === 0 ? (
+              <div className="panel evidence-empty">
+                <h2>No matching evidence</h2>
+                <p className="muted">Try another state, UT, or layer.</p>
+              </div>
+            ) : (
+              <div className="evidence-table-wrap">
+                <table className="evidence-table">
               <thead>
                 <tr>
                   <th>System</th>
@@ -66,7 +126,7 @@ export function CentreEvidence() {
                 </tr>
               </thead>
               <tbody>
-                {evidence.map((row) => (
+                {filteredEvidence.map((row) => (
                   <tr key={`${row.state_id}:${row.system_id}:${row.capability_id}`}>
                     <td><strong>{row.system_name}</strong></td>
                     <td>{row.state_name}</td>
@@ -78,8 +138,10 @@ export function CentreEvidence() {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+                </table>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
