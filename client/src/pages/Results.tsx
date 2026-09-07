@@ -130,6 +130,13 @@ export function Results() {
             Open full dashboard
           </button>
           <button className="primary-btn full" onClick={() => window.print()}>Export PDF</button>
+          <a
+            className="download-btn"
+            href="/DMM-survey-form.pdf"
+            download="DMM-survey-form.pdf"
+          >
+            Download survey form
+          </a>
           <p className="muted small">Two A4 pages: executive summary, then the full labelled maturity grid.</p>
         </aside>
       </main>

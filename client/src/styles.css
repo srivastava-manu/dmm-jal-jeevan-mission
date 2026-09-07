@@ -478,6 +478,13 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 .sf-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
 .sf-row .muted.small { margin-left: auto; }
 .results-sidebar { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 10px; }
+.download-btn {
+  width: 100%; height: 34px; padding: 0 14px; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); color: var(--accent); border: 1px solid var(--border-accent, #bfe0cf);
+  border-radius: 7px; font-size: 13px; font-weight: 600; text-decoration: none;
+}
+.download-btn:hover { background: var(--accent-soft); }
 .print-grid { margin-top: 24px; }
 
 /* ── Assessor dashboard (screen 8) ── */
