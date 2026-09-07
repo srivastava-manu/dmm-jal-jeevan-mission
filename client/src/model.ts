@@ -246,6 +246,12 @@ export function colorForMean(mean: number | null): { bg: string; fg: string } {
   return SCORE_COLORS[idx]!;
 }
 
+/** Match a 0–100 maturity percentage to the five named maturity bands. */
+export function colorForMaturityPct(pct: number): { bg: string; fg: string } {
+  const idx = pct <= 20 ? 0 : pct <= 40 ? 1 : pct <= 60 ? 2 : pct <= 80 ? 3 : 4;
+  return SCORE_COLORS[idx]!;
+}
+
 // ── Centre dashboard payload (mirror server/src/lib/national.ts) ──
 export interface CentreStateRef {
   state_id: string;

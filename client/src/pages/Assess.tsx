@@ -4,7 +4,7 @@ import { api } from "../api";
 import {
   SCALE,
   SCORE_COLORS,
-  colorForMean,
+  colorForMaturityPct,
   MAX_SCORE,
   bandFor,
   fmtDate,
@@ -433,7 +433,7 @@ function RailBox({
       <div className="bar">
         <div
           className="bar-fill"
-          style={{ width: `${pct}%`, background: colorForMean(pct / 25).bg }}
+          style={{ width: `${pct}%`, background: colorForMaturityPct(pct).bg }}
         />
       </div>
       <span className="muted small">{note}</span>

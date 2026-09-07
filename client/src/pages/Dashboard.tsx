@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import {
   colorForMean,
+  colorForMaturityPct,
   SCORE_COLORS,
   SCALE,
   type CentreDashboard,
@@ -149,7 +150,7 @@ export function Dashboard() {
                     <div className="bar">
                       <div
                         className="bar-fill"
-                        style={{ width: `${l.pct}%`, background: colorForMean(l.pct / 25).bg }}
+                        style={{ width: `${l.pct}%`, background: colorForMaturityPct(l.pct).bg }}
                       />
                     </div>
                     <div className="layer-score mono" title={`${l.score} of ${l.outOf}`}>{l.score.toFixed(1)}</div>

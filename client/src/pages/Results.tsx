@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api";
-import { fmtDate, colorForMean, type ResultsResponse } from "../model";
+import { fmtDate, colorForMean, colorForMaturityPct, type ResultsResponse } from "../model";
 import { MaturityGrid } from "../components/MaturityGrid";
 import { AssessorNav } from "../components/AssessorNav";
 
@@ -56,7 +56,7 @@ export function Results() {
                 <div className="bar">
                   <div
                     className="bar-fill"
-                    style={{ width: `${s.overallPct}%`, background: colorForMean(s.overallPct / 25).bg }}
+                    style={{ width: `${s.overallPct}%`, background: colorForMaturityPct(s.overallPct).bg }}
                   />
                 </div>
               </div>
@@ -94,7 +94,7 @@ export function Results() {
                 <div className="bar">
                   <div
                     className="bar-fill"
-                    style={{ width: `${l.pct}%`, background: colorForMean(l.pct / 25).bg }}
+                    style={{ width: `${l.pct}%`, background: colorForMaturityPct(l.pct).bg }}
                   />
                 </div>
                 <div className="li-score mono">{l.score}</div>
