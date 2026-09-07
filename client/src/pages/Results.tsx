@@ -38,7 +38,7 @@ export function Results() {
         <div className="results-main">
           <header className="results-head">
             <button className="link-back no-print" onClick={() => navigate("/home")}>
-              ← Back to history
+              ← Back to Assess
             </button>
             <h1>{a.state_name}</h1>
             <p className="muted">
@@ -133,13 +133,6 @@ export function Results() {
             Open full dashboard
           </button>
           <button className="primary-btn full" onClick={() => window.print()}>Export PDF</button>
-          <a
-            className="download-btn"
-            href="/DMM-survey-form.pdf"
-            download="DMM-survey-form.pdf"
-          >
-            Download survey form
-          </a>
           <p className="muted small">Two A4 pages: executive summary, then the full labelled maturity grid.</p>
         </aside>
       </main>

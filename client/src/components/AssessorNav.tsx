@@ -2,8 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
 
-// Shared top navigation for the state-assessor screens: Results, History, About (in that
-// order), then Sign out. "History" is the home/history screen; "Results" opens the latest
+// Shared top navigation for the state-assessor screens: Results, Assess, About (in that
+// order), then Sign out. "Assess" is the home/assessment screen; "Results" opens the latest
 // assessment's results (the same page a saved-assessment row opens).
 export function AssessorNav({ label = "self-assessment" }: { label?: string }) {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ export function AssessorNav({ label = "self-assessment" }: { label?: string }) {
       </div>
       <nav className="topbar-nav">
         <button className="navlink" onClick={openLatestResults}>Results</button>
-        <button className="navlink" onClick={() => navigate("/home")}>History</button>
+        <button className="navlink" onClick={() => navigate("/home")}>Assess</button>
         <button className="navlink" onClick={() => navigate("/about")}>About</button>
         <button className="ghost small" onClick={signOut}>Sign out</button>
       </nav>

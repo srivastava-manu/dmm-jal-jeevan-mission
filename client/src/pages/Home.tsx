@@ -75,9 +75,18 @@ export function Home() {
               {user?.designation ? `, ${user.designation}` : ""}
             </p>
           </div>
-          <button onClick={() => navigate("/home/start")} className="primary-btn">
-            {submitted.length > 0 || draft ? "Start another" : "Start assessment"}
-          </button>
+          <div className="home-head-actions">
+            <a
+              className="download-btn home-download-btn"
+              href="/DMM-survey-form.pdf"
+              download="DMM-survey-form.pdf"
+            >
+              Download survey form
+            </a>
+            <button onClick={() => navigate("/home/start")} className="primary-btn">
+              {submitted.length > 0 || draft ? "Start another" : "Start assessment"}
+            </button>
+          </div>
         </div>
 
         {draft && (

@@ -315,6 +315,7 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
 .home { max-width: 1180px; margin: 0 auto; padding: 24px; }
 .home-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
 .home-head h1 { font-size: 28px; margin: 0 0 4px; }
+.home-head-actions { display: flex; align-items: center; gap: 10px; }
 .draft-card { max-width: none; border-color: var(--border-accent, #bfe0cf); border-left: 3px solid var(--accent); margin-bottom: 24px; padding: 20px 24px; }
 .draft-card h2 { font-size: 17px; margin: 6px 0 12px; }
 .progress-line { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -485,6 +486,7 @@ button.ghost.small { margin-top: 0; height: 34px; padding: 0 14px; font-size: 13
   border-radius: 7px; font-size: 13px; font-weight: 600; text-decoration: none;
 }
 .download-btn:hover { background: var(--accent-soft); }
+.home-download-btn { width: auto; white-space: nowrap; }
 .print-grid { margin-top: 24px; }
 
 /* ── Assessor dashboard (screen 8) ── */
