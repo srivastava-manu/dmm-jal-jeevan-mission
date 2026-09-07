@@ -8,7 +8,11 @@ run = "npm install --include=dev && npm run build && npm run db:seed && npm run 
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["sh", "-c", "npm install --include=dev && npm run db:setup && npm run build"]
+# db:setup before db:migrate: migrations contain GRANT ... TO dmm_app, so the role must
+# exist first. db:migrate before build so schema and code always ship together — without
+# it a release can serve code that reads columns the production database does not have.
+# Both are idempotent and non-destructive here (db:setup only wipes under --reset).
+build = ["sh", "-c", "npm install --include=dev && npm run db:setup && npm run db:migrate && npm run build"]
 run = ["sh", "-c", "PORT=5000 npm run start"]
 
 [[ports]]

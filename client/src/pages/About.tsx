@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { useAuth } from "../auth";
 import { AssessorNav } from "../components/AssessorNav";
+import { CentreNav } from "../components/CentreNav";
 import { SCALE, SCORE_COLORS, BANDS, MAX_SCORE, fmtDate, type PublicModel } from "../model";
 
 // Screen 10 — "About the model". Public (no sign-in required). All model content is loaded
@@ -26,7 +27,12 @@ export function About() {
 
   return (
     <div className="page">
-      {user ? (
+      {/* The page is public, but a signed-in visitor keeps their own navigation — a Centre
+          user must not be handed the assessor's Results/History tabs, which their role cannot
+          open. Signed out, neither bar applies. */}
+      {user?.role === "centre" ? (
+        <CentreNav active="about" />
+      ) : user ? (
         <AssessorNav label="about" />
       ) : (
         <header className="topbar no-print">
@@ -125,7 +131,12 @@ export function About() {
                   <div className="version-row" key={v.version}>
                     <span className="version-tag mono">{v.version}</span>
                     <span className="muted">{fmtDate(v.published_at)}</span>
-                    <span>{v.notes}</span>
+                    {/* The current version is listed even when no public note has been
+                        written for it yet (see db getPublicModel), so it needs a fallback
+                        that claims nothing about what changed. */}
+                    <span className={v.notes ? undefined : "muted"}>
+                      {v.notes ?? "The model currently in use."}
+                    </span>
                   </div>
                 ))}
               </div>
