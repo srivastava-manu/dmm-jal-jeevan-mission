@@ -146,7 +146,12 @@ export function Dashboard() {
                 {data.layers.map((l) => (
                   <div className="layer-row" key={l.layer_index}>
                     <div className="layer-name"><span className="mono">{l.layer_index + 1}</span> {l.layer_name}</div>
-                    <div className="bar"><div className="bar-fill" style={{ width: `${l.pct}%` }} /></div>
+                    <div className="bar">
+                      <div
+                        className="bar-fill"
+                        style={{ width: `${l.pct}%`, background: colorForMean(l.pct / 25).bg }}
+                      />
+                    </div>
                     <div className="layer-score mono" title={`${l.score} of ${l.outOf}`}>{l.score.toFixed(1)}</div>
                     <div className="layer-band">{l.band}</div>
                   </div>

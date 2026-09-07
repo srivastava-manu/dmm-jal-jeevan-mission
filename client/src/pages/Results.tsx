@@ -53,7 +53,12 @@ export function Results() {
               <div className="rc-body">
                 <span className="band-big accent">{s.overallBand}</span>
                 <span className="muted">{s.overallScore} of {s.overallMax} · {s.overallPct}%</span>
-                <div className="bar"><div className="bar-fill" style={{ width: `${s.overallPct}%` }} /></div>
+                <div className="bar">
+                  <div
+                    className="bar-fill"
+                    style={{ width: `${s.overallPct}%`, background: colorForMean(s.overallPct / 25).bg }}
+                  />
+                </div>
               </div>
             </div>
 
@@ -86,7 +91,12 @@ export function Results() {
             {s.layers.map((l) => (
               <div className="li-row" key={l.layer_index}>
                 <div className="li-name">{l.layer_name}</div>
-                <div className="bar"><div className="bar-fill" style={{ width: `${l.pct}%` }} /></div>
+                <div className="bar">
+                  <div
+                    className="bar-fill"
+                    style={{ width: `${l.pct}%`, background: colorForMean(l.pct / 25).bg }}
+                  />
+                </div>
                 <div className="li-score mono">{l.score}</div>
                 <div className="li-band accent">{l.band}</div>
               </div>
