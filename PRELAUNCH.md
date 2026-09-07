@@ -75,8 +75,11 @@ appear on the national dashboard as real maturity scores for real states.
 There is no self-signup and no script for creating a Centre user other than `db:seed`, which
 also creates two demo assessors. So: seed once, then remove what you don't want.
 
-- [ ] Set `SEED_CENTRE_PASSWORD` and `SEED_ASSESSOR_PASSWORD` temporarily, to strong unique
-      values.
+- [ ] Set `SEED_CENTRE_PASSWORD` to a strong, unique value — **this is the one real credential
+      you create by hand**, and the only way anyone gets into the system.
+- [ ] Set `SEED_ASSESSOR_PASSWORD` to a throwaway. It exists only because `seed.ts` refuses to
+      run without it; it authenticates the two demo assessors you delete two steps below, and
+      no real user ever.
 - [ ] Run **once**: `npm run db:seed`
 - [ ] **Delete the two demo assessors** (`assessor.demo1@example.gov.in`,
       `assessor.demo2@example.gov.in`, in Sikkim and Tripura) through the Centre's *State
@@ -84,6 +87,11 @@ also creates two demo assessors. So: seed once, then remove what you don't want.
       deletion is permitted.
 - [ ] **Remove both `SEED_*` secrets** from the deployment.
 - [ ] Confirm one user remains: `SELECT email, role FROM users;` → `centre@njjm.gov.in | centre`
+
+> **How real assessors get in:** the Centre adds them on the *State assessors* screen, which
+> creates the account with **no password** — they cannot sign in yet. The Centre then uses
+> *Reset password* on that assessor, which generates a temporary password to hand over out of
+> band. Nothing is seeded, and nothing is emailed.
 
 > **Know this limit:** nobody can change their own password. The Centre resets *assessors'*
 > passwords (`POST /api/centre/assessors/:id/reset-password`, audited, returns a temporary one
