@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../api";
 import {
   SCALE,
@@ -16,6 +16,7 @@ import { AssessorNav } from "../components/AssessorNav";
 // selected capability (measure, evidence, and how it has moved across submitted rounds).
 export function AssessorDashboard() {
   const { id = "" } = useParams();
+  const navigate = useNavigate();
   const [data, setData] = useState<ResultsResponse | null>(null);
   const [history, setHistory] = useState<HistoryResponse | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -46,6 +47,9 @@ export function AssessorDashboard() {
         <div className="dash-main">
             <div className="dash-head">
               <div className="dash-meta no-print">
+                <button className="link-back" onClick={() => navigate(`/assessment/${id}/results`)}>
+                  ← Back to results
+                </button>
                 <h1>{total} capabilities across {layerCount} layers</h1>
                 <p className="muted">{data.assessment.state_name} · {fmtDate(data.assessment.submitted_at ?? data.assessment.created_at)}</p>
               </div>

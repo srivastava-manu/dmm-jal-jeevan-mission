@@ -37,6 +37,9 @@ export function Results() {
       <main className="results">
         <div className="results-main">
           <header className="results-head">
+            <button className="link-back no-print" onClick={() => navigate("/home")}>
+              ← Back to history
+            </button>
             <h1>{a.state_name}</h1>
             <p className="muted">
               {dateStr} · assessed by {a.assessor_name ?? "—"}

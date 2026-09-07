@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { fmtDate, type CompareResponse } from "../model";
 import { AssessorNav } from "../components/AssessorNav";
@@ -8,6 +8,7 @@ import { AssessorNav } from "../components/AssessorNav";
 // capabilities by name across model versions and excludes added/retired ones from the counts.
 export function Compare() {
   const { id = "" } = useParams();
+  const navigate = useNavigate();
   const [params] = useSearchParams();
   const [data, setData] = useState<CompareResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +28,9 @@ export function Compare() {
       <AssessorNav label="compare" />
 
       <main className="compare">
+        <button className="link-back" onClick={() => navigate(`/assessment/${id}/results`)}>
+          ← Back to results
+        </button>
         <p className="muted">
           {fmtDate(earlier.submitted_at)} ({earlier.model_version}) → {fmtDate(current.submitted_at ?? current.created_at)} ({current.model_version})
         </p>
