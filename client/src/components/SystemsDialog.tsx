@@ -134,7 +134,7 @@ export function SystemsDialog({
                   <span className="system-detail muted small">Live {fmtDate(s.go_live)}</span>
                 )}
                 <span className="system-detail muted small">
-                  {s.in_use ? "Currently in use" : "Not currently in use"}
+                  {s.in_use ? "In Use" : "Not In Use"}
                 </span>
                 {s.is_cited && <span className="system-detail muted small">Cited as evidence</span>}
               </div>
@@ -171,8 +171,8 @@ export function SystemsDialog({
           <label>
             Current status
             <select value={inUse ? "yes" : "no"} onChange={(e) => setInUse(e.target.value === "yes")}>
-              <option value="yes">Currently in use</option>
-              <option value="no">Not currently in use</option>
+              <option value="yes">In Use</option>
+              <option value="no">Not In Use</option>
             </select>
           </label>
           <button type="submit" disabled={busy}>{editingId ? "Save" : "Add"}</button>
