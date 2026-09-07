@@ -5,6 +5,7 @@ import { requireFeature } from "../http/feature-gate.js";
 import { features } from "../config.js";
 import {
   getCentreDashboardData,
+  listCentreEvidence,
   listAssessors,
   centreAddAssessor,
   centreSetAccess,
@@ -48,6 +49,10 @@ centreRouter.get("/dashboard", async (req, res) => {
     newRequests: data.newRequests,
   });
   res.json({ modelVersion: data.modelVersion, ...dashboard });
+});
+
+centreRouter.get("/evidence", async (req, res) => {
+  res.json({ evidence: await listCentreEvidence(req.auth!.ctx) });
 });
 
 // ── State assessors ─────────────────────────────────────────────────────────

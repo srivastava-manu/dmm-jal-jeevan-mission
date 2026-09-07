@@ -292,6 +292,20 @@ export interface CentreDashboard {
   newRequests: number;
 }
 
+export interface CentreEvidenceRow {
+  system_id: string;
+  system_name: string;
+  state_id: string;
+  state_name: string;
+  capability_id: string;
+  capability_name: string;
+  layer_index: number;
+  layer_name: string;
+  score_value: 3 | 4;
+  districts_live: number | null;
+  go_live: string | null;
+}
+
 export interface AssessorRow {
   id: string;
   name: string;

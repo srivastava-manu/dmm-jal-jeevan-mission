@@ -57,6 +57,9 @@ export const api = {
     dashboard(): Promise<import("./model").CentreDashboard> {
       return request("/api/centre/dashboard");
     },
+    evidence(): Promise<{ evidence: import("./model").CentreEvidenceRow[] }> {
+      return request("/api/centre/evidence");
+    },
     assessors(): Promise<{ assessors: import("./model").AssessorRow[] }> {
       return request("/api/centre/assessors");
     },

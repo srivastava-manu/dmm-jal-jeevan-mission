@@ -8,7 +8,7 @@ import { useAuth } from "../auth";
 // KPI cards, where each denominator is labelled — the bar deliberately carries no figure, so
 // there is no unexplained "N of M" to contradict them. (This also means the bar no longer
 // runs the full national aggregation on every Centre page just to render two numbers.)
-export function CentreNav({ active }: { active: "dashboard" | "assessors" | "requests" | "about" }) {
+export function CentreNav({ active }: { active: "dashboard" | "evidence" | "assessors" | "requests" | "about" }) {
   const navigate = useNavigate();
   const { setUser, features } = useAuth();
 
@@ -32,6 +32,7 @@ export function CentreNav({ active }: { active: "dashboard" | "assessors" | "req
       </div>
       <nav className="topbar-nav">
         {tab("dashboard", "Dashboard", "/dashboard")}
+        {tab("evidence", "Evidence", "/centre/evidence")}
         {tab("assessors", "State assessors", "/centre/assessors")}
         {features.supportRequests && tab("requests", "Requests", "/centre/requests")}
         {tab("about", "About", "/about")}

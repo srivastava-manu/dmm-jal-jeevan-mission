@@ -10,6 +10,7 @@ import { AssessorDashboard } from "./pages/AssessorDashboard";
 import { Compare } from "./pages/Compare";
 import { About } from "./pages/About";
 import { Dashboard } from "./pages/Dashboard";
+import { CentreEvidence } from "./pages/CentreEvidence";
 import { CentreAssessors } from "./pages/CentreAssessors";
 import { CentreRequests } from "./pages/CentreRequests";
 import { StateDetail } from "./pages/StateDetail";
@@ -126,6 +127,14 @@ export function App() {
         element={
           <RequireRole role="centre">
             <Dashboard />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="/centre/evidence"
+        element={
+          <RequireRole role="centre">
+            <CentreEvidence />
           </RequireRole>
         }
       />

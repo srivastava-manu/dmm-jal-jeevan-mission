@@ -591,7 +591,7 @@ export async function upsertScore(
   });
 }
 
-/** Attach (or clear, with null) the evidence system on a capability's score. */
+/** Attach a same-state system to a score of 3 or 4, or clear the existing link. */
 export async function setScoreSystem(
   ctx: RlsContext,
   assessmentId: string,
@@ -601,7 +601,22 @@ export async function setScoreSystem(
   return withRlsTx(ctx, async (c) => {
     await assertEditable(c, assessmentId);
     const res = await c.query(
-      "UPDATE scores SET system_id = $3 WHERE assessment_id = $1 AND capability_id = $2",
+      `UPDATE scores sc
+       SET system_id = $3
+       FROM assessments a
+       WHERE sc.assessment_id = a.id
+         AND sc.assessment_id = $1
+         AND sc.capability_id = $2
+         AND (
+           $3::uuid IS NULL
+           OR (
+             sc.value IN (3, 4)
+             AND EXISTS (
+               SELECT 1 FROM systems sys
+               WHERE sys.id = $3 AND sys.state_id = a.state_id
+             )
+           )
+         )`,
       [assessmentId, capabilityId, systemId],
     );
     return (res.rowCount ?? 0) > 0;
@@ -1103,6 +1118,50 @@ export async function getCentreDashboardData(ctx: RlsContext): Promise<CentreDas
       openRequests,
       newRequests,
     };
+  });
+}
+
+export interface CentreEvidenceRow {
+  system_id: string;
+  system_name: string;
+  state_id: string;
+  state_name: string;
+  capability_id: string;
+  capability_name: string;
+  layer_index: number;
+  layer_name: string;
+  score_value: 3 | 4;
+  districts_live: number | null;
+  go_live: string | null;
+}
+
+/**
+ * Evidence attached to scores of 3 or 4 in each state's latest submitted assessment.
+ * One row represents one capability/system mention; the same system may legitimately
+ * appear under multiple capabilities or layers.
+ */
+export async function listCentreEvidence(ctx: RlsContext): Promise<CentreEvidenceRow[]> {
+  return withRlsTx(ctx, async (c) => {
+    const { rows } = await c.query<CentreEvidenceRow>(
+      `WITH latest AS (
+         SELECT DISTINCT ON (a.state_id) a.id, a.state_id
+         FROM assessments a
+         WHERE a.status = 'submitted'
+         ORDER BY a.state_id, a.submitted_at DESC, a.id DESC
+       )
+       SELECT sys.id AS system_id, sys.name AS system_name,
+              st.id AS state_id, st.name AS state_name,
+              cap.id AS capability_id, cap.name AS capability_name,
+              cap.layer_index, cap.layer_name, s.value AS score_value,
+              sys.districts_live, sys.go_live::text
+       FROM latest l
+       JOIN states st ON st.id = l.state_id
+       JOIN scores s ON s.assessment_id = l.id AND s.value IN (3, 4)
+       JOIN systems sys ON sys.id = s.system_id
+       JOIN capabilities cap ON cap.id = s.capability_id
+       ORDER BY sys.name, st.name, cap.layer_index, cap.order_in_layer`,
+    );
+    return rows;
   });
 }
 

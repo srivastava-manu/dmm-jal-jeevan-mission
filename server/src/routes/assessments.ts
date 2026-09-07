@@ -143,7 +143,7 @@ assessmentsRouter.put("/:id/scores/:capabilityId/evidence", async (req, res) => 
       parsed.data.system_id,
     );
     if (!ok) {
-      res.status(404).json({ error: "Score the capability before adding evidence." });
+      res.status(404).json({ error: "Score the capability 3 or 4 before adding evidence." });
       return;
     }
     res.json({ ok: true });
