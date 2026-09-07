@@ -24,7 +24,8 @@ export function SystemsDialog({
   const [systems, setSystems] = useState<SystemRow[]>([]);
   const [name, setName] = useState("");
   const [districts, setDistricts] = useState("");
-  const [goLive, setGoLive] = useState(""); // YYYY-MM
+  const [goLive, setGoLive] = useState(""); // YYYY-MM-DD
+  const [inUse, setInUse] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -47,6 +48,7 @@ export function SystemsDialog({
     setName("");
     setDistricts("");
     setGoLive("");
+    setInUse(true);
     setEditingId(null);
     setError(null);
   }
@@ -55,7 +57,8 @@ export function SystemsDialog({
     setEditingId(s.id);
     setName(s.name);
     setDistricts(s.districts_live === null ? "" : String(s.districts_live));
-    setGoLive(s.go_live ? s.go_live.slice(0, 7) : "");
+    setGoLive(s.go_live ? s.go_live.slice(0, 10) : "");
+    setInUse(s.in_use);
     setError(null);
   }
 
@@ -70,7 +73,8 @@ export function SystemsDialog({
     const body = {
       name: name.trim(),
       districts_live: districts === "" ? null : Number(districts),
-      go_live: goLive === "" ? null : `${goLive}-01`,
+      go_live: goLive === "" ? null : goLive,
+      in_use: inUse,
     };
     try {
       if (editingId) {
@@ -129,7 +133,10 @@ export function SystemsDialog({
                 {s.go_live && (
                   <span className="system-detail muted small">Live {fmtDate(s.go_live)}</span>
                 )}
-                {s.in_use && <span className="system-detail muted small">In use</span>}
+                <span className="system-detail muted small">
+                  {s.in_use ? "Currently in use" : "Not currently in use"}
+                </span>
+                {s.is_cited && <span className="system-detail muted small">Cited as evidence</span>}
               </div>
               <div className="system-actions">
                 {mode === "attach" && onAttach && (
@@ -139,7 +146,7 @@ export function SystemsDialog({
                 <button
                   className="ghost small danger"
                   onClick={() => remove(s)}
-                  title={s.in_use ? "This system is cited as evidence and must be unlinked before deletion." : "Delete system"}
+                  title={s.is_cited ? "This system is cited as evidence and must be unlinked before deletion." : "Delete system"}
                 >
                   Delete
                 </button>
@@ -149,9 +156,25 @@ export function SystemsDialog({
         </div>
 
         <form className="system-add" onSubmit={submit}>
-          <input placeholder="System name" value={name} onChange={(e) => setName(e.target.value)} />
-          <input type="number" min={0} placeholder="Districts" value={districts} onChange={(e) => setDistricts(e.target.value)} />
-          <input type="month" aria-label="Go-live month" value={goLive} onChange={(e) => setGoLive(e.target.value)} />
+          <label>
+            System name
+            <input placeholder="Required" value={name} onChange={(e) => setName(e.target.value)} />
+          </label>
+          <label>
+            Number of districts
+            <input type="number" min={0} placeholder="Optional" value={districts} onChange={(e) => setDistricts(e.target.value)} />
+          </label>
+          <label>
+            Live since date
+            <input type="date" value={goLive} onChange={(e) => setGoLive(e.target.value)} />
+          </label>
+          <label>
+            Current status
+            <select value={inUse ? "yes" : "no"} onChange={(e) => setInUse(e.target.value === "yes")}>
+              <option value="yes">Currently in use</option>
+              <option value="no">Not currently in use</option>
+            </select>
+          </label>
           <button type="submit" disabled={busy}>{editingId ? "Save" : "Add"}</button>
         </form>
         {editingId && (

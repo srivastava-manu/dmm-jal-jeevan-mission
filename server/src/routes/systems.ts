@@ -15,6 +15,7 @@ systemsRouter.get("/", async (req, res) => {
 const systemSchema = z.object({
   name: z.string().trim().min(1),
   districts_live: z.number().int().min(0).nullable().optional(),
+  in_use: z.boolean().optional(),
   go_live: z
     .string()
     .regex(/^\d{4}-\d{2}(-\d{2})?$/, "go_live must be YYYY-MM or YYYY-MM-DD")
@@ -38,6 +39,7 @@ systemsRouter.post("/", async (req, res, next) => {
       name: parsed.data.name,
       districts_live: parsed.data.districts_live ?? null,
       go_live: normalizeGoLive(parsed.data.go_live),
+      in_use: parsed.data.in_use ?? true,
     });
     res.status(201).json({ system });
   } catch (e) {
@@ -60,6 +62,7 @@ systemsRouter.patch("/:id", async (req, res, next) => {
       name: parsed.data.name,
       districts_live: parsed.data.districts_live ?? null,
       go_live: normalizeGoLive(parsed.data.go_live),
+      in_use: parsed.data.in_use ?? true,
     });
     if (!system) {
       res.status(404).json({ error: "System not found." });

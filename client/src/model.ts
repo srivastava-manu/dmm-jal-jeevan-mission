@@ -107,6 +107,7 @@ export interface SystemRow {
   districts_live: number | null;
   go_live: string | null;
   in_use: boolean;
+  is_cited: boolean;
 }
 
 // ── Results / dashboard / compare (server-computed; the client renders, computes nothing) ──

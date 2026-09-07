@@ -163,12 +163,13 @@ export const api = {
       name: string;
       districts_live: number | null;
       go_live: string | null;
+      in_use: boolean;
     }): Promise<{ system: import("./model").SystemRow }> {
       return request("/api/systems", { method: "POST", body: JSON.stringify(input) });
     },
     edit(
       id: string,
-      input: { name: string; districts_live: number | null; go_live: string | null },
+      input: { name: string; districts_live: number | null; go_live: string | null; in_use: boolean },
     ): Promise<{ system: import("./model").SystemRow }> {
       return request(`/api/systems/${id}`, { method: "PATCH", body: JSON.stringify(input) });
     },

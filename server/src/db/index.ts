@@ -375,6 +375,7 @@ export interface SystemRow {
   districts_live: number | null;
   go_live: string | null;
   in_use: boolean;
+  is_cited: boolean;
 }
 
 export interface AssessmentDetail {
@@ -624,7 +625,8 @@ export async function setScoreSystem(
 }
 
 const SYSTEM_COLS =
-  "id, name, districts_live, go_live, EXISTS(SELECT 1 FROM scores sc WHERE sc.system_id = systems.id) AS in_use";
+  `id, name, districts_live, go_live, currently_in_use AS in_use,
+   EXISTS(SELECT 1 FROM scores sc WHERE sc.system_id = systems.id) AS is_cited`;
 
 export async function listSystems(ctx: RlsContext): Promise<SystemRow[]> {
   return withRlsTx(ctx, async (c) => {
@@ -637,20 +639,21 @@ export async function listSystems(ctx: RlsContext): Promise<SystemRow[]> {
 
 export async function createSystem(
   ctx: RlsContext,
-  input: { name: string; districts_live: number | null; go_live: string | null },
+  input: { name: string; districts_live: number | null; go_live: string | null; in_use: boolean },
 ): Promise<SystemRow> {
   return withRlsTx(ctx, async (c) => {
     // RETURNING the row directly. A data-modifying CTE cannot be re-SELECTed from in the
     // same statement (the SELECT sees the pre-INSERT snapshot and finds nothing), so
     // `in_use` is computed as its own subquery instead of via SYSTEM_COLS.
     const { rows } = await c.query<SystemRow>(
-      `INSERT INTO systems (state_id, name, districts_live, go_live)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO systems (state_id, name, districts_live, go_live, currently_in_use)
+       VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (state_id, name) DO UPDATE SET
-         districts_live = EXCLUDED.districts_live, go_live = EXCLUDED.go_live, updated_at = now()
-       RETURNING id, name, districts_live, go_live,
-                 EXISTS(SELECT 1 FROM scores sc WHERE sc.system_id = systems.id) AS in_use`,
-      [ctx.stateId, input.name, input.districts_live, input.go_live],
+         districts_live = EXCLUDED.districts_live, go_live = EXCLUDED.go_live,
+         currently_in_use = EXCLUDED.currently_in_use, updated_at = now()
+       RETURNING id, name, districts_live, go_live, currently_in_use AS in_use,
+                 EXISTS(SELECT 1 FROM scores sc WHERE sc.system_id = systems.id) AS is_cited`,
+      [ctx.stateId, input.name, input.districts_live, input.go_live, input.in_use],
     );
     const row = rows[0];
     if (!row) throw new Error("Could not save the system.");
@@ -665,13 +668,14 @@ export async function createSystem(
 export async function editSystem(
   ctx: RlsContext,
   systemId: string,
-  input: { name: string; districts_live: number | null; go_live: string | null },
+  input: { name: string; districts_live: number | null; go_live: string | null; in_use: boolean },
 ): Promise<SystemRow | null> {
   return withRlsTx(ctx, async (c) => {
     const upd = await c.query<{ id: string }>(
-      `UPDATE systems SET name = $2, districts_live = $3, go_live = $4, updated_at = now()
+      `UPDATE systems
+       SET name = $2, districts_live = $3, go_live = $4, currently_in_use = $5, updated_at = now()
        WHERE id = $1 RETURNING id`,
-      [systemId, input.name, input.districts_live, input.go_live],
+      [systemId, input.name, input.districts_live, input.go_live, input.in_use],
     );
     if (!upd.rows[0]) return null; // not visible / not owned
     await c.query(
