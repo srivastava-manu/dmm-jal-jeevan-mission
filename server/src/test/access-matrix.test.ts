@@ -149,6 +149,7 @@ function routes() {
     ["GET", "/api/centre/requests", undefined, sr([403, 403, 200, 401])],
     ["GET", "/api/centre/audit", undefined, [403, 403, 200, 401]],
     ["GET", "/api/centre/export.csv", undefined, [403, 403, 200, 401]],
+    ["GET", "/api/centre/evidence", undefined, [403, 403, 200, 401]],
     ["GET", "/api/centre/capability-stat?name=Feedback%20%26%20Satisfaction", undefined, sr([403, 403, 200, 401])],
     // State-assessor writes
     ["PUT", `/api/assessments/${ids.draftA}/scores/${ids.capId}`, { value: 2 }, [200, 403, 403, 401]],
