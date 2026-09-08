@@ -1,3 +1,4 @@
 - [Production database app role](production-database-app-role.md) — production schema copies may not carry app-role privileges; bootstrap must resync least-privilege grants.
 - [Webview port mapping](webview-port-mapping.md) — the default development URL routes through external port 80; map it to the webview server port.
 - [GitHub CLI authentication](github-cli-auth.md) — Replit’s GitHub API connection and Shell Git credentials use separate authorization paths.
+- [Dependency advisory verification](dependency-advisory-verification.md) — a clean npm audit may not prove task-listed vulnerable versions are absent; inspect the full lock tree too.

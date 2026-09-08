@@ -11,6 +11,10 @@
   "engines": {
     "node": ">=20"
   },
+  "overrides": {
+    "qs": "6.16.0",
+    "tsx": "4.23.13"
+  },
   "scripts": {
     "postinstall": "node scripts/normalize-lockfile.mjs",
     "check:secrets": "bash scripts/check-secrets.sh",
