@@ -32,7 +32,7 @@ export function CentreNav({ active }: { active: "dashboard" | "evidence" | "asse
       </div>
       <nav className="topbar-nav">
         {tab("dashboard", "Dashboard", "/dashboard")}
-        {tab("evidence", "Evidence", "/centre/evidence")}
+        {tab("evidence", "Solutions Catalogue", "/centre/evidence")}
         {tab("assessors", "State assessors", "/centre/assessors")}
         {features.supportRequests && tab("requests", "Requests", "/centre/requests")}
         {tab("about", "About", "/about")}
