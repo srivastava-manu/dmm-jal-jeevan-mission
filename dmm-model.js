@@ -4,7 +4,7 @@ if (window.DMM_MODEL) return;
 // inlines into the standalone HTML and works from file:// locally.
 // Versioned data, not markup: capability
 // names, measure text and "includes" lists change without touching screens.
-const MODEL_VERSION = "v2.1";
+const MODEL_VERSION = "v2.2";
 
 const SCALE = [
   { n: 0, short: "Does not exist", t: "Does not exist", d: "No digital system for this capability. Handled on paper, in spreadsheets, or not at all." },
@@ -56,17 +56,6 @@ const LAYERS = [
     ]
   },
   {
-    name: "Agencies", covers: "Digital management of implementing and operating agencies", short: "Agencies",
-    caps: [
-      C("Project Delivery & Quality Assurance", "Whether the State has the capability to digitally plan, execute, monitor and validate rural water infrastructure projects, ensuring timely completion, adherence to quality standards and compliance with contractual and technical requirements.", ["Planning", "Execution", "Quality checks", "Compliance"]),
-      C("Asset Lifecycle Management", "Whether the State has the capability to digitally manage water supply assets throughout their lifecycle, including commissioning, tagging, handover, maintenance history, condition monitoring and lifecycle updates.", ["Commissioning", "Tagging", "Handover", "Maintenance history", "Condition monitoring"]),
-      C("Water Service Delivery", "Whether the State has the capability to digitally operate and manage rural water supply schemes by monitoring water production, bulk water flow, supply schedules, service continuity and operational performance.", ["Production", "Bulk flow", "Supply schedules", "Service continuity"]),
-      C("Water Quality Management", "Whether the State has the capability to digitally manage water quality surveillance through laboratory testing, compliance monitoring, reporting and timely corrective actions to ensure safe and compliant drinking water.", ["Lab testing", "Compliance monitoring", "Reporting", "Corrective action"]),
-      C("Operations & Resource Management", "Whether the State has the capability to digitally plan, allocate and monitor operational resources, including workforce, equipment, materials, consumables and finances, to support efficient O&M of water supply schemes.", ["Workforce", "Equipment", "Materials", "Finances"]),
-      C("Contract Performance & Compliance", "Whether the State has the capability to digitally monitor contractual obligations, service levels, inspections, audits, performance indicators and statutory compliance to ensure effective and accountable service delivery.", ["Obligations", "Service levels", "Inspections", "Audits", "Statutory compliance"])
-    ]
-  },
-  {
     name: "Department", covers: "Digital systems for planning, finance, and governance at department level", short: "Department",
     caps: [
       C("Infrastructure Planning & Asset Governance", "Whether the State has the capability to digitally plan, design, govern and manage rural water infrastructure throughout its lifecycle, including DPR preparation, asset inventory, commissioning and lifecycle management.", ["Asset Management", "Inventory", "BOQ", "DPR", "Asset Registry"]),
@@ -74,7 +63,9 @@ const LAYERS = [
       C("Water Resource & Sustainability Management", "Whether the State has the capability to digitally assess, monitor and manage water sources, hydrogeology and source sustainability to ensure long-term availability and resilience.", ["Source Sustainability", "Source Geology", "Water Audits"]),
       C("Water Service Intelligence", "Whether the State has the capability to digitally monitor, analyse and optimise rural water service delivery using operational data, dashboards, analytics, predictive insights and decision-support tools.", ["BI", "MIS", "Dashboards", "Predictive Maintenance", "Scheme Risk Forecasting"]),
       C("Water Quality Governance", "Whether the State has the capability to digitally monitor, analyse and govern drinking water quality through laboratory management, surveillance, compliance monitoring and timely corrective actions.", ["LIMS", "Water Quality surveillance"]),
-      C("Engineering & Network Intelligence", "Whether the State has the capability to digitally model, monitor and optimise water supply infrastructure using engineering tools, spatial intelligence, network modelling and operational telemetry.", ["GIS", "Geo-tagging", "Hydraulic Modeling", "IoT", "SCADA"])
+      C("Engineering & Network Intelligence", "Whether the State has the capability to digitally model, monitor and optimise water supply infrastructure using engineering tools, spatial intelligence, network modelling and operational telemetry.", ["GIS", "Geo-tagging", "Hydraulic Modeling", "IoT", "SCADA"]),
+      C("Project Delivery & Quality Assurance", "Whether the State has the capability to digitally plan, execute, monitor and validate rural water infrastructure projects, ensuring timely completion, adherence to quality standards and compliance with contractual and technical requirements.", ["Planning", "Execution", "Quality checks", "Compliance"]),
+      C("Operations & Resource Management", "Whether the State has the capability to digitally plan, allocate and monitor operational resources, including workforce, equipment, materials, consumables and finances, to support efficient O&M of water supply schemes.", ["Workforce", "Equipment", "Materials", "Finances"])
     ]
   },
   {
@@ -84,7 +75,6 @@ const LAYERS = [
       C("Integrated Planning & Programme Governance", "Whether the State has the capability to digitally support joint planning, approvals, programme monitoring and governance across multiple departments.", ["Joint planning", "Approvals", "Programme governance"]),
       C("Cross-Sector Policy & Regulatory Alignment", "Whether the State has the capability to digitally support alignment of policies, regulations, standards and institutional responsibilities across sectors.", ["Policy alignment", "Regulatory coordination"]),
       C("Strategic Intelligence & Decision Support", "Whether the State has the capability to provide integrated analytics, dashboards and cross-sector insights that enable evidence-based planning, monitoring and strategic decision-making.", ["Analytics", "Dashboards", "Performance monitoring"]),
-      C("Public Feedback & Stakeholder Engagement", "Whether the State has the capability to digitally consolidate citizen feedback, grievances and stakeholder inputs across departments to improve service delivery, transparency and policy effectiveness.", ["Grievances", "Feedback", "Citizen inputs"]),
       C("Emergency Preparedness & Resilience Management", "Whether the State has the capability to digitally coordinate preparedness, emergency response, disaster management and recovery across departments to ensure continuity of drinking water services.", ["Disaster management", "Emergency response", "Drought", "Floods", "Contamination events"])
     ]
   },
@@ -92,7 +82,6 @@ const LAYERS = [
     name: "Shared Digital Services", covers: "Services shared across all stakeholder groups", short: "Shared svc",
     caps: [
       C("Stakeholder Identity & Lifecycle Management", "Whether the State has the capability to digitally onboard, authenticate, authorize and manage the lifecycle, profiles and access of all stakeholders across the water service ecosystem.", ["User management", "Onboarding", "Identity", "Roles", "Access"]),
-      C("Grievance & Service Request Management", "Whether the State has the capability to digitally receive, assign, track, escalate and resolve grievances and service requests across stakeholders with timely response, transparency and accountability.", ["Intake", "Assignment", "Escalation", "Resolution", "SLA tracking"]),
       C("Capacity Building & Knowledge Management", "Whether the State has the capability to digitally deliver training, certifications, knowledge resources, SOPs and continuous learning opportunities to strengthen stakeholder competencies.", ["LMS", "Training", "Certification", "Knowledge", "Digital learning"]),
       C("Personalized Dashboards & Reports", "Whether the State has the capability to provide stakeholders with role-based dashboards, reports, alerts and insights that support operational monitoring, performance management and informed decision-making.", ["Role-based dashboards", "Personalized KPIs", "Drill-down", "Self-service reporting", "Automated distribution"]),
       C("Intelligent Assistance & Decision Support", "Whether the State has the capability to provide contextual assistance, conversational interfaces, recommendations and guided workflows that help stakeholders perform tasks more effectively.", ["Context-aware guidance", "Decision support", "Recommendations", "Conversational assistance"]),
@@ -110,17 +99,6 @@ const LAYERS = [
       C("Security, Privacy & Compliance", "Whether the State has the capability to protect digital systems and data through comprehensive security controls, privacy safeguards, risk management and compliance with applicable standards and regulations.", ["Security", "Privacy", "Compliance", "Audit", "Encryption", "Monitoring"])
     ]
   },
-  {
-    name: "Infrastructure Foundation", covers: "The compute and network layer underlying the technology foundation", short: "Infra fdn",
-    caps: [
-      C("Compute & Hosting Infrastructure", "Whether the State has the capability to provision, manage and optimize reliable compute and hosting infrastructure supporting secure, efficient and continuous operation of digital services.", ["Cloud", "On-premises", "Virtualization", "Containers", "Compute resources"]),
-      C("Data Infrastructure", "Whether the State has the capability to provide reliable, scalable and high-performance storage, databases and data services that support secure data management, processing and retrieval.", ["Databases", "Object storage", "File storage", "Caching", "Data services"]),
-      C("Network & Connectivity", "Whether the State has the capability to provide secure, reliable and high-performance network connectivity enabling seamless communication between users, applications, infrastructure and external systems.", ["Internet", "VPN", "MPLS", "SD-WAN", "Connectivity to remote areas"]),
-      C("Infrastructure Resilience & Continuity", "Whether the State has the capability to ensure uninterrupted operation and rapid recovery of digital services through high availability, backup, disaster recovery and business continuity mechanisms.", ["HA", "Backup", "Disaster Recovery", "Failover", "Business Continuity"]),
-      C("Infrastructure Monitoring & Operations", "Whether the State has the capability to continuously monitor infrastructure health, performance, availability and operational events, enabling proactive detection, incident response and optimization.", ["Monitoring", "Logging", "Alerting", "Observability", "Incident Management"]),
-      C("Elasticity & Performance Management", "Whether the State has the capability to dynamically scale infrastructure resources and optimize system performance to meet changing workloads while maintaining reliability and cost efficiency.", ["Horizontal scaling", "Vertical scaling", "Auto scaling", "Load balancing", "Performance tuning"])
-    ]
-  }
 ];
 
 const STATES = ["Andaman and Nicobar Islands","Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh","Chhattisgarh","Dadra and Nagar Haveli and Daman and Diu","Delhi (National Capital Territory)","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Ladakh","Lakshadweep","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"];
@@ -140,23 +118,21 @@ const SEED_SYSTEMS = [
 const SEED_FEB = [
   2, 3, 1, 1, 3, 2,
   1, 2, 1, 2, 1, 2,
-  3, 2, 2, 3, 1, 1,
   3, 3, 2, 4, 3, 2,
-  1, 0, 2, 1, 2, 1,
-  2, 2, 3, 1, 2, 2,
-  2, 1, 2, 3, 1, 2,
-  2, 2, 3, 3, 2, 2
+  3, 1,
+  1, 0, 2, 1, 1,
+  2, 3, 1, 2, 2,
+  2, 1, 2, 3, 1, 2
 ];
 
 const SEED_AUG = [
   1, 2, 0, 0, 2, 1,
   0, 1, 1, 1, 0, 1,
-  2, 1, 1, 2, 0, 0,
   2, 2, 1, 3, 2, 1,
-  0, 0, 1, 0, 1, 0,
-  1, 2, 2, 0, 1, 1,
-  1, 0, 1, 2, 0, 2,
-  2, 1, 2, 2, 1, 1
+  2, 0,
+  0, 0, 1, 0, 0,
+  1, 2, 0, 1, 1,
+  1, 0, 1, 2, 0, 2
 ];
 
 window.DMM_MODEL = { MODEL_VERSION, SCALE, BANDS, SCORE_COLORS, LAYERS, STATES, SEED_SYSTEMS, SEED_FEB, SEED_AUG };

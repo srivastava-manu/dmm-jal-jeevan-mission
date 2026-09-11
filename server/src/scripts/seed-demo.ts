@@ -66,17 +66,21 @@ async function main(): Promise<void> {
 
     const model = await currentModel(client);
 
-    // Map (layer_index * 6 + order_in_layer) -> capability id, for the current version.
+    // Map the flattened model order to capability ids. Layer sizes are model data and are
+    // allowed to differ between versions, so layer_index * 6 is not a valid mapping.
     const caps = await client.query<{
       id: string;
       layer_index: number;
       order_in_layer: number;
     }>(
-      "SELECT id, layer_index, order_in_layer FROM capabilities WHERE model_version_id = $1",
+      `SELECT id, layer_index, order_in_layer
+       FROM capabilities
+       WHERE model_version_id = $1
+       ORDER BY layer_index, order_in_layer`,
       [model.id],
     );
     const capId = new Map<number, string>();
-    for (const r of caps.rows) capId.set(r.layer_index * 6 + r.order_in_layer, r.id);
+    caps.rows.forEach((r, index) => capId.set(index, r.id));
 
     // Resolve seeded states and clear prior demo assessments for idempotency.
     const stateIds = new Map<string, string>();
@@ -112,6 +116,12 @@ async function main(): Promise<void> {
       assessors++;
 
       if (!st.submitted || !st.scores) continue;
+      if (st.scores.length !== caps.rows.length) {
+        throw new Error(
+          `Demo seed for ${st.name} has ${st.scores.length} scores, ` +
+          `but model ${model.version} has ${caps.rows.length} capabilities.`,
+        );
+      }
 
       const submittedAt = parseSeedDate(st.submitted);
       const a = await client.query<{ id: string }>(

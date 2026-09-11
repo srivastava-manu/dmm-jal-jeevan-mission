@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { colorForMean, type CapScoreRow } from "../model";
 
-// The 8×6 maturity grid, shared by the results mini-grid / print grid and the dashboard.
+// The maturity grid, shared by the results mini-grid / print grid and the dashboard.
 // Cells are coloured by the capability's own score (0–4). Rows and columns follow the
 // model's real shape — one row per layer, one column per capability position.
 export function MaturityGrid({

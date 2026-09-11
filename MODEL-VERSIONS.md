@@ -63,7 +63,7 @@ internal `notes` column never reaches the public payload.
       SET published_at = TIMESTAMPTZ '2026-11-01 00:00:00+00',
           public_notes = 'Two capabilities in the Data layer were split, so scores from '
                          'earlier rounds are not directly comparable for those areas.'
-    WHERE version = 'v2.2';
+     WHERE version = 'v2.3';
    ```
 
    **Set `published_at` explicitly, at UTC midnight.** Left to its `DEFAULT now()` it records
@@ -73,6 +73,12 @@ internal `notes` column never reaches the public payload.
    before.
 
 5. `npm run db:migrate`, then check `/about`.
+
+The current published model is v2.2. It has 36 capabilities across six layers. The Agencies and
+Infrastructure Foundation layers were removed; Project Delivery & Quality Assurance and Operations &
+Resource Management moved into Department; four former Agencies capabilities were retired; and
+Public Feedback & Stakeholder Engagement plus Grievance & Service Request Management were retired.
+Historical v2.1 rows and assessments remain unchanged.
 
 ### Writing the note
 
@@ -84,9 +90,8 @@ Write the **effect on the reader**, not a description of the edit.
 - Bad — *"Measure text revised after stakeholder review."* (says something changed while
   withholding what, and asserts a review the reader cannot verify)
 
-Never describe a release that did not happen. `seed-compare-demo.ts` inserts a **fabricated**
-v2.0 so the compare screen has something to compare against; it forces `public_notes` to NULL
-precisely so it can never appear on a public page.
+Never describe a release that did not happen. `seed-compare-demo.ts` creates a development-only
+historical v2.1 assessment for the compare screen; it does not create or publish a model version.
 
 ## Keeping environments and agents in sync
 

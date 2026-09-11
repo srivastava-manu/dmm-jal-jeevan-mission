@@ -4,7 +4,7 @@ import { perCapabilityMax, bandFor } from "./model.js";
 // show: totals, percentages, bands, per-layer index, strongest/weakest layer, top-four
 // strengths, bottom-four focus, consistency flags, and cross-version comparison. The front
 // end renders these; it computes nothing. Maxima derive from the capability count times the
-// scale ceiling — never a hardcoded 192/24.
+// Scale ceiling — never hardcode overall or per-layer maxima; derive both from model rows.
 
 export interface CapScore {
   capability_id: string;

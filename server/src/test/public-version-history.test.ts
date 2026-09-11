@@ -9,7 +9,7 @@ import { getPublicModel } from "../db/index.js";
 // official. Two things must hold, and neither is obvious from reading the query:
 //
 //   1. A version with NULL public_notes never reaches the page, however it got into the
-//      table. (seed-compare-demo.ts inserts a fabricated v2.0 for the compare screen; a
+//      table. (seed-compare-demo.ts creates development-only historical assessment data for the compare screen; a
 //      public page asserting that release happened would be a false claim.)
 //   2. The internal `notes` column never leaks — it carries provenance like "Imported from
 //      dmm-model.js", written for maintainers, not citizens.

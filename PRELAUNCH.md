@@ -55,18 +55,20 @@ appear on the national dashboard as real maturity scores for real states.
 - [ ] **Confirm the database is empty of assessments and carries the model.** Against the
       production database:
       ```sql
-      SELECT (SELECT count(*) FROM assessments)  AS assessments,   -- expect 0
-             (SELECT count(*) FROM users)        AS users,         -- expect 0
-             (SELECT count(*) FROM states)       AS states,        -- expect 36
-             (SELECT count(*) FROM capabilities) AS capabilities;  -- expect 48
+       SELECT (SELECT count(*) FROM assessments)  AS assessments,   -- expect 0
+              (SELECT count(*) FROM users)        AS users,         -- expect 0
+              (SELECT count(*) FROM states)       AS states,        -- expect 36
+              (SELECT count(*) FROM capabilities
+                 WHERE model_version_id = (SELECT id FROM model_versions WHERE version = 'v2.2'))
+                                                    AS current_capabilities; -- expect 36
       ```
 
-- [ ] **No fabricated model version is present.** `seed-compare-demo.ts` invents a v2.0 for the
-      compare screen; it must never have been run here.
+- [ ] **No compare-demo data is present.** `seed-compare-demo.ts` creates a development-only
+      historical v2.1 assessment for the compare screen; it must never have been run here.
       ```sql
       SELECT version, public_notes IS NOT NULL AS listed_publicly FROM model_versions;
       ```
-      Expect exactly `v2.1 | true`.
+       Expect exactly `v2.1 | true` and `v2.2 | true` after the v2.2 migration is applied.
 
 ---
 

@@ -66,7 +66,7 @@ npm install
 npm run db:setup       # create/adjust the dmm_app role + grants (idempotent)
 npm run db:migrate     # apply migrations/001–003 (plain SQL, tracked in schema_migrations)
 npm run db:seed        # dev users: 1 centre + 2 demo assessors (Sikkim, Tripura)
-npm run db:seed:model  # model v2.1 (48 capabilities) + 20 submitted assessments from the data files
+npm run db:seed:model  # current model v2.2 (36 capabilities) + 20 submitted assessments from the data files
 ```
 
 Reset everything and re-seed:
@@ -92,12 +92,12 @@ real, data-backed national dashboard once `db:seed:model` has run.
 ## The national dashboard (data slice)
 
 `db:seed:model` loads the authoritative content from `dmm-model.js` and
-`njjm-centre-data.js` into real rows: model v2.1 with its 48 capabilities, an assessor per
+`njjm-centre-data.js` into real rows: model v2.2 with its 36 capabilities, an assessor per
 seeded state, and 20 **submitted** assessments (4 further states have an assessor but no
 submission). Sign in as `centre@njjm.gov.in` to see:
 
 - KPIs (national maturity, submitted count, weakest/strongest layer),
-- the 8×6 mean-score grid coloured by rounded mean,
+- the model-shaped mean-score grid coloured by rounded mean,
 - the layer-wise national averages.
 
 The two headline business rules are enforced by the **database**, not the UI: every Centre
@@ -143,7 +143,7 @@ Sign in as a state assessor to reach `/home`:
 - **Systems dialog** — capture the state's systems once, reused as evidence.
 
 Counts are derived from the capability rows for the assessment's model version — nothing
-hardcodes 48/6/24/192 (the only scale constant is the 0–4 ceiling).
+hardcodes the capability count or layer maxima (the only scale constant is the 0–4 ceiling).
 
 To exercise pre-fill locally you need a prior submitted assessment for your state; the
 optional `npm run db:seed:demo` seeds those (and gives you assessor logins such as
@@ -182,8 +182,8 @@ Read-only screens for a submitted (or draft) assessment:
   per-layer index / strongest+weakest / top-four strengths / bottom-four focus / consistency
   flags (ties break by layer then capability position). The front end renders, computes
   nothing. Maxima derive from the capability count × the scale ceiling — never a hardcoded
-  192/24.
-- **Dashboard** `/assessment/:id/dashboard` (screen 8) — the 8×6 grid + a detail rail
+   the overall or per-layer maximum.
+- **Dashboard** `/assessment/:id/dashboard` (screen 8) — the model-shaped grid + a detail rail
   (measure, evidence, and the capability's value across submitted rounds).
 - **Compare** `/assessment/:id/compare?to=<earlierId>` (screen 9) — matches capabilities by
   **name** across model versions; names in only one version are `notComparable` (added /
@@ -200,8 +200,8 @@ the Export buttons call `window.print()`. Results prints as two pages: the summa
 labelled maturity grid, forced to page 2 with `break-before: page`.
 
 To try cross-version compare locally: `npm run db:seed:demo` then
-`npm run db:seed:compare-demo` (adds an earlier v2.0 with one renamed capability and a v2.0
-round for Andhra Pradesh), then open a v2.1 assessment's Compare.
+`npm run db:seed:compare-demo` (adds an earlier v2.1 round for Andhra Pradesh), then open the
+current v2.2 assessment's Compare.
 
 ## About the model (public)
 
@@ -217,7 +217,7 @@ History, About.
 Sign in as `centre@njjm.gov.in`. The Centre role has no `state_id`; RLS keeps drafts
 invisible and blocks any write to state-scoped score data (`npm run test` proves both).
 
-- **National dashboard** (`/dashboard`, screen 12) — KPIs, the 8×6 mean grid (click a cell
+- **National dashboard** (`/dashboard`, screen 12) — KPIs, the model-shaped mean grid (click a cell
   for its distribution), per-layer national index, and a rail that expands each level to the
   states there; a chip opens that state's detail. Aggregation is `server/src/lib/national.ts`
   (reusing `scoring.ts`) over each state's LATEST submitted assessment; the "N of M" pill
@@ -234,7 +234,7 @@ invisible and blocks any write to state-scoped score data (`npm run test` proves
 - **State detail** (`/state/:assessmentId`, screen 15) — read-only grid. A draft id is
   refused at the database layer (404).
 
-Optional demo data: `npm run db:seed:demo` seeds ~24 states of submissions so the dashboard,
+Optional demo data: `npm run db:seed:demo` seeds the available states of submissions so the dashboard,
 assessors and (via the Assess screen) requests have content.
 
 ## Deploying to NIC

@@ -6,8 +6,9 @@ A single web application that lets **state IT officers** self-assess the digital
 IT systems under the Jal Jeevan Mission, and lets the **National Jal Jeevan Mission (Centre)** see the
 consolidated national picture, manage state assessor accounts, and respond to support requests raised by states.
 
-The assessment model has **48 capability areas across 8 layers**, each scored 0–4. A layer scores 0–24;
-the overall assessment scores 0–192, which converts to a percentage and a named maturity band.
+The current assessment model (v2.2) has **36 capability areas across 6 layers**, each scored 0–4.
+Layer maxima follow the number of capabilities in each layer; the overall assessment scores 0–144,
+which converts to a percentage and a named maturity band.
 
 Both audiences share **one app and one login**. The user's `role` decides which surface they land on:
 
@@ -39,7 +40,7 @@ reproduced faithfully. Exact values are in *Design tokens* below.
 ## The model (content, not code)
 
 `dmm-model.js` in this bundle is the authoritative content. **It must become database rows, not
-hardcoded constants** — the 48 capabilities and their wording will keep changing after stakeholder
+hardcoded constants** — the 36 current capabilities and their wording will keep changing after stakeholder
 discussions, and each saved assessment must record which version it was taken against.
 
 **Revised.** A model version now carries two descriptions, because it has two audiences.
@@ -53,11 +54,11 @@ migration rules are in **`MODEL-VERSIONS.md`**.
 
 It exports:
 
-- `MODEL_VERSION` — e.g. `"v2.1"`
+- `MODEL_VERSION` — e.g. `"v2.2"`
 - `SCALE` — the five rating levels: `{n, short, t, d}`
 - `BANDS` — the five maturity bands with their percentage ceilings
 - `SCORE_COLORS` — the 0–4 colour ramp
-- `LAYERS` — 8 layers, each `{name, covers, short, caps: [{n, m, inc}] }` where `n` = capability name,
+- `LAYERS` — 6 layers, each `{name, covers, short, caps: [{n, m, inc}] }` where `n` = capability name,
   `m` = measure text (the question), `inc` = list of included functions
 - `STATES` — all 28 states and 8 UTs, alphabetical
 
@@ -81,16 +82,21 @@ It exports:
 | 61–80% | Mature |
 | 81–100% | Leading |
 
-### The eight layers
+### The six layers
 
 1. **Citizens** — digital services reaching consumers and households directly
 2. **Frontline Workers** — digital tools used by field staff for monitoring and reporting
-3. **Agencies** — digital management of implementing and operating agencies
-4. **Department** — digital systems for planning, finance, and governance at department level
-5. **State Functionaries** — cross-department coordination and strategic decision-making
-6. **Shared Digital Services** — services shared across all stakeholder groups
-7. **Technology Foundation** — the software layer underlying every other layer
-8. **Infrastructure Foundation** — the compute and network layer underlying the technology foundation
+3. **Department** — digital systems for planning, finance, and governance at department level
+4. **State Functionaries** — cross-department coordination and strategic decision-making
+5. **Shared Digital Services** — services shared across all stakeholder groups
+6. **Technology Foundation** — the software layer underlying every other layer
+
+Model v2.2 changes from State feedback: the Agencies and Infrastructure Foundation layers were
+removed; Project Delivery & Quality Assurance and Operations & Resource Management moved into
+Department; Contract Performance & Compliance, Water Quality Management, Water Service Delivery
+and Asset Lifecycle Management were retired; Public Feedback & Stakeholder Engagement was removed
+from State Functionaries; and Grievance & Service Request Management was removed from Shared Digital
+Services. Model v2.1 remains intact for historical assessments.
 
 Every capability's measure text begins "Whether the State has the capability to…" or
 "Whether the system has the capability to…". Keep that phrasing.
@@ -107,7 +113,7 @@ These are the rules the design encodes. Getting them wrong breaks the product's 
    absent from the denominator.
 3. **Submitted assessments lock after 7 days.** `locked_at = submitted_at + 7 days`. Score writes after
    that are rejected server-side, not just hidden in the UI.
-4. **Submission requires all 48 answered.** A partial assessment distorts the index. The review screen
+4. **Submission requires all 36 answered in v2.2.** A partial assessment distorts the index. The review screen
    lists what is missing and the submit button is disabled until it's empty.
 5. **Evidence appears only on scores of 3 and 4.** When an assessor picks 3 or 4, an evidence block
    appears: system (dropdown from the state's own systems list), districts live, go-live month.
@@ -142,7 +148,7 @@ states
   id, name, is_ut (bool)
 
 model_versions
-  id, version ('v2.1'), published_at, notes, public_notes
+  id, version ('v2.2' or a historical version), published_at, notes, public_notes
 
 capabilities
   id, model_version_id, layer_index (0-7), layer_name, layer_covers,
@@ -176,11 +182,11 @@ audit_log                                   -- user-management actions and syste
 
 ### Derived values (compute, never store)
 
-- `layer_score` = sum of that layer's 6 score values (0–24)
-- `overall_score` = sum of all 48 (0–192); `overall_pct = round(overall/192*100)`
+- `layer_score` = sum of that layer's score values; the maximum is the layer capability count × 4
+- `overall_score` = sum of all 36 in v2.2 (0–144); `overall_pct = round(overall/144*100)`
 - `band(pct)` = first band whose ceiling ≥ pct
 - **National capability average** = mean of that capability's value across submitted assessments
-- **National layer average** = sum of that layer's 6 capability averages (out of 24)
+- **National layer average** = sum of that layer's capability averages (out of the layer maximum)
 
 ---
 
@@ -203,12 +209,12 @@ Max-width 1180px. h1 = state name at 28px/600. Subline "N saved assessments · A
 Green "Start assessment" / "Start another" button top right.
 
 If a draft exists: a card with `--border-accent`, "IN PROGRESS" label in accent, the draft title,
-a progress bar (max-width 420px), "N of 48 answered · X/192 so far", and a green
+a progress bar (max-width 420px), "N of total answered · X/current maximum so far", and a green
 "Continue assessment" button.
 
 Two-column grid (1fr / 320px):
 - **Left** — "Saved assessments" list. Each row: a 52px rounded square showing the percentage in mono
-  on the band colour, the date at 15px/600, a line "Band · X/192 · Assessor name", a Delete button
+  on the band colour, the date at 15px/600, a line "Band · X/current maximum · Assessor name", a Delete button
   (click once to arm, again within 4s to confirm), and a chevron. Clicking the row opens that
   snapshot's results read-only.
 - **Right** — "Overall maturity over time" bar chart (one bar per assessment plus the live draft,
@@ -218,9 +224,9 @@ Two-column grid (1fr / 320px):
 ### 3. Start assessment
 Max-width 760px. Two clickable option cards — **no Begin button; each card starts the assessment
 directly**:
-- "Start from <date of last assessment>" · tag "Recommended" · "All 48 answers pre-filled. Change only
+- "Start from <date of last assessment>" · tag "Recommended" · "All current-model answers pre-filled. Change only
   what has moved." · CTA line "Begin from <date> →" in accent
-- "Start blank" · tag "Slower" · "Answer all 48 from scratch, layer by layer." · CTA "Begin blank
+- "Start blank" · tag "Slower" · "Answer all current-model capabilities from scratch, layer by layer." · CTA "Begin blank
   assessment →"
 
 Plus a dashed "Model version" note, a warning box if an existing draft would be replaced, and Cancel.
@@ -229,12 +235,12 @@ Plus a dashed "Model version" note, a warning box if an existing draft would be 
 Three columns: **248px layer nav / flexible capability list / 288px score rail**. Both side columns
 `position:sticky; top:60px; height:calc(100vh - 60px); overflow:auto`.
 
-**Left nav** — "Layers" label with "N of 48" in mono, a progress bar, then 8 layer items. Each shows
-"1 Citizens", "6/6" in mono, a status dot and either the band + score (complete), "In progress", or
-"Not started". Active layer gets `--accent-soft` background and `--border-accent`. Footer:
-"Model v2.1 · 48 capabilities · scale 0–4. Answers save as you go."
+**Left nav** — "Layers" label with "N of total" in mono, a progress bar, then the current model's
+layer items. Each shows the layer number, answered/total count, a status dot and either the band +
+score (complete), "In progress", or "Not started". Active layer gets `--accent-soft` background and
+`--border-accent`. Footer: "Model v2.2 · 36 capabilities · scale 0–4. Answers save as you go."
 
-**Centre column** — "LAYER N OF 8" label, layer name at 24px/600, an "All 48 in a grid" button top
+**Centre column** — "LAYER N OF 6" label, layer name at 24px/600, an "All capabilities in a grid" button top
 right. Then one card per capability (12px radius, 18px 20px padding):
 - capability name 16px/600
 - measure text 13px `--text-2`, max 62ch — **always visible, never collapsed**
@@ -251,26 +257,28 @@ right. Then one card per capability (12px radius, 18px 20px padding):
 - a footer line above a hairline: "Scored N · <label>" and "Was N on <date>" (note: **"on", not "in"**)
 
 Unanswered capabilities beyond the current focus render as dashed placeholder rows.
-Bottom: previous-layer and next-layer buttons; on layer 8 the next button becomes "Review & submit →".
+Bottom: previous-layer and next-layer buttons; on the last model layer the next button becomes
+"Review & submit →".
 
 **Right rail**, three white boxes in this order — all three share the same anatomy: a big mono figure
 with its denominator on one baseline, the band right-aligned in accent, a progress bar, and a note:
-1. **Progress** — "34" + "of 48 answered", bar, "14 left across 3 layers"
-2. **Score for this layer** — "10" + "of 24", band, bar, "4 of 6 answered — the index firms up as you
-   complete the layer." (or "All six answered. Was 9/24 on 11 Feb 2026.")
-3. **Overall score so far** — "96" + "of 192", band, bar, comparison to the previous round
+1. **Progress** — answered + total capabilities, bar, and the number left across incomplete layers
+2. **Score for this layer** — current score + that layer's derived maximum, band, bar, and answered/total
+3. **Overall score so far** — current score + the model-derived overall maximum, band, bar, comparison to
+   the previous round
 Then the Scale reference, then a **large solid green "Review & submit" button** (46px, 15px/600) pinned
 to the bottom.
 
 ### 5. Matrix / re-assessment mode
-Max-width 1400px, grid + 320px rail. Eight rows of `150px repeat(6, 1fr)`; each cell shows the
+Max-width 1400px, grid + 320px rail. One row per model layer with a model-derived number of capability
+columns; each cell shows the
 capability name at 10.5px and the score in mono, background = the level colour, and a dark outline
 if it changed since the last assessment. Rail shows the selected capability with its measure, the
 5-button scale, the previous value and delta, and a "Next unreviewed" button. Keyboard: ↑↓ to move,
 0–4 to score.
 
 ### 6. Review & submit
-Max-width 760px. Progress bar + "46 of 48". Then, conditionally:
+Max-width 760px. Progress bar + answered/total. Then, conditionally:
 - **Unanswered** block on `--danger-bg`: count, the list (each row clicks through to that layer),
   and "A partial assessment distorts the index — answer these before submitting."
 - **Evidence gaps** block on `--warning-bg`: "N high scores without a system named".
@@ -283,26 +291,26 @@ Buttons: "Keep editing" and "Submit assessment" (grey and inert while anything i
 ### 7. Executive summary (results)
 Max-width 1240px, content + 300px sidebar. Order matters:
 1. Header — state name 27px, meta line "<date> · assessed by <name>" (**no model version**)
-2. Three cards: **Overall digital maturity** (band at 30px in accent, "96 of 192 · 50%", a bar;
+2. Three cards: **Overall digital maturity** (band at 30px in accent, score/max · percentage, a bar;
    content distributed with `justify-content:space-between`) · **Since <date>** (band transition,
    "+23 points · 14 improved, 2 slipped", a "See what changed" button — hidden when there is no
    earlier round) · **Layers** (strongest / most room to grow)
-3. **Layer-wise maturity index** — 8 rows, each: name (190px), bar, score in mono, band
+3. **Layer-wise maturity index** — one row per current model layer, each: name (190px), bar, score in mono, band
 4. **Strengths** (card with `--border-accent`, accent label) and **Where to focus next**, side by side.
    Strengths lists the four highest-scoring capabilities and a line naming the strongest layer;
    Focus lists the four lowest with "A starting point for the roadmap, prepared offline by your team."
 5. A print-only full labelled maturity grid (page 2 of the PDF)
 
-Sidebar: a mini 6-column grid of all 48 cells, an "Open full dashboard" button, and an **Export PDF**
+Sidebar: a model-shaped mini grid of all current capabilities, an "Open full dashboard" button, and an **Export PDF**
 button with the caption "Two A4 pages: executive summary, then the full labelled maturity grid."
 
 **There is no peer-comparison block on this screen.**
 
 ### 8. Dashboard
-Max-width 1400px, grid + 300px detail rail. Title "48 capabilities across 8 layers", then — directly
+Max-width 1400px, grid + 300px detail rail. Title "36 capabilities across 6 layers", then — directly
 below the title — a **single-line legend card** listing all five levels with their full labels, then
-the 8×6 grid (`150px repeat(6,1fr)`, cells 64px min-height, level colour, name at 10.5px, score in
-mono). Cells are clickable.
+the model-shaped grid (cells 64px min-height, level colour, name at 10.5px, score in mono). Cells are
+clickable.
 
 Rail: the selected capability — layer and index, name, score swatch + label, measure text, an
 Evidence box ("System · N districts · live YYYY-MM" or "No system attached yet."), score history
@@ -320,8 +328,8 @@ as new, never as an improvement.
 Max-width 900px. Reachable at `#about` without an account; a visitor sees only the About tab (no state
 pill, no other nav) plus a "Start the assessment" prompt. Order:
 1. Title "Digital Maturity Model" (no version number) + intro
-2. **The eight layers** — one row per layer: `184px / 1fr` grid, layer number + name at 14px/600 with
-   its "covers" line beneath, and its six capability names as pills
+2. **The six layers** — one row per layer: `184px / 1fr` grid, layer number + name at 14px/600 with
+   its "covers" line beneath, and its model-defined capability names as pills
 3. **Rating scale** — all five levels with 30px swatches and full definitions, plus a note that levels
    3 and 4 depend on routine *use*, not deployment
 4. **Maturity index** — the five bands, each with a colour swatch — and **Version history**
@@ -352,7 +360,7 @@ horizontal-scroll container with a **760px min-width floor** so cells never shri
 Meta line: "Averaged across N submitted assessments · M states and UTs have an assessor. Drafts are
 not visible to the Centre and are excluded from all averages."
 
-Five KPI cards: **National maturity** (band + "X of 192 · N%") · **Assessor coverage** ("of M states
+Five KPI cards: **National maturity** (band + "X of current maximum · N%") · **Assessor coverage** ("of M states
 and UTs have an assessor") · **Submitted** ("of M states with an assessor") · **Weakest layer** (layer
 name, with its score as the subtitle — *not* prefixed with its index) · **Open requests** (with "N new").
 
@@ -363,13 +371,13 @@ deliberately visible: states with no assessor at all are a programme signal, not
 > **Revised.** Originally four cards, without **Assessor coverage**; that number appeared only in
 > the meta line and (with a different denominator) in the removed top-bar pill.
 
-**National maturity grid** — the 8×6 grid with each cell showing the capability name and its **mean
+**National maturity grid** — the model-shaped grid with each cell showing the capability name and its **mean
 score to one decimal** across submitted states, coloured by the rounded mean. Header caption: "Each
 cell is the mean score across submitted states · click one to see its distribution below".
 Selected cell gets a dark border plus a `0 0 0 3px rgba(31,138,91,.28)` ring; clicking it again clears.
 A wrapping legend card sits above the grid.
 
-**Layer-wise national average** — 8 rows, labelled "sum of its six capability means, out of 24".
+**Layer-wise national average** — one row per layer, labelled with its derived maximum.
 
 **Sticky rail** — when a cell is selected: the layer name as label, capability name as title, the
 average swatch with "National average across N states", and the measure text. Then the distribution:
@@ -401,7 +409,8 @@ a reply textarea, and a "Save reply" button.
 
 ### 15. State detail (read-only)
 Reached from a chip in the dashboard rail. Header: state name, "Submitted <date> · <assessor>,
-<designation>", and the total + band right-aligned. Then that state's full 8×6 grid, non-interactive.
+<designation>", and the total + band right-aligned. Then that state's full model-shaped grid,
+non-interactive.
 
 ---
 
@@ -427,7 +436,7 @@ Reached from a chip in the dashboard rail. Header: state name, "Submitted <date>
 
 ## State
 
-Per assessor session: current screen, current layer index, selected capability, draft scores (48),
+Per assessor session: current screen, current layer index, selected capability, draft scores (current model total),
 evidence per capability, the systems list, toast text, sign-in validation error.
 Per Centre session: current screen, selected grid cell, which distribution level is expanded,
 selected request, status filter, reply draft, dialog form + its validation error.
@@ -597,7 +606,7 @@ nothing to show until real submissions exist.
 
 | File | What it is |
 |---|---|
-| `dmm-model.js` | **The model content.** 48 capabilities with measures and includes lists, the 0–4 scale, bands, colour ramp, all 36 states and UTs. Becomes database rows. |
+| `dmm-model.js` | **The model content.** The current 36 capabilities with measures and includes lists, the 0–4 scale, bands, colour ramp, all 36 states and UTs. Becomes database rows. |
 | `DMM Prototype.html` | State assessor prototype — every screen, fully interactive, seeded with three rounds of history. |
 | `NJJM Centre.html` | Centre prototype — national dashboard, user management, requests, state detail. |
 | `njjm-centre-data.js` | Seed data for the Centre prototype: 24 states with plausible scores built from per-capability national baselines, and six support requests. Reference only — not production data. |

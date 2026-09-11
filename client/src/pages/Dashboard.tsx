@@ -141,7 +141,7 @@ export function Dashboard() {
             <section className="panel">
               <div className="panel-head">
                 <h2>Layer-wise national average</h2>
-                <p className="muted">Sum of its six capability means, out of 24.</p>
+                <p className="muted">Sum of each layer's capability means; the maximum follows the current model.</p>
               </div>
               <div className="layers">
                 {data.layers.map((l) => (

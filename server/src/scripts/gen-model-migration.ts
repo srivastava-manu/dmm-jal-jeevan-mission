@@ -3,11 +3,10 @@ import path from "node:path";
 import vm from "node:vm";
 import { REPO_ROOT } from "../config.js";
 
-// Generates migrations/004_seed_model.sql from the authoritative dmm-model.js. The OUTPUT
+// Generates a numbered model migration from the authoritative dmm-model.js. The OUTPUT
 // is plain SQL, checked into the repo, so NIC reviews exactly what runs — but it is
-// provably derived from the model content rather than hand-transcribed. Re-run whenever
-// dmm-model.js changes to regenerate (for a genuinely new version, bump MODEL_VERSION so a
-// NEW model_versions row + NEW capability rows are added; existing rows are never edited).
+// provably derived from the model content rather than hand-transcribed. The original
+// model keeps its default output; new versions set MODEL_MIGRATION_FILE to a new filename.
 
 interface Capability {
   n: string;
@@ -45,9 +44,13 @@ function arrayLit(items: string[]): string {
 async function main(): Promise<void> {
   const model = await loadModel();
   const version = model.MODEL_VERSION;
+  const outputName = process.env.MODEL_MIGRATION_FILE ?? "004_seed_model.sql";
+  if (!/^[0-9]{3}_[A-Za-z0-9._-]+\.sql$/.test(outputName)) {
+    throw new Error("MODEL_MIGRATION_FILE must be a numbered migration filename such as 010_seed_model_v2_2.sql");
+  }
 
   const lines: string[] = [];
-  lines.push(`-- 004_seed_model.sql`);
+  lines.push(`-- ${outputName}`);
   lines.push(
     `-- GENERATED from dmm-model.js by server/src/scripts/gen-model-migration.ts — do not edit by hand.`,
   );
@@ -87,7 +90,7 @@ async function main(): Promise<void> {
     }
   }
 
-  const out = path.join(REPO_ROOT, "migrations", "004_seed_model.sql");
+  const out = path.join(REPO_ROOT, "migrations", outputName);
   await fs.writeFile(out, lines.join("\n"), "utf8");
   console.log(
     `Wrote ${path.relative(REPO_ROOT, out)} — ${version}, ` +

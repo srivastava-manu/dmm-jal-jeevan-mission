@@ -12,7 +12,7 @@ import {
 import { MaturityGrid } from "../components/MaturityGrid";
 import { AssessorNav } from "../components/AssessorNav";
 
-// Screen 8 — the assessor's own dashboard: the labelled 8×6 grid plus a detail rail for the
+// Screen 8 — the assessor's own dashboard: the labelled model grid plus a detail rail for the
 // selected capability (measure, evidence, and how it has moved across submitted rounds).
 export function AssessorDashboard() {
   const { id = "" } = useParams();
