@@ -22,7 +22,7 @@
       line-height: 1.38;
       background: white;
     }
-    .cover, .layer-section { break-after: page; }
+    .cover, .layer-section, .summary-page { break-after: page; }
     .cover { min-height: 260mm; display: flex; flex-direction: column; }
     .brand-line { height: 7px; background: var(--accent); margin: -16mm -14mm 22mm; }
     .kicker, .eyebrow {
@@ -95,6 +95,32 @@
     .notes-label { margin-top: 3mm; color: var(--muted); font-size: 8pt; font-weight: 700; }
     .writing-lines { display: grid; gap: 3mm; margin-top: 2mm; }
     .writing-lines span { height: 4mm; border-bottom: 1px solid #c5cfd4; }
+    .layer-subtotal {
+      display: flex; justify-content: space-between; align-items: center; gap: 8mm;
+      margin-top: 4mm; padding: 3mm 4mm; border: 1px solid var(--accent);
+      border-radius: 2mm; background: var(--accent-soft); color: var(--ink);
+    }
+    .layer-subtotal small { color: var(--muted); font-size: 8pt; }
+    .subtotal-entry { font-family: "Courier New", monospace; font-size: 10pt; font-weight: 700; white-space: nowrap; }
+    .summary-page { min-height: 260mm; }
+    .summary-title { padding-bottom: 4mm; border-bottom: 2px solid var(--accent); margin-bottom: 5mm; }
+    .summary-title h2 { font-size: 22pt; }
+    .summary-title p { color: var(--muted); }
+    .summary-table { width: 100%; border-collapse: collapse; margin-top: 5mm; font-size: 9.5pt; }
+    .summary-table th, .summary-table td { border-bottom: 1px solid var(--line); padding: 3mm 2mm; text-align: left; }
+    .summary-table th { color: var(--muted); font-size: 8pt; letter-spacing: .05em; text-transform: uppercase; }
+    .summary-table th:nth-child(n+2), .summary-table td:nth-child(n+2) { text-align: right; }
+    .summary-table .summary-total td { border-top: 2px solid var(--accent); border-bottom: 0; font-weight: 700; padding-top: 4mm; }
+    .summary-blank { display: inline-block; min-width: 28mm; border-bottom: 1px solid #71808a; height: 5mm; vertical-align: bottom; }
+    .summary-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; margin-top: 10mm; }
+    .summary-panel { border: 1px solid var(--line); border-radius: 3mm; padding: 4mm; }
+    .summary-panel h3 { margin-bottom: 3mm; font-size: 11pt; }
+    .band-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+    .band-table td { padding: 2mm 1mm; border-top: 1px solid var(--line); }
+    .band-table td:first-child { color: var(--accent); font-family: "Courier New", monospace; font-weight: 700; width: 35%; }
+    .summary-notes { margin-top: 10mm; }
+    .summary-notes h3 { margin-bottom: 4mm; }
+    .summary-note-line { height: 9mm; border-bottom: 1px solid #c5cfd4; }
   </style>
 </head>
 <body>
@@ -151,7 +177,7 @@
     </section>
     <p class="cover-foot">This form mirrors the published v2.3 assessment model. For the digital workflow, use the Jal Jeevan Mission Digital Maturity Model application.</p>
   </main>
-  
+
       <div class="layer-section">
         <div class="layer-heading">
           <div class="layer-index">1</div>
@@ -270,6 +296,7 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -389,6 +416,11 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
+        <div class="layer-subtotal">
+          <span><strong>Layer 1 subtotal — Citizens</strong><br><small>Sum of 6 ratings</small></span>
+          <span class="subtotal-entry">Score: ______ / 24</span>
+        </div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -508,6 +540,7 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -627,6 +660,11 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
+        <div class="layer-subtotal">
+          <span><strong>Layer 2 subtotal — Frontline Workers</strong><br><small>Sum of 6 ratings</small></span>
+          <span class="subtotal-entry">Score: ______ / 24</span>
+        </div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -746,6 +784,7 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -865,6 +904,7 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -948,6 +988,11 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
+        <div class="layer-subtotal">
+          <span><strong>Layer 3 subtotal — Department</strong><br><small>Sum of 8 ratings</small></span>
+          <span class="subtotal-entry">Score: ______ / 32</span>
+        </div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1067,6 +1112,7 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1150,6 +1196,11 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
+        <div class="layer-subtotal">
+          <span><strong>Layer 4 subtotal — State Functionaries</strong><br><small>Sum of 5 ratings</small></span>
+          <span class="subtotal-entry">Score: ______ / 20</span>
+        </div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1269,6 +1320,7 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1352,6 +1404,11 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
+        <div class="layer-subtotal">
+          <span><strong>Layer 5 subtotal — Shared Digital Services</strong><br><small>Sum of 5 ratings</small></span>
+          <span class="subtotal-entry">Score: ______ / 20</span>
+        </div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1471,6 +1528,7 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1590,6 +1648,99 @@
         <div class="notes-label">Evidence / notes</div>
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
+
+        <div class="layer-subtotal">
+          <span><strong>Layer 6 subtotal — Technology Foundation</strong><br><small>Sum of 6 ratings</small></span>
+          <span class="subtotal-entry">Score: ______ / 24</span>
+        </div>
       </div>
+  <section class="summary-page">
+    <div class="summary-title">
+      <div class="eyebrow">Score sheet · v2.3</div>
+      <h2>Assessment summary</h2>
+      <p>Carry each layer subtotal here, total them, then read the maturity index below.</p>
+    </div>
+    <table class="summary-table">
+      <thead>
+        <tr><th>Layer</th><th>Subtotal</th><th>Maximum</th></tr>
+      </thead>
+      <tbody>
+
+          <tr>
+            <td>1. Citizens</td>
+            <td><span class="summary-blank"></span></td>
+            <td>24</td>
+          </tr>
+          <tr>
+            <td>2. Frontline Workers</td>
+            <td><span class="summary-blank"></span></td>
+            <td>24</td>
+          </tr>
+          <tr>
+            <td>3. Department</td>
+            <td><span class="summary-blank"></span></td>
+            <td>32</td>
+          </tr>
+          <tr>
+            <td>4. State Functionaries</td>
+            <td><span class="summary-blank"></span></td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>5. Shared Digital Services</td>
+            <td><span class="summary-blank"></span></td>
+            <td>20</td>
+          </tr>
+          <tr>
+            <td>6. Technology Foundation</td>
+            <td><span class="summary-blank"></span></td>
+            <td>24</td>
+          </tr>
+        <tr class="summary-total">
+          <td>Total</td>
+          <td><span class="summary-blank"></span></td>
+          <td>144</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="summary-panels">
+      <div class="summary-panel">
+        <h3>Overall maturity index</h3>
+        <p>Total ÷ 144 × 100 = <span class="summary-blank"></span> %</p>
+        <table class="band-table">
+          <tbody>
+            <tr><td>0–20%</td><td>Nascent</td></tr>
+            <tr><td>21–40%</td><td>Emerging</td></tr>
+            <tr><td>41–60%</td><td>Developing</td></tr>
+            <tr><td>61–80%</td><td>Mature</td></tr>
+            <tr><td>81–100%</td><td>Leading</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="summary-panel">
+        <h3>Layer maturity index</h3>
+        <p>Read each layer subtotal out of its maximum above.</p>
+        <table class="band-table">
+          <tbody>
+            <tr><td>0–20%</td><td>Nascent</td></tr>
+            <tr><td>21–40%</td><td>Emerging</td></tr>
+            <tr><td>41–60%</td><td>Developing</td></tr>
+            <tr><td>61–80%</td><td>Mature</td></tr>
+            <tr><td>81–100%</td><td>Leading</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="summary-notes">
+      <h3>Notes · evidence · systems referenced</h3>
+      <div class="summary-note-line"></div>
+      <div class="summary-note-line"></div>
+      <div class="summary-note-line"></div>
+      <div class="summary-note-line"></div>
+      <div class="summary-note-line"></div>
+    </div>
+  </section>
 </body>
 </html>

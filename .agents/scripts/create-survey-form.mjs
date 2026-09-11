@@ -325,5 +325,5 @@ const html = `<!doctype html>
 const outputDir = path.join(root, "deliverables");
 await fs.mkdir(outputDir, { recursive: true });
 const htmlPath = path.join(outputDir, "DMM-v2.3-Survey-Form.html");
-await fs.writeFile(htmlPath, html, "utf8");
+await fs.writeFile(htmlPath, html.replace(/[ \t]+$/gm, ""), "utf8");
 console.log(`Wrote ${path.relative(root, htmlPath)} — ${capabilityNumber} capabilities`);
