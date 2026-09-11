@@ -14,3 +14,17 @@ mtime_ms = 1789129599967
 storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:ba9d7656-9f05-4e2d-a45e-c24fad3e9f03/c39710b4-66ac-49c9-983a-9bfc814e043a/fe565f3c-460e-4a27-a524-8c2ff68a1f28"
 storage_version_token = "1789129853924481"
 content_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+[[outputs]]
+id = "4ip4bWsFYk9TUyVzj9-qG"
+uri = "file://deliverables/DMM-v2.3-Survey-Form.pdf"
+type = "pdf"
+title = "Jal Jeevan Mission Digital Maturity Model v2.3 Survey Form"
+description = "Printable A4 survey form covering all 36 v2.3 capabilities across six layers, with score boxes from 0–4 and evidence/notes space."
+logical_id = "cfa30579-a888-4ae5-90a5-5609e6b921ca"
+content_hash = "sha256:d23943b1f8e658177c7ee5a778c5f72c3c8005046c3cc0ea2e5bdbccf86f3113"
+size = 263971
+mtime_ms = 1789135543739
+storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:ba9d7656-9f05-4e2d-a45e-c24fad3e9f03/cfa30579-a888-4ae5-90a5-5609e6b921ca/9b9f83e5-1d3a-46bd-8912-b7c27f13acb3"
+storage_version_token = "1789135588872695"
+content_type = "application/pdf"

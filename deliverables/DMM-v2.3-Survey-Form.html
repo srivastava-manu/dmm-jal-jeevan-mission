@@ -52,9 +52,10 @@
     .instructions h2 { font-size: 14pt; margin-bottom: 3mm; }
     .instructions ol { margin: 0 0 6mm 5mm; padding-left: 5mm; }
     .instructions li { margin: 2mm 0; }
-    .scale-table { width: 100%; border-collapse: collapse; margin-top: 4mm; font-size: 8.6pt; }
-    .scale-table td { border-top: 1px solid var(--line); padding: 2.5mm 2mm; vertical-align: top; }
-    .scale-table tr:last-child td { border-bottom: 1px solid var(--line); }
+    .scale-table { width: 100%; display: grid; margin-top: 4mm; font-size: 8.2pt; }
+    .scale-table tbody { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 5mm; }
+    .scale-table tr { display: grid; grid-template-columns: 9mm 1fr; border: 1px solid var(--line); border-radius: 2mm; }
+    .scale-table td { border: 0; padding: 2mm 1.5mm; vertical-align: top; }
     .scale-number { width: 10mm; color: var(--accent); font-size: 13pt; font-weight: 700; text-align: center; }
     .scale-table span { color: var(--muted); }
     .cover-foot { margin-top: auto; padding-top: 10mm; color: var(--muted); font-size: 8.5pt; }
@@ -94,18 +95,9 @@
     .notes-label { margin-top: 3mm; color: var(--muted); font-size: 8pt; font-weight: 700; }
     .writing-lines { display: grid; gap: 3mm; margin-top: 2mm; }
     .writing-lines span { height: 4mm; border-bottom: 1px solid #c5cfd4; }
-    .document-footer {
-      position: fixed; bottom: -10mm; left: 0; right: 0;
-      border-top: 1px solid var(--line); padding-top: 2mm;
-      color: var(--muted); font-size: 7.5pt; display: flex; justify-content: space-between;
-    }
   </style>
 </head>
 <body>
-  <div class="document-footer">
-    <span>Jal Jeevan Mission · Digital Maturity Model v2.3</span>
-    <span>Printable survey form · Complete one form per State/UT</span>
-  </div>
   <main class="cover">
     <div class="brand-line"></div>
     <div class="kicker">Jal Jeevan Mission</div>
@@ -160,1367 +152,1444 @@
     <p class="cover-foot">This form mirrors the published v2.3 assessment model. For the digital workflow, use the Jal Jeevan Mission Digital Maturity Model application.</p>
   </main>
   
-    <div class="layer-section">
-      <div class="layer-heading">
-        <div class="layer-index">1</div>
-        <div>
-          <div class="eyebrow">Layer 1 · 6 capabilities</div>
-          <h2>Citizens</h2>
-          <p>Digital services reaching consumers and households directly</p>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">1</div>
+          <div>
+            <div class="eyebrow">Layer 1 · 6 capabilities</div>
+            <h2>Citizens</h2>
+            <p>Digital services reaching consumers and households directly</p>
+          </div>
         </div>
-      </div>
-      <div class="capability-list">
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">1</span>
-            <h3>Grievance &amp; Feedback</h3>
-          </div>
-          <p class="measure">Whether the State has the digital capability to systematically collect, analyze, and act upon citizen grievance &amp; feedback regarding rural drinking water services.</p>
-          <div class="includes"><strong>Includes:</strong> Feedback capture · Sentiment analysis · Closure of loop</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">2</span>
-            <h3>Consumer Registry</h3>
-          </div>
-          <p class="measure">Whether the State has a digital registry of FHTC / consumers with a unique identifier, and whether this database is authoritative, complete, up-to-date, interoperable and actively used.</p>
-          <div class="includes"><strong>Includes:</strong> Unique consumer ID · Household mapping · Interoperability · Active use</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">3</span>
-            <h3>Connection Lifecycle Management</h3>
-          </div>
-          <p class="measure">Whether the State effectively manages the entire lifecycle of a Functional Household Tap Connection (FHTC): from application through installation, modification, transfer, suspension and disconnection.</p>
-          <div class="includes"><strong>Includes:</strong> Application · Installation · Transfer · Suspension · Disconnection</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">4</span>
-            <h3>Billing &amp; Payments</h3>
-          </div>
-          <p class="measure">Whether the state has the capability to digitally view bills, receive payment reminders, make online payments through multiple channels, access payment history and receive digital receipts.</p>
-          <div class="includes"><strong>Includes:</strong> Bill view · Reminders · Online payment · Payment history · Digital receipts</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">5</span>
-            <h3>Notifications &amp; Alerts</h3>
-          </div>
-          <p class="measure">Whether the system has the capability to notify citizens before they need to ask — planned supply interruptions, water quality advisories, bill due reminders, complaint status updates or restoration notices.</p>
-          <div class="includes"><strong>Includes:</strong> Supply interruptions · Quality advisories · Bill reminders · Complaint status</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">6</span>
-            <h3>Citizen Engagement &amp; Participation</h3>
-          </div>
-          <p class="measure">Whether the State provides digital mechanisms that enable citizens and communities to actively participate in governance, monitoring, planning and decision-making.</p>
-          <div class="includes"><strong>Includes:</strong> Participation · Community monitoring · Planning inputs</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section></div>
-    </div>
-    <div class="layer-section">
-      <div class="layer-heading">
-        <div class="layer-index">2</div>
-        <div>
-          <div class="eyebrow">Layer 2 · 6 capabilities</div>
-          <h2>Frontline Workers</h2>
-          <p>Digital tools used by field staff for monitoring and reporting</p>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">1</span>
+          <h3>Grievance &amp; Feedback</h3>
         </div>
-      </div>
-      <div class="capability-list">
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">7</span>
-            <h3>Water Quantity &amp; Regularity</h3>
+        <p class="measure">Whether the State has the digital capability to systematically collect, analyze, and act upon citizen grievance &amp; feedback regarding rural drinking water services.</p>
+        <div class="includes"><strong>Includes:</strong> Feedback capture · Sentiment analysis · Closure of loop</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
           </div>
-          <p class="measure">Whether the system has the capability to enable frontline workers to accurately measure, digitally report and validate daily water supply data in a timely manner using standardized processes and digital tools.</p>
-          <div class="includes"><strong>Includes:</strong> Daily reporting · Validation · Integration · Governance</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">8</span>
-            <h3>FTK Testing</h3>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
           </div>
-          <p class="measure">Whether the system has the capability to enable frontline workers to conduct Field Test Kit (FTK) tests, digitally report water quality observations, identify potential quality issues and support routine village-level surveillance.</p>
-          <div class="includes"><strong>Includes:</strong> FTK testing · Digital reporting · Issue identification</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">9</span>
-            <h3>Repair and Maintenance</h3>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
           </div>
-          <p class="measure">Whether the system has the capability to effectively monitor minor maintenance and repair activities to ensure timely completion, quality of repairs, asset uptime, and continuous improvement.</p>
-          <div class="includes"><strong>Includes:</strong> Maintenance logs · O&amp;M expenditure · Collections</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">10</span>
-            <h3>Community Engagement</h3>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
           </div>
-          <p class="measure">Whether the system has the capability to enable frontline workers to digitally plan, conduct, record and monitor community mobilization and IEC activities that promote safe water practices and sustainable operation.</p>
-          <div class="includes"><strong>Includes:</strong> IEC planning · Activity records · Monitoring</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">11</span>
-            <h3>Financial Management</h3>
-          </div>
-          <p class="measure">Whether the system has the capability to enable frontline workers to digitally record O&amp;M expenditure, collections and village-level financial management.</p>
-          <div class="includes"><strong>Includes:</strong> Field collection · Inspections · Surveys · Compliance records</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">12</span>
-            <h3>Digital Work Assistance</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to digitally empower frontline workers through mobile applications, role-based dashboards, contextual digital assistants, training, knowledge resources and alerts.</p>
-          <div class="includes"><strong>Includes:</strong> Mobile apps · Role dashboards · Training · Alerts</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section></div>
-    </div>
-    <div class="layer-section">
-      <div class="layer-heading">
-        <div class="layer-index">3</div>
-        <div>
-          <div class="eyebrow">Layer 3 · 8 capabilities</div>
-          <h2>Department</h2>
-          <p>Digital systems for planning, finance, and governance at department level</p>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">2</span>
+          <h3>Consumer Registry</h3>
         </div>
-      </div>
-      <div class="capability-list">
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">13</span>
-            <h3>Infrastructure Planning &amp; Asset Governance</h3>
+        <p class="measure">Whether the State has a digital registry of FHTC / consumers with a unique identifier, and whether this database is authoritative, complete, up-to-date, interoperable and actively used.</p>
+        <div class="includes"><strong>Includes:</strong> Unique consumer ID · Household mapping · Interoperability · Active use</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
           </div>
-          <p class="measure">Whether the State has the capability to digitally plan, design, govern and manage rural water infrastructure throughout its lifecycle, including DPR preparation, asset inventory, commissioning and lifecycle management.</p>
-          <div class="includes"><strong>Includes:</strong> Asset Management · Inventory · BOQ · DPR · Asset Registry</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">14</span>
-            <h3>Vendor &amp; Financial Management</h3>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
           </div>
-          <p class="measure">Whether the State has the capability to digitally manage procurement, contracts, work orders, invoices, payments and financial transactions, ensuring financial accountability and integration with government financial systems.</p>
-          <div class="includes"><strong>Includes:</strong> Vendor Management · Contracts · Work Orders · Invoices · Payments · IFMS</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">15</span>
-            <h3>Water Resource &amp; Sustainability Management</h3>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
           </div>
-          <p class="measure">Whether the State has the capability to digitally assess, monitor and manage water sources, hydrogeology and source sustainability to ensure long-term availability and resilience.</p>
-          <div class="includes"><strong>Includes:</strong> Source Sustainability · Source Geology · Water Audits</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">16</span>
-            <h3>Water Service Intelligence</h3>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
           </div>
-          <p class="measure">Whether the State has the capability to digitally monitor, analyse and optimise rural water service delivery using operational data, dashboards, analytics, predictive insights and decision-support tools.</p>
-          <div class="includes"><strong>Includes:</strong> BI · MIS · Dashboards · Predictive Maintenance · Scheme Risk Forecasting</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">17</span>
-            <h3>Water Quality Governance</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to digitally monitor, analyse and govern drinking water quality through laboratory management, surveillance, compliance monitoring and timely corrective actions.</p>
-          <div class="includes"><strong>Includes:</strong> LIMS · Water Quality surveillance</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">18</span>
-            <h3>Engineering &amp; Network Intelligence</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to digitally model, monitor and optimise water supply infrastructure using engineering tools, spatial intelligence, network modelling and operational telemetry.</p>
-          <div class="includes"><strong>Includes:</strong> GIS · Geo-tagging · Hydraulic Modeling · IoT · SCADA</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">19</span>
-            <h3>Project Delivery &amp; Service Quality</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to digitally plan, execute, monitor and validate rural water infrastructure projects, ensuring timely completion, adherence to quality standards, and compliance with contractual and technical requirements.</p>
-          <div class="includes"><strong>Includes:</strong> Planning · Execution · Quality checks · Compliance</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">20</span>
-            <h3>Operations &amp; Resource Management</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to digitally plan, allocate and monitor operational resources, including workforce, equipment, materials, consumables and finances, to support efficient O&amp;M of water supply schemes.</p>
-          <div class="includes"><strong>Includes:</strong> Workforce · Equipment · Materials · Finances</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section></div>
-    </div>
-    <div class="layer-section">
-      <div class="layer-heading">
-        <div class="layer-index">4</div>
-        <div>
-          <div class="eyebrow">Layer 4 · 5 capabilities</div>
-          <h2>State Functionaries</h2>
-          <p>Cross-department coordination and strategic decision-making</p>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">3</span>
+          <h3>Connection Lifecycle Management</h3>
         </div>
+        <p class="measure">Whether the State effectively manages the entire lifecycle of a Functional Household Tap Connection (FHTC): from application through installation, modification, transfer, suspension and disconnection.</p>
+        <div class="includes"><strong>Includes:</strong> Application · Installation · Transfer · Suspension · Disconnection</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
       </div>
-      <div class="capability-list">
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">21</span>
-            <h3>Interdepartmental Coordination &amp; Collaboration</h3>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">1</div>
+          <div>
+            <div class="eyebrow">Layer 1 · 6 capabilities · continued</div>
+            <h2>Citizens</h2>
+            <p>Digital services reaching consumers and households directly</p>
           </div>
-          <p class="measure">Whether the State has the capability to digitally coordinate, collaborate and exchange information across departments to enable seamless execution of programmes and coordinated governance of rural drinking water services.</p>
-          <div class="includes"><strong>Includes:</strong> Data exchange · Workflow · Coordination</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">22</span>
-            <h3>Integrated Planning &amp; Programme Governance</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to digitally support joint planning, approvals, programme monitoring and governance across multiple departments.</p>
-          <div class="includes"><strong>Includes:</strong> Joint planning · Approvals · Programme governance</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">23</span>
-            <h3>Cross-Sector Policy &amp; Regulatory Alignment</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to digitally support alignment of policies, regulations, standards and institutional responsibilities across sectors.</p>
-          <div class="includes"><strong>Includes:</strong> Policy alignment · Regulatory coordination</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">24</span>
-            <h3>Strategic Intelligence &amp; Decision Support</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to provide integrated analytics, dashboards and cross-sector insights that enable evidence-based planning, monitoring and strategic decision-making.</p>
-          <div class="includes"><strong>Includes:</strong> Analytics · Dashboards · Performance monitoring</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">25</span>
-            <h3>Emergency Preparedness &amp; Resilience Management</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to digitally coordinate preparedness, emergency response, disaster management and recovery across departments to ensure continuity of drinking water services.</p>
-          <div class="includes"><strong>Includes:</strong> Disaster management · Emergency response · Drought · Floods · Contamination events</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section></div>
-    </div>
-    <div class="layer-section">
-      <div class="layer-heading">
-        <div class="layer-index">5</div>
-        <div>
-          <div class="eyebrow">Layer 5 · 5 capabilities</div>
-          <h2>Shared Digital Services</h2>
-          <p>Services shared across all stakeholder groups</p>
         </div>
-      </div>
-      <div class="capability-list">
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">26</span>
-            <h3>Stakeholder Identity &amp; Lifecycle Management</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to digitally onboard, authenticate, authorize and manage the lifecycle, profiles and access of all stakeholders across the water service ecosystem.</p>
-          <div class="includes"><strong>Includes:</strong> User management · Onboarding · Identity · Roles · Access</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">27</span>
-            <h3>Capacity Building &amp; Knowledge Management</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to digitally deliver training, certifications, knowledge resources, SOPs and continuous learning opportunities to strengthen stakeholder competencies.</p>
-          <div class="includes"><strong>Includes:</strong> LMS · Training · Certification · Knowledge · Digital learning</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">28</span>
-            <h3>Personalized Dashboards &amp; Reports</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to provide stakeholders with role-based dashboards, reports, alerts and insights that support operational monitoring, performance management and informed decision-making.</p>
-          <div class="includes"><strong>Includes:</strong> Role-based dashboards · Personalized KPIs · Drill-down · Self-service reporting · Automated distribution</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">29</span>
-            <h3>Intelligent Assistance &amp; Decision Support</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to provide contextual assistance, conversational interfaces, recommendations and guided workflows that help stakeholders perform tasks more effectively.</p>
-          <div class="includes"><strong>Includes:</strong> Context-aware guidance · Decision support · Recommendations · Conversational assistance</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">30</span>
-            <h3>Omnichannel Digital Experience</h3>
-          </div>
-          <p class="measure">Whether the State has the capability to enable stakeholders to access digital services through multiple channels such as mobile applications, web portals, WhatsApp, SMS, IVRS and future digital interfaces.</p>
-          <div class="includes"><strong>Includes:</strong> WhatsApp · Mobile · Portal · IVRS · SMS · Email</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section></div>
-    </div>
-    <div class="layer-section">
-      <div class="layer-heading">
-        <div class="layer-index">6</div>
-        <div>
-          <div class="eyebrow">Layer 6 · 6 capabilities</div>
-          <h2>Technology Foundation</h2>
-          <p>The software layer underlying every other layer</p>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">4</span>
+          <h3>Billing &amp; Payments</h3>
         </div>
+        <p class="measure">Whether the state has the capability to digitally view bills, receive payment reminders, make online payments through multiple channels, access payment history and receive digital receipts.</p>
+        <div class="includes"><strong>Includes:</strong> Bill view · Reminders · Online payment · Payment history · Digital receipts</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">5</span>
+          <h3>Notifications &amp; Alerts</h3>
+        </div>
+        <p class="measure">Whether the system has the capability to notify citizens before they need to ask — planned supply interruptions, water quality advisories, bill due reminders, complaint status updates or restoration notices.</p>
+        <div class="includes"><strong>Includes:</strong> Supply interruptions · Quality advisories · Bill reminders · Complaint status</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">6</span>
+          <h3>Citizen Engagement &amp; Participation</h3>
+        </div>
+        <p class="measure">Whether the State provides digital mechanisms that enable citizens and communities to actively participate in governance, monitoring, planning and decision-making.</p>
+        <div class="includes"><strong>Includes:</strong> Participation · Community monitoring · Planning inputs</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
       </div>
-      <div class="capability-list">
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">31</span>
-            <h3>Digital Platform &amp; Architecture</h3>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">2</div>
+          <div>
+            <div class="eyebrow">Layer 2 · 6 capabilities</div>
+            <h2>Frontline Workers</h2>
+            <p>Digital tools used by field staff for monitoring and reporting</p>
           </div>
-          <p class="measure">Whether the State has the capability to build and operate scalable, modular, resilient and maintainable digital solutions using modern architectural principles, reusable components and cloud-ready technologies.</p>
-          <div class="includes"><strong>Includes:</strong> Unified platform · Modular architecture · Microservices · Cloud native · DevOps · Containerization</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">32</span>
-            <h3>Interoperability &amp; Open Integration</h3>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">7</span>
+          <h3>Water Quantity &amp; Regularity</h3>
+        </div>
+        <p class="measure">Whether the system has the capability to enable frontline workers to accurately measure, digitally report and validate daily water supply data in a timely manner using standardized processes and digital tools.</p>
+        <div class="includes"><strong>Includes:</strong> Daily reporting · Validation · Integration · Governance</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
           </div>
-          <p class="measure">Whether the State has the capability to seamlessly exchange information and integrate with central, state and external systems through open standards, APIs, common data models and interoperable interfaces.</p>
-          <div class="includes"><strong>Includes:</strong> APIs · Centre systems · State systems · Standards · Registries · Eventing</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">33</span>
-            <h3>Data Management &amp; Governance</h3>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
           </div>
-          <p class="measure">Whether the State has the capability to establish trusted, high-quality and well-governed data through standardized data models, master data management, metadata, data quality and data governance practices.</p>
-          <div class="includes"><strong>Includes:</strong> Master data management · Metadata · Data quality · Data governance · Data catalog · Lineage · Stewardship</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">34</span>
-            <h3>Digital Identity &amp; Access Management</h3>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
           </div>
-          <p class="measure">Whether the State has the capability to securely manage digital identities, authentication, authorization and access control for users, applications and services while ensuring privacy and accountability.</p>
-          <div class="includes"><strong>Includes:</strong> IAM · SSO · RBAC · MFA</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">35</span>
-            <h3>Intelligent Automation &amp; Decision Support</h3>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
           </div>
-          <p class="measure">Whether the State has the capability to leverage intelligent technologies to automate business processes, generate insights, support decision-making and improve operational efficiency.</p>
-          <div class="includes"><strong>Includes:</strong> AI · ML · OCR · Prediction · Recommendations · NLP</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">36</span>
-            <h3>Security, Privacy &amp; Compliance</h3>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">8</span>
+          <h3>FTK Testing</h3>
+        </div>
+        <p class="measure">Whether the system has the capability to enable frontline workers to conduct Field Test Kit (FTK) tests, digitally report water quality observations, identify potential quality issues and support routine village-level surveillance.</p>
+        <div class="includes"><strong>Includes:</strong> FTK testing · Digital reporting · Issue identification</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
           </div>
-          <p class="measure">Whether the State has the capability to protect digital systems and data through comprehensive security controls, privacy safeguards, risk management and compliance with applicable standards and regulations.</p>
-          <div class="includes"><strong>Includes:</strong> Security · Privacy · Compliance · Audit · Encryption · Monitoring</div>
-          <div class="score-row">
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">0</span>
-              <span class="score-label">Does not exist</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">1</span>
-              <span class="score-label">Under development</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">2</span>
-              <span class="score-label">Pilot complete</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">3</span>
-              <span class="score-label">Functional at limited scale</span>
-            </div>
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">4</span>
-              <span class="score-label">Fully functional at state scale</span>
-            </div></div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section></div>
-    </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">9</span>
+          <h3>Repair and Maintenance</h3>
+        </div>
+        <p class="measure">Whether the system has the capability to effectively monitor minor maintenance and repair activities to ensure timely completion, quality of repairs, asset uptime, and continuous improvement.</p>
+        <div class="includes"><strong>Includes:</strong> Maintenance logs · O&amp;M expenditure · Collections</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">2</div>
+          <div>
+            <div class="eyebrow">Layer 2 · 6 capabilities · continued</div>
+            <h2>Frontline Workers</h2>
+            <p>Digital tools used by field staff for monitoring and reporting</p>
+          </div>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">10</span>
+          <h3>Community Engagement</h3>
+        </div>
+        <p class="measure">Whether the system has the capability to enable frontline workers to digitally plan, conduct, record and monitor community mobilization and IEC activities that promote safe water practices and sustainable operation.</p>
+        <div class="includes"><strong>Includes:</strong> IEC planning · Activity records · Monitoring</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">11</span>
+          <h3>Financial Management</h3>
+        </div>
+        <p class="measure">Whether the system has the capability to enable frontline workers to digitally record O&amp;M expenditure, collections and village-level financial management.</p>
+        <div class="includes"><strong>Includes:</strong> Field collection · Inspections · Surveys · Compliance records</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">12</span>
+          <h3>Digital Work Assistance</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally empower frontline workers through mobile applications, role-based dashboards, contextual digital assistants, training, knowledge resources and alerts.</p>
+        <div class="includes"><strong>Includes:</strong> Mobile apps · Role dashboards · Training · Alerts</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">3</div>
+          <div>
+            <div class="eyebrow">Layer 3 · 8 capabilities</div>
+            <h2>Department</h2>
+            <p>Digital systems for planning, finance, and governance at department level</p>
+          </div>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">13</span>
+          <h3>Infrastructure Planning &amp; Asset Governance</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally plan, design, govern and manage rural water infrastructure throughout its lifecycle, including DPR preparation, asset inventory, commissioning and lifecycle management.</p>
+        <div class="includes"><strong>Includes:</strong> Asset Management · Inventory · BOQ · DPR · Asset Registry</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">14</span>
+          <h3>Vendor &amp; Financial Management</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally manage procurement, contracts, work orders, invoices, payments and financial transactions, ensuring financial accountability and integration with government financial systems.</p>
+        <div class="includes"><strong>Includes:</strong> Vendor Management · Contracts · Work Orders · Invoices · Payments · IFMS</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">15</span>
+          <h3>Water Resource &amp; Sustainability Management</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally assess, monitor and manage water sources, hydrogeology and source sustainability to ensure long-term availability and resilience.</p>
+        <div class="includes"><strong>Includes:</strong> Source Sustainability · Source Geology · Water Audits</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">3</div>
+          <div>
+            <div class="eyebrow">Layer 3 · 8 capabilities · continued</div>
+            <h2>Department</h2>
+            <p>Digital systems for planning, finance, and governance at department level</p>
+          </div>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">16</span>
+          <h3>Water Service Intelligence</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally monitor, analyse and optimise rural water service delivery using operational data, dashboards, analytics, predictive insights and decision-support tools.</p>
+        <div class="includes"><strong>Includes:</strong> BI · MIS · Dashboards · Predictive Maintenance · Scheme Risk Forecasting</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">17</span>
+          <h3>Water Quality Governance</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally monitor, analyse and govern drinking water quality through laboratory management, surveillance, compliance monitoring and timely corrective actions.</p>
+        <div class="includes"><strong>Includes:</strong> LIMS · Water Quality surveillance</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">18</span>
+          <h3>Engineering &amp; Network Intelligence</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally model, monitor and optimise water supply infrastructure using engineering tools, spatial intelligence, network modelling and operational telemetry.</p>
+        <div class="includes"><strong>Includes:</strong> GIS · Geo-tagging · Hydraulic Modeling · IoT · SCADA</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">3</div>
+          <div>
+            <div class="eyebrow">Layer 3 · 8 capabilities · continued</div>
+            <h2>Department</h2>
+            <p>Digital systems for planning, finance, and governance at department level</p>
+          </div>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">19</span>
+          <h3>Project Delivery &amp; Service Quality</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally plan, execute, monitor and validate rural water infrastructure projects, ensuring timely completion, adherence to quality standards, and compliance with contractual and technical requirements.</p>
+        <div class="includes"><strong>Includes:</strong> Planning · Execution · Quality checks · Compliance</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">20</span>
+          <h3>Operations &amp; Resource Management</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally plan, allocate and monitor operational resources, including workforce, equipment, materials, consumables and finances, to support efficient O&amp;M of water supply schemes.</p>
+        <div class="includes"><strong>Includes:</strong> Workforce · Equipment · Materials · Finances</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">4</div>
+          <div>
+            <div class="eyebrow">Layer 4 · 5 capabilities</div>
+            <h2>State Functionaries</h2>
+            <p>Cross-department coordination and strategic decision-making</p>
+          </div>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">21</span>
+          <h3>Interdepartmental Coordination &amp; Collaboration</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally coordinate, collaborate and exchange information across departments to enable seamless execution of programmes and coordinated governance of rural drinking water services.</p>
+        <div class="includes"><strong>Includes:</strong> Data exchange · Workflow · Coordination</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">22</span>
+          <h3>Integrated Planning &amp; Programme Governance</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally support joint planning, approvals, programme monitoring and governance across multiple departments.</p>
+        <div class="includes"><strong>Includes:</strong> Joint planning · Approvals · Programme governance</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">23</span>
+          <h3>Cross-Sector Policy &amp; Regulatory Alignment</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally support alignment of policies, regulations, standards and institutional responsibilities across sectors.</p>
+        <div class="includes"><strong>Includes:</strong> Policy alignment · Regulatory coordination</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">4</div>
+          <div>
+            <div class="eyebrow">Layer 4 · 5 capabilities · continued</div>
+            <h2>State Functionaries</h2>
+            <p>Cross-department coordination and strategic decision-making</p>
+          </div>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">24</span>
+          <h3>Strategic Intelligence &amp; Decision Support</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to provide integrated analytics, dashboards and cross-sector insights that enable evidence-based planning, monitoring and strategic decision-making.</p>
+        <div class="includes"><strong>Includes:</strong> Analytics · Dashboards · Performance monitoring</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">25</span>
+          <h3>Emergency Preparedness &amp; Resilience Management</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally coordinate preparedness, emergency response, disaster management and recovery across departments to ensure continuity of drinking water services.</p>
+        <div class="includes"><strong>Includes:</strong> Disaster management · Emergency response · Drought · Floods · Contamination events</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">5</div>
+          <div>
+            <div class="eyebrow">Layer 5 · 5 capabilities</div>
+            <h2>Shared Digital Services</h2>
+            <p>Services shared across all stakeholder groups</p>
+          </div>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">26</span>
+          <h3>Stakeholder Identity &amp; Lifecycle Management</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally onboard, authenticate, authorize and manage the lifecycle, profiles and access of all stakeholders across the water service ecosystem.</p>
+        <div class="includes"><strong>Includes:</strong> User management · Onboarding · Identity · Roles · Access</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">27</span>
+          <h3>Capacity Building &amp; Knowledge Management</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to digitally deliver training, certifications, knowledge resources, SOPs and continuous learning opportunities to strengthen stakeholder competencies.</p>
+        <div class="includes"><strong>Includes:</strong> LMS · Training · Certification · Knowledge · Digital learning</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">28</span>
+          <h3>Personalized Dashboards &amp; Reports</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to provide stakeholders with role-based dashboards, reports, alerts and insights that support operational monitoring, performance management and informed decision-making.</p>
+        <div class="includes"><strong>Includes:</strong> Role-based dashboards · Personalized KPIs · Drill-down · Self-service reporting · Automated distribution</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">5</div>
+          <div>
+            <div class="eyebrow">Layer 5 · 5 capabilities · continued</div>
+            <h2>Shared Digital Services</h2>
+            <p>Services shared across all stakeholder groups</p>
+          </div>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">29</span>
+          <h3>Intelligent Assistance &amp; Decision Support</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to provide contextual assistance, conversational interfaces, recommendations and guided workflows that help stakeholders perform tasks more effectively.</p>
+        <div class="includes"><strong>Includes:</strong> Context-aware guidance · Decision support · Recommendations · Conversational assistance</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">30</span>
+          <h3>Omnichannel Digital Experience</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to enable stakeholders to access digital services through multiple channels such as mobile applications, web portals, WhatsApp, SMS, IVRS and future digital interfaces.</p>
+        <div class="includes"><strong>Includes:</strong> WhatsApp · Mobile · Portal · IVRS · SMS · Email</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">6</div>
+          <div>
+            <div class="eyebrow">Layer 6 · 6 capabilities</div>
+            <h2>Technology Foundation</h2>
+            <p>The software layer underlying every other layer</p>
+          </div>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">31</span>
+          <h3>Digital Platform &amp; Architecture</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to build and operate scalable, modular, resilient and maintainable digital solutions using modern architectural principles, reusable components and cloud-ready technologies.</p>
+        <div class="includes"><strong>Includes:</strong> Unified platform · Modular architecture · Microservices · Cloud native · DevOps · Containerization</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">32</span>
+          <h3>Interoperability &amp; Open Integration</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to seamlessly exchange information and integrate with central, state and external systems through open standards, APIs, common data models and interoperable interfaces.</p>
+        <div class="includes"><strong>Includes:</strong> APIs · Centre systems · State systems · Standards · Registries · Eventing</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">33</span>
+          <h3>Data Management &amp; Governance</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to establish trusted, high-quality and well-governed data through standardized data models, master data management, metadata, data quality and data governance practices.</p>
+        <div class="includes"><strong>Includes:</strong> Master data management · Metadata · Data quality · Data governance · Data catalog · Lineage · Stewardship</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">6</div>
+          <div>
+            <div class="eyebrow">Layer 6 · 6 capabilities · continued</div>
+            <h2>Technology Foundation</h2>
+            <p>The software layer underlying every other layer</p>
+          </div>
+        </div>
+        <div class="capability-list">
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">34</span>
+          <h3>Digital Identity &amp; Access Management</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to securely manage digital identities, authentication, authorization and access control for users, applications and services while ensuring privacy and accountability.</p>
+        <div class="includes"><strong>Includes:</strong> IAM · SSO · RBAC · MFA</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">35</span>
+          <h3>Intelligent Automation &amp; Decision Support</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to leverage intelligent technologies to automate business processes, generate insights, support decision-making and improve operational efficiency.</p>
+        <div class="includes"><strong>Includes:</strong> AI · ML · OCR · Prediction · Recommendations · NLP</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">36</span>
+          <h3>Security, Privacy &amp; Compliance</h3>
+        </div>
+        <p class="measure">Whether the State has the capability to protect digital systems and data through comprehensive security controls, privacy safeguards, risk management and compliance with applicable standards and regulations.</p>
+        <div class="includes"><strong>Includes:</strong> Security · Privacy · Compliance · Audit · Encryption · Monitoring</div>
+        <div class="score-row">
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">0</span>
+            <span class="score-label">Does not exist</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">1</span>
+            <span class="score-label">Under development</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">2</span>
+            <span class="score-label">Pilot complete</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">3</span>
+            <span class="score-label">Functional at limited scale</span>
+          </div>
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">4</span>
+            <span class="score-label">Fully functional at state scale</span>
+          </div></div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section></div>
+      </div>
 </body>
 </html>

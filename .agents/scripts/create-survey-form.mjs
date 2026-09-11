@@ -27,52 +27,56 @@ const scoreLabels = [
 
 let capabilityNumber = 0;
 const layerPages = model.LAYERS.map((layer, layerIndex) => {
-  const cards = layer.caps
-    .map((capability) => {
-      capabilityNumber += 1;
-      const number = capabilityNumber;
-      const includes = capability.inc?.length
-        ? `<div class="includes"><strong>Includes:</strong> ${capability.inc
-            .map(escapeHtml)
-            .join(" · ")}</div>`
-        : "";
-      const scoreBoxes = scoreLabels
-        .map(
-          ([score, label]) => `
-            <div class="score-option">
-              <span class="box"></span>
-              <span class="score-number">${score}</span>
-              <span class="score-label">${escapeHtml(label)}</span>
-            </div>`,
-        )
-        .join("");
-      return `
-        <section class="capability-card">
-          <div class="capability-heading">
-            <span class="capability-number">${number}</span>
-            <h3>${escapeHtml(capability.n)}</h3>
-          </div>
-          <p class="measure">${escapeHtml(capability.m)}</p>
-          ${includes}
-          <div class="score-row">${scoreBoxes}</div>
-          <div class="notes-label">Evidence / notes</div>
-          <div class="writing-lines"><span></span><span></span></div>
-        </section>`;
-    })
-    .join("");
-
-  return `
-    <div class="layer-section">
-      <div class="layer-heading">
-        <div class="layer-index">${layerIndex + 1}</div>
-        <div>
-          <div class="eyebrow">Layer ${layerIndex + 1} · ${layer.caps.length} capabilities</div>
-          <h2>${escapeHtml(layer.name)}</h2>
-          <p>${escapeHtml(layer.covers)}</p>
+  const cards = layer.caps.map((capability) => {
+    capabilityNumber += 1;
+    const number = capabilityNumber;
+    const includes = capability.inc?.length
+      ? `<div class="includes"><strong>Includes:</strong> ${capability.inc
+          .map(escapeHtml)
+          .join(" · ")}</div>`
+      : "";
+    const scoreBoxes = scoreLabels
+      .map(
+        ([score, label]) => `
+          <div class="score-option">
+            <span class="box"></span>
+            <span class="score-number">${score}</span>
+            <span class="score-label">${escapeHtml(label)}</span>
+          </div>`,
+      )
+      .join("");
+    return `
+      <section class="capability-card">
+        <div class="capability-heading">
+          <span class="capability-number">${number}</span>
+          <h3>${escapeHtml(capability.n)}</h3>
         </div>
-      </div>
-      <div class="capability-list">${cards}</div>
-    </div>`;
+        <p class="measure">${escapeHtml(capability.m)}</p>
+        ${includes}
+        <div class="score-row">${scoreBoxes}</div>
+        <div class="notes-label">Evidence / notes</div>
+        <div class="writing-lines"><span></span><span></span></div>
+      </section>`;
+  });
+
+  const pages = [];
+  for (let start = 0; start < cards.length; start += 3) {
+    const chunk = cards.slice(start, start + 3).join("");
+    const continuation = start > 0 ? " · continued" : "";
+    pages.push(`
+      <div class="layer-section">
+        <div class="layer-heading">
+          <div class="layer-index">${layerIndex + 1}</div>
+          <div>
+            <div class="eyebrow">Layer ${layerIndex + 1} · ${layer.caps.length} capabilities${continuation}</div>
+            <h2>${escapeHtml(layer.name)}</h2>
+            <p>${escapeHtml(layer.covers)}</p>
+          </div>
+        </div>
+        <div class="capability-list">${chunk}</div>
+      </div>`);
+  }
+  return pages.join("");
 }).join("");
 
 const scaleRows = model.SCALE.map(
@@ -137,9 +141,10 @@ const html = `<!doctype html>
     .instructions h2 { font-size: 14pt; margin-bottom: 3mm; }
     .instructions ol { margin: 0 0 6mm 5mm; padding-left: 5mm; }
     .instructions li { margin: 2mm 0; }
-    .scale-table { width: 100%; border-collapse: collapse; margin-top: 4mm; font-size: 8.6pt; }
-    .scale-table td { border-top: 1px solid var(--line); padding: 2.5mm 2mm; vertical-align: top; }
-    .scale-table tr:last-child td { border-bottom: 1px solid var(--line); }
+    .scale-table { width: 100%; display: grid; margin-top: 4mm; font-size: 8.2pt; }
+    .scale-table tbody { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 5mm; }
+    .scale-table tr { display: grid; grid-template-columns: 9mm 1fr; border: 1px solid var(--line); border-radius: 2mm; }
+    .scale-table td { border: 0; padding: 2mm 1.5mm; vertical-align: top; }
     .scale-number { width: 10mm; color: var(--accent); font-size: 13pt; font-weight: 700; text-align: center; }
     .scale-table span { color: var(--muted); }
     .cover-foot { margin-top: auto; padding-top: 10mm; color: var(--muted); font-size: 8.5pt; }
@@ -179,18 +184,9 @@ const html = `<!doctype html>
     .notes-label { margin-top: 3mm; color: var(--muted); font-size: 8pt; font-weight: 700; }
     .writing-lines { display: grid; gap: 3mm; margin-top: 2mm; }
     .writing-lines span { height: 4mm; border-bottom: 1px solid #c5cfd4; }
-    .document-footer {
-      position: fixed; bottom: -10mm; left: 0; right: 0;
-      border-top: 1px solid var(--line); padding-top: 2mm;
-      color: var(--muted); font-size: 7.5pt; display: flex; justify-content: space-between;
-    }
   </style>
 </head>
 <body>
-  <div class="document-footer">
-    <span>Jal Jeevan Mission · Digital Maturity Model ${escapeHtml(model.MODEL_VERSION)}</span>
-    <span>Printable survey form · Complete one form per State/UT</span>
-  </div>
   <main class="cover">
     <div class="brand-line"></div>
     <div class="kicker">Jal Jeevan Mission</div>
