@@ -66,7 +66,7 @@ npm install
 npm run db:setup       # create/adjust the dmm_app role + grants (idempotent)
 npm run db:migrate     # apply migrations/001–003 (plain SQL, tracked in schema_migrations)
 npm run db:seed        # dev users: 1 centre + 2 demo assessors (Sikkim, Tripura)
-npm run db:seed:model  # current model v2.2 (36 capabilities) + 20 submitted assessments from the data files
+npm run db:seed:model  # current model v2.3 (36 capabilities) + 20 submitted assessments from the data files
 ```
 
 Reset everything and re-seed:
@@ -92,7 +92,7 @@ real, data-backed national dashboard once `db:seed:model` has run.
 ## The national dashboard (data slice)
 
 `db:seed:model` loads the authoritative content from `dmm-model.js` and
-`njjm-centre-data.js` into real rows: model v2.2 with its 36 capabilities, an assessor per
+`njjm-centre-data.js` into real rows: model v2.3 with its 36 capabilities, an assessor per
 seeded state, and 20 **submitted** assessments (4 further states have an assessor but no
 submission). Sign in as `centre@njjm.gov.in` to see:
 
@@ -201,7 +201,7 @@ labelled maturity grid, forced to page 2 with `break-before: page`.
 
 To try cross-version compare locally: `npm run db:seed:demo` then
 `npm run db:seed:compare-demo` (adds an earlier v2.1 round for Andhra Pradesh), then open the
-current v2.2 assessment's Compare.
+current v2.3 assessment's Compare.
 
 ## About the model (public)
 

@@ -59,7 +59,7 @@ appear on the national dashboard as real maturity scores for real states.
               (SELECT count(*) FROM users)        AS users,         -- expect 0
               (SELECT count(*) FROM states)       AS states,        -- expect 36
               (SELECT count(*) FROM capabilities
-                 WHERE model_version_id = (SELECT id FROM model_versions WHERE version = 'v2.2'))
+                  WHERE model_version_id = (SELECT id FROM model_versions WHERE version = 'v2.3'))
                                                     AS current_capabilities; -- expect 36
       ```
 
@@ -68,7 +68,7 @@ appear on the national dashboard as real maturity scores for real states.
       ```sql
       SELECT version, public_notes IS NOT NULL AS listed_publicly FROM model_versions;
       ```
-       Expect exactly `v2.1 | true` and `v2.2 | true` after the v2.2 migration is applied.
+       Expect exactly `v2.1 | true`, `v2.2 | true`, and `v2.3 | true` after the v2.3 migration is applied.
 
 ---
 

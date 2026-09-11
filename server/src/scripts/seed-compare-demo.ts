@@ -1,11 +1,11 @@
 import { adminPool } from "../db/admin.js";
 
 // Demo scaffolding for cross-version compare: creates an earlier v2.1 assessment for Andhra
-// Pradesh, while leaving the v2.1 model rows and the current v2.2 assessment unchanged.
+// Pradesh, while leaving the v2.2 model rows and the current v2.3 assessment unchanged.
 // Idempotent and intentionally limited to the development/demo database.
 
-const EARLIER_VERSION = "v2.1";
-const CURRENT_VERSION = "v2.2";
+const EARLIER_VERSION = "v2.2";
+const CURRENT_VERSION = "v2.3";
 const STATE = "Andhra Pradesh";
 
 async function main(): Promise<void> {
@@ -91,7 +91,7 @@ async function main(): Promise<void> {
       const base = currentValues.get(cap.name);
       let value: number;
       if (base === undefined) {
-        value = 2; // Retired in v2.2; compare must mark it not comparable.
+        value = 2; // Renamed or retired in v2.3; compare must mark it not comparable.
       } else {
         comparableSeen++;
         if (comparableSeen <= 3) value = clamp(base - 1);

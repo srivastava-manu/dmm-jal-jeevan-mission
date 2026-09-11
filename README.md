@@ -6,7 +6,7 @@ A single web application that lets **state IT officers** self-assess the digital
 IT systems under the Jal Jeevan Mission, and lets the **National Jal Jeevan Mission (Centre)** see the
 consolidated national picture, manage state assessor accounts, and respond to support requests raised by states.
 
-The current assessment model (v2.2) has **36 capability areas across 6 layers**, each scored 0–4.
+The current assessment model (v2.3) has **36 capability areas across 6 layers**, each scored 0–4.
 Layer maxima follow the number of capabilities in each layer; the overall assessment scores 0–144,
 which converts to a percentage and a named maturity band.
 
@@ -54,7 +54,7 @@ migration rules are in **`MODEL-VERSIONS.md`**.
 
 It exports:
 
-- `MODEL_VERSION` — e.g. `"v2.2"`
+- `MODEL_VERSION` — e.g. `"v2.3"`
 - `SCALE` — the five rating levels: `{n, short, t, d}`
 - `BANDS` — the five maturity bands with their percentage ceilings
 - `SCORE_COLORS` — the 0–4 colour ramp
@@ -96,7 +96,8 @@ removed; Project Delivery & Quality Assurance and Operations & Resource Manageme
 Department; Contract Performance & Compliance, Water Quality Management, Water Service Delivery
 and Asset Lifecycle Management were retired; Public Feedback & Stakeholder Engagement was removed
 from State Functionaries; and Grievance & Service Request Management was removed from Shared Digital
-Services. Model v2.1 remains intact for historical assessments.
+Services. Model v2.3 applies the latest terminology and measure wording updates to eight existing
+capabilities. Model v2.1 and v2.2 remain intact for historical assessments.
 
 Every capability's measure text begins "Whether the State has the capability to…" or
 "Whether the system has the capability to…". Keep that phrasing.
@@ -113,7 +114,7 @@ These are the rules the design encodes. Getting them wrong breaks the product's 
    absent from the denominator.
 3. **Submitted assessments lock after 7 days.** `locked_at = submitted_at + 7 days`. Score writes after
    that are rejected server-side, not just hidden in the UI.
-4. **Submission requires all 36 answered in v2.2.** A partial assessment distorts the index. The review screen
+4. **Submission requires all 36 answered in v2.3.** A partial assessment distorts the index. The review screen
    lists what is missing and the submit button is disabled until it's empty.
 5. **Evidence appears only on scores of 3 and 4.** When an assessor picks 3 or 4, an evidence block
    appears: system (dropdown from the state's own systems list), districts live, go-live month.
@@ -148,11 +149,11 @@ states
   id, name, is_ut (bool)
 
 model_versions
-  id, version ('v2.2' or a historical version), published_at, notes, public_notes
+  id, version ('v2.3' or a historical version), published_at, notes, public_notes
 
 capabilities
   id, model_version_id, layer_index (0-7), layer_name, layer_covers,
-  order_in_layer (0-5), name, measure, includes (text[])
+  order_in_layer (0-7), name, measure, includes (text[])
 
 assessments
   id, state_id, assessor_user_id, model_version_id,
@@ -183,7 +184,7 @@ audit_log                                   -- user-management actions and syste
 ### Derived values (compute, never store)
 
 - `layer_score` = sum of that layer's score values; the maximum is the layer capability count × 4
-- `overall_score` = sum of all 36 in v2.2 (0–144); `overall_pct = round(overall/144*100)`
+- `overall_score` = sum of all 36 in v2.3 (0–144); `overall_pct = round(overall/144*100)`
 - `band(pct)` = first band whose ceiling ≥ pct
 - **National capability average** = mean of that capability's value across submitted assessments
 - **National layer average** = sum of that layer's capability averages (out of the layer maximum)
@@ -238,7 +239,7 @@ Three columns: **248px layer nav / flexible capability list / 288px score rail**
 **Left nav** — "Layers" label with "N of total" in mono, a progress bar, then the current model's
 layer items. Each shows the layer number, answered/total count, a status dot and either the band +
 score (complete), "In progress", or "Not started". Active layer gets `--accent-soft` background and
-`--border-accent`. Footer: "Model v2.2 · 36 capabilities · scale 0–4. Answers save as you go."
+`--border-accent`. Footer: "Model v2.3 · 36 capabilities · scale 0–4. Answers save as you go."
 
 **Centre column** — "LAYER N OF 6" label, layer name at 24px/600, an "All capabilities in a grid" button top
 right. Then one card per capability (12px radius, 18px 20px padding):

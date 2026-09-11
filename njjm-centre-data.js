@@ -83,7 +83,7 @@ const STATES = STATE_ROWS.map((r, i) => ({
 }));
 
 const REQUESTS = [
-  { id: "rq1", state: "Jharkhand", capability: "Field Data Management", layer: "Frontline Workers", score: 1,
+  { id: "rq1", state: "Jharkhand", capability: "Financial Management", layer: "Frontline Workers", score: 1,
     date: "19 Jul 2026", status: "New", note: "We have no digital field data capture beyond a WhatsApp group. Looking for what other states use.", reply: "" },
   { id: "rq2", state: "Bihar", capability: "Interoperability & Open Integration", layer: "Technology Foundation", score: 0,
     date: "29 Jun 2026", status: "In progress", note: "Our MIS cannot exchange data with the central IMIS. Need guidance on the API standards.", reply: "Shared the IMIS integration spec on 02 Jul. Technical call being scheduled with NIC." },
