@@ -3,3 +3,4 @@
 - [GitHub CLI authentication](github-cli-auth.md) — Replit’s GitHub API connection and Shell Git credentials use separate authorization paths.
 - [Dependency advisory verification](dependency-advisory-verification.md) — a clean npm audit may not prove task-listed vulnerable versions are absent; inspect the full lock tree too.
 - [Uneven model layers](uneven-model-layers.md) — model revisions may change per-layer capability counts; schema checks and seed mappings must not assume six.
+- [Survey PDF pagination](survey-pdf-pagination.md) — Chromium CSS page counters resolve to zero; generate numbered footers from the known page structure.
