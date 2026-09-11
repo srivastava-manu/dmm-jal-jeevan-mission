@@ -34,6 +34,9 @@ const maturityBands = [
 ];
 
 let capabilityNumber = 0;
+const totalPages =
+  2 + model.LAYERS.reduce((count, layer) => count + Math.ceil(layer.caps.length / 3), 0);
+let pageNumber = 2;
 const layerPages = model.LAYERS.map((layer, layerIndex) => {
   const cards = layer.caps.map((capability) => {
     capabilityNumber += 1;
@@ -91,7 +94,9 @@ const layerPages = model.LAYERS.map((layer, layerIndex) => {
         </div>
         <div class="capability-list">${chunk}</div>
         ${subtotal}
+        <div class="page-footer">Page ${pageNumber} of ${totalPages}</div>
       </div>`);
+    pageNumber += 1;
   }
   return pages.join("");
 }).join("");
@@ -138,8 +143,10 @@ const html = `<!doctype html>
       line-height: 1.38;
       background: white;
     }
-    .cover, .layer-section, .summary-page { break-after: page; }
-    .cover { min-height: 260mm; display: flex; flex-direction: column; }
+    .cover, .layer-section, .summary-page {
+      position: relative; min-height: 260mm; break-after: page; padding-bottom: 8mm;
+    }
+    .cover { display: flex; flex-direction: column; }
     .brand-line { height: 7px; background: var(--accent); margin: -16mm -14mm 22mm; }
     .kicker, .eyebrow {
       color: var(--accent);
@@ -244,6 +251,11 @@ const html = `<!doctype html>
     .summary-notes { margin-top: 10mm; }
     .summary-notes h3 { margin-bottom: 4mm; }
     .summary-note-line { height: 9mm; border-bottom: 1px solid #c5cfd4; }
+    .page-footer {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding-top: 2mm; border-top: 1px solid var(--line);
+      color: var(--muted); font-size: 8pt; text-align: right;
+    }
   </style>
 </head>
 <body>
@@ -279,6 +291,7 @@ const html = `<!doctype html>
       </table>
     </section>
     <p class="cover-foot">This form mirrors the published v2.3 assessment model. For the digital workflow, use the Jal Jeevan Mission Digital Maturity Model application.</p>
+    <div class="page-footer">Page 1 of ${totalPages}</div>
   </main>
   ${layerPages}
   <section class="summary-page">
@@ -331,6 +344,7 @@ const html = `<!doctype html>
       <div class="summary-note-line"></div>
       <div class="summary-note-line"></div>
     </div>
+    <div class="page-footer">Page ${totalPages} of ${totalPages}</div>
   </section>
 </body>
 </html>`;

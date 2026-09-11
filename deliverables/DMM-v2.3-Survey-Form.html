@@ -22,8 +22,10 @@
       line-height: 1.38;
       background: white;
     }
-    .cover, .layer-section, .summary-page { break-after: page; }
-    .cover { min-height: 260mm; display: flex; flex-direction: column; }
+    .cover, .layer-section, .summary-page {
+      position: relative; min-height: 260mm; break-after: page; padding-bottom: 8mm;
+    }
+    .cover { display: flex; flex-direction: column; }
     .brand-line { height: 7px; background: var(--accent); margin: -16mm -14mm 22mm; }
     .kicker, .eyebrow {
       color: var(--accent);
@@ -128,6 +130,11 @@
     .summary-notes { margin-top: 10mm; }
     .summary-notes h3 { margin-bottom: 4mm; }
     .summary-note-line { height: 9mm; border-bottom: 1px solid #c5cfd4; }
+    .page-footer {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding-top: 2mm; border-top: 1px solid var(--line);
+      color: var(--muted); font-size: 8pt; text-align: right;
+    }
   </style>
 </head>
 <body>
@@ -188,6 +195,7 @@
       </table>
     </section>
     <p class="cover-foot">This form mirrors the published v2.3 assessment model. For the digital workflow, use the Jal Jeevan Mission Digital Maturity Model application.</p>
+    <div class="page-footer">Page 1 of 15</div>
   </main>
 
       <div class="layer-section">
@@ -309,6 +317,7 @@
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
 
+        <div class="page-footer">Page 2 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -433,6 +442,7 @@
           <span><strong>Layer 1 subtotal — Citizens</strong><br><small>Sum of 6 ratings</small></span>
           <span class="subtotal-entry">Score: ______ / 24</span>
         </div>
+        <div class="page-footer">Page 3 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -553,6 +563,7 @@
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
 
+        <div class="page-footer">Page 4 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -677,6 +688,7 @@
           <span><strong>Layer 2 subtotal — Frontline Workers</strong><br><small>Sum of 6 ratings</small></span>
           <span class="subtotal-entry">Score: ______ / 24</span>
         </div>
+        <div class="page-footer">Page 5 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -797,6 +809,7 @@
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
 
+        <div class="page-footer">Page 6 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -917,6 +930,7 @@
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
 
+        <div class="page-footer">Page 7 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1005,6 +1019,7 @@
           <span><strong>Layer 3 subtotal — Department</strong><br><small>Sum of 8 ratings</small></span>
           <span class="subtotal-entry">Score: ______ / 32</span>
         </div>
+        <div class="page-footer">Page 8 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1125,6 +1140,7 @@
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
 
+        <div class="page-footer">Page 9 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1213,6 +1229,7 @@
           <span><strong>Layer 4 subtotal — State Functionaries</strong><br><small>Sum of 5 ratings</small></span>
           <span class="subtotal-entry">Score: ______ / 20</span>
         </div>
+        <div class="page-footer">Page 10 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1333,6 +1350,7 @@
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
 
+        <div class="page-footer">Page 11 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1421,6 +1439,7 @@
           <span><strong>Layer 5 subtotal — Shared Digital Services</strong><br><small>Sum of 5 ratings</small></span>
           <span class="subtotal-entry">Score: ______ / 20</span>
         </div>
+        <div class="page-footer">Page 12 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1541,6 +1560,7 @@
         <div class="writing-lines"><span></span><span></span></div>
       </section></div>
 
+        <div class="page-footer">Page 13 of 15</div>
       </div>
       <div class="layer-section">
         <div class="layer-heading">
@@ -1665,6 +1685,7 @@
           <span><strong>Layer 6 subtotal — Technology Foundation</strong><br><small>Sum of 6 ratings</small></span>
           <span class="subtotal-entry">Score: ______ / 24</span>
         </div>
+        <div class="page-footer">Page 14 of 15</div>
       </div>
   <section class="summary-page">
     <div class="summary-title">
@@ -1771,6 +1792,7 @@
       <div class="summary-note-line"></div>
       <div class="summary-note-line"></div>
     </div>
+    <div class="page-footer">Page 15 of 15</div>
   </section>
 </body>
 </html>
