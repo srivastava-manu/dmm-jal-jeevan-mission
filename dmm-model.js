@@ -4,7 +4,7 @@ if (window.DMM_MODEL) return;
 // inlines into the standalone HTML and works from file:// locally.
 // Versioned data, not markup: capability
 // names, measure text and "includes" lists change without touching screens.
-const MODEL_VERSION = "v2.2";
+const MODEL_VERSION = "v2.3";
 
 const SCALE = [
   { n: 0, short: "Does not exist", t: "Does not exist", d: "No digital system for this capability. Handled on paper, in spreadsheets, or not at all." },
@@ -36,10 +36,10 @@ const LAYERS = [
   {
     name: "Citizens", covers: "Digital services reaching consumers and households directly", short: "Citizens",
     caps: [
-      C("Feedback & Satisfaction", "Whether the State has the digital capability to systematically collect, analyze, and act upon citizen feedback regarding rural drinking water services.", ["Feedback capture", "Sentiment analysis", "Closure of loop"]),
-      C("Consumer Registry & Profile", "Whether the State has a digital registry of FHTC / consumers with a unique identifier, and whether this database is authoritative, complete, up-to-date, interoperable and actively used.", ["Unique consumer ID", "Household mapping", "Interoperability", "Active use"]),
+      C("Grievance & Feedback", "Whether the State has the digital capability to systematically collect, analyze, and act upon citizen grievance & feedback regarding rural drinking water services.", ["Feedback capture", "Sentiment analysis", "Closure of loop"]),
+      C("Consumer Registry", "Whether the State has a digital registry of FHTC / consumers with a unique identifier, and whether this database is authoritative, complete, up-to-date, interoperable and actively used.", ["Unique consumer ID", "Household mapping", "Interoperability", "Active use"]),
       C("Connection Lifecycle Management", "Whether the State effectively manages the entire lifecycle of a Functional Household Tap Connection (FHTC): from application through installation, modification, transfer, suspension and disconnection.", ["Application", "Installation", "Transfer", "Suspension", "Disconnection"]),
-      C("Digital Billing & Payments", "Whether the state has the capability to digitally view bills, receive payment reminders, make online payments through multiple channels, access payment history and receive digital receipts.", ["Bill view", "Reminders", "Online payment", "Payment history", "Digital receipts"]),
+      C("Billing & Payments", "Whether the state has the capability to digitally view bills, receive payment reminders, make online payments through multiple channels, access payment history and receive digital receipts.", ["Bill view", "Reminders", "Online payment", "Payment history", "Digital receipts"]),
       C("Notifications & Alerts", "Whether the system has the capability to notify citizens before they need to ask — planned supply interruptions, water quality advisories, bill due reminders, complaint status updates or restoration notices.", ["Supply interruptions", "Quality advisories", "Bill reminders", "Complaint status"]),
       C("Citizen Engagement & Participation", "Whether the State provides digital mechanisms that enable citizens and communities to actively participate in governance, monitoring, planning and decision-making.", ["Participation", "Community monitoring", "Planning inputs"])
     ]
@@ -47,11 +47,11 @@ const LAYERS = [
   {
     name: "Frontline Workers", covers: "Digital tools used by field staff for monitoring and reporting", short: "Frontline",
     caps: [
-      C("Water Quantity & Regularity Monitoring", "Whether the system has the capability to enable frontline workers to accurately measure, digitally report and validate daily water supply data in a timely manner using standardized processes and digital tools.", ["Daily reporting", "Validation", "Integration", "Governance"]),
-      C("Water Quality Monitoring & FTK", "Whether the system has the capability to enable frontline workers to conduct Field Test Kit (FTK) tests, digitally report water quality observations, identify potential quality issues and support routine village-level surveillance.", ["FTK testing", "Digital reporting", "Issue identification"]),
-      C("Asset Maintenance & Financial Management", "Whether the system has the capability to enable frontline workers to digitally record asset maintenance, O&M expenditure, collections and village-level financial management.", ["Maintenance logs", "O&M expenditure", "Collections"]),
+      C("Water Quantity & Regularity", "Whether the system has the capability to enable frontline workers to accurately measure, digitally report and validate daily water supply data in a timely manner using standardized processes and digital tools.", ["Daily reporting", "Validation", "Integration", "Governance"]),
+      C("FTK Testing", "Whether the system has the capability to enable frontline workers to conduct Field Test Kit (FTK) tests, digitally report water quality observations, identify potential quality issues and support routine village-level surveillance.", ["FTK testing", "Digital reporting", "Issue identification"]),
+      C("Repair and Maintenance", "Whether the system has the capability to effectively monitor minor maintenance and repair activities to ensure timely completion, quality of repairs, asset uptime, and continuous improvement.", ["Maintenance logs", "O&M expenditure", "Collections"]),
       C("Community Engagement", "Whether the system has the capability to enable frontline workers to digitally plan, conduct, record and monitor community mobilization and IEC activities that promote safe water practices and sustainable operation.", ["IEC planning", "Activity records", "Monitoring"]),
-      C("Field Data Management", "Whether the system has the capability to enable frontline workers to digitally collect, validate, update and report operational field data, inspections, surveys, asset information and compliance records.", ["Field collection", "Inspections", "Surveys", "Compliance records"]),
+      C("Financial Management", "Whether the system has the capability to enable frontline workers to digitally record O&M expenditure, collections and village-level financial management.", ["Field collection", "Inspections", "Surveys", "Compliance records"]),
       C("Digital Work Assistance", "Whether the State has the capability to digitally empower frontline workers through mobile applications, role-based dashboards, contextual digital assistants, training, knowledge resources and alerts.", ["Mobile apps", "Role dashboards", "Training", "Alerts"])
     ]
   },
@@ -64,7 +64,7 @@ const LAYERS = [
       C("Water Service Intelligence", "Whether the State has the capability to digitally monitor, analyse and optimise rural water service delivery using operational data, dashboards, analytics, predictive insights and decision-support tools.", ["BI", "MIS", "Dashboards", "Predictive Maintenance", "Scheme Risk Forecasting"]),
       C("Water Quality Governance", "Whether the State has the capability to digitally monitor, analyse and govern drinking water quality through laboratory management, surveillance, compliance monitoring and timely corrective actions.", ["LIMS", "Water Quality surveillance"]),
       C("Engineering & Network Intelligence", "Whether the State has the capability to digitally model, monitor and optimise water supply infrastructure using engineering tools, spatial intelligence, network modelling and operational telemetry.", ["GIS", "Geo-tagging", "Hydraulic Modeling", "IoT", "SCADA"]),
-      C("Project Delivery & Quality Assurance", "Whether the State has the capability to digitally plan, execute, monitor and validate rural water infrastructure projects, ensuring timely completion, adherence to quality standards and compliance with contractual and technical requirements.", ["Planning", "Execution", "Quality checks", "Compliance"]),
+      C("Project Delivery & Service Quality", "Whether the State has the capability to digitally plan, execute, monitor and validate rural water infrastructure projects, ensuring timely completion, adherence to quality standards, and compliance with contractual and technical requirements.", ["Planning", "Execution", "Quality checks", "Compliance"]),
       C("Operations & Resource Management", "Whether the State has the capability to digitally plan, allocate and monitor operational resources, including workforce, equipment, materials, consumables and finances, to support efficient O&M of water supply schemes.", ["Workforce", "Equipment", "Materials", "Finances"])
     ]
   },
