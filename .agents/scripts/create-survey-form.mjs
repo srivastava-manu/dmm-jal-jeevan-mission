@@ -24,6 +24,14 @@ const scoreLabels = [
   ["3", "Functional at limited scale"],
   ["4", "Fully functional at state scale"],
 ];
+const scoreColors = model.SCORE_COLORS;
+const maturityBands = [
+  ["0–20%", "Nascent"],
+  ["21–40%", "Emerging"],
+  ["41–60%", "Developing"],
+  ["61–80%", "Mature"],
+  ["81–100%", "Leading"],
+];
 
 let capabilityNumber = 0;
 const layerPages = model.LAYERS.map((layer, layerIndex) => {
@@ -90,11 +98,20 @@ const layerPages = model.LAYERS.map((layer, layerIndex) => {
 
 const scaleRows = model.SCALE.map(
   (item) => `
-    <tr>
+    <tr style="background:${scoreColors[item.n].bg};color:${scoreColors[item.n].fg}">
       <td class="scale-number">${item.n}</td>
       <td><strong>${escapeHtml(item.t)}</strong><br><span>${escapeHtml(item.d)}</span></td>
     </tr>`,
 ).join("");
+
+const maturityBandRows = maturityBands
+  .map(
+    ([range, name], index) => `
+      <tr style="background:${scoreColors[index].bg};color:${scoreColors[index].fg}">
+        <td>${range}</td><td>${name}</td>
+      </tr>`,
+  )
+  .join("");
 
 const html = `<!doctype html>
 <html lang="en">
@@ -155,7 +172,8 @@ const html = `<!doctype html>
     .scale-table tr { display: grid; grid-template-columns: 9mm 1fr; border: 1px solid var(--line); border-radius: 2mm; }
     .scale-table td { border: 0; padding: 2mm 1.5mm; vertical-align: top; }
     .scale-number { width: 10mm; color: var(--accent); font-size: 13pt; font-weight: 700; text-align: center; }
-    .scale-table span { color: var(--muted); }
+    .scale-table span { color: currentColor; opacity: .86; }
+    .scale-number { color: currentColor; }
     .cover-foot { margin-top: auto; padding-top: 10mm; color: var(--muted); font-size: 8.5pt; }
     .layer-section { break-after: page; }
     .layer-heading {
@@ -215,7 +233,7 @@ const html = `<!doctype html>
     .summary-panel h3 { margin-bottom: 3mm; font-size: 11pt; }
     .band-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
     .band-table td { padding: 2mm 1mm; border-top: 1px solid var(--line); }
-    .band-table td:first-child { color: var(--accent); font-family: "Courier New", monospace; font-weight: 700; width: 35%; }
+    .band-table td:first-child { color: currentColor; font-family: "Courier New", monospace; font-weight: 700; width: 35%; }
     .summary-notes { margin-top: 10mm; }
     .summary-notes h3 { margin-bottom: 4mm; }
     .summary-note-line { height: 9mm; border-bottom: 1px solid #c5cfd4; }
@@ -286,26 +304,14 @@ const html = `<!doctype html>
         <h3>Overall maturity index</h3>
         <p>Total ÷ ${capabilityNumber * 4} × 100 = <span class="summary-blank"></span> %</p>
         <table class="band-table">
-          <tbody>
-            <tr><td>0–20%</td><td>Nascent</td></tr>
-            <tr><td>21–40%</td><td>Emerging</td></tr>
-            <tr><td>41–60%</td><td>Developing</td></tr>
-            <tr><td>61–80%</td><td>Mature</td></tr>
-            <tr><td>81–100%</td><td>Leading</td></tr>
-          </tbody>
+          <tbody>${maturityBandRows}</tbody>
         </table>
       </div>
       <div class="summary-panel">
         <h3>Layer maturity index</h3>
         <p>Read each layer subtotal out of its maximum above.</p>
         <table class="band-table">
-          <tbody>
-            <tr><td>0–20%</td><td>Nascent</td></tr>
-            <tr><td>21–40%</td><td>Emerging</td></tr>
-            <tr><td>41–60%</td><td>Developing</td></tr>
-            <tr><td>61–80%</td><td>Mature</td></tr>
-            <tr><td>81–100%</td><td>Leading</td></tr>
-          </tbody>
+          <tbody>${maturityBandRows}</tbody>
         </table>
       </div>
     </div>
