@@ -63,6 +63,14 @@ const layerPages = model.LAYERS.map((layer, layerIndex) => {
   for (let start = 0; start < cards.length; start += 3) {
     const chunk = cards.slice(start, start + 3).join("");
     const continuation = start > 0 ? " · continued" : "";
+    const isLastPage = start + 3 >= cards.length;
+    const subtotal = isLastPage
+      ? `
+        <div class="layer-subtotal">
+          <span><strong>Layer ${layerIndex + 1} subtotal — ${escapeHtml(layer.name)}</strong><br><small>Sum of ${layer.caps.length} ratings</small></span>
+          <span class="subtotal-entry">Score: ______ / ${layer.caps.length * 4}</span>
+        </div>`
+      : "";
     pages.push(`
       <div class="layer-section">
         <div class="layer-heading">
@@ -74,6 +82,7 @@ const layerPages = model.LAYERS.map((layer, layerIndex) => {
           </div>
         </div>
         <div class="capability-list">${chunk}</div>
+        ${subtotal}
       </div>`);
   }
   return pages.join("");
@@ -111,7 +120,7 @@ const html = `<!doctype html>
       line-height: 1.38;
       background: white;
     }
-    .cover, .layer-section { break-after: page; }
+    .cover, .layer-section, .summary-page { break-after: page; }
     .cover { min-height: 260mm; display: flex; flex-direction: column; }
     .brand-line { height: 7px; background: var(--accent); margin: -16mm -14mm 22mm; }
     .kicker, .eyebrow {
@@ -184,6 +193,32 @@ const html = `<!doctype html>
     .notes-label { margin-top: 3mm; color: var(--muted); font-size: 8pt; font-weight: 700; }
     .writing-lines { display: grid; gap: 3mm; margin-top: 2mm; }
     .writing-lines span { height: 4mm; border-bottom: 1px solid #c5cfd4; }
+    .layer-subtotal {
+      display: flex; justify-content: space-between; align-items: center; gap: 8mm;
+      margin-top: 4mm; padding: 3mm 4mm; border: 1px solid var(--accent);
+      border-radius: 2mm; background: var(--accent-soft); color: var(--ink);
+    }
+    .layer-subtotal small { color: var(--muted); font-size: 8pt; }
+    .subtotal-entry { font-family: "Courier New", monospace; font-size: 10pt; font-weight: 700; white-space: nowrap; }
+    .summary-page { min-height: 260mm; }
+    .summary-title { padding-bottom: 4mm; border-bottom: 2px solid var(--accent); margin-bottom: 5mm; }
+    .summary-title h2 { font-size: 22pt; }
+    .summary-title p { color: var(--muted); }
+    .summary-table { width: 100%; border-collapse: collapse; margin-top: 5mm; font-size: 9.5pt; }
+    .summary-table th, .summary-table td { border-bottom: 1px solid var(--line); padding: 3mm 2mm; text-align: left; }
+    .summary-table th { color: var(--muted); font-size: 8pt; letter-spacing: .05em; text-transform: uppercase; }
+    .summary-table th:nth-child(n+2), .summary-table td:nth-child(n+2) { text-align: right; }
+    .summary-table .summary-total td { border-top: 2px solid var(--accent); border-bottom: 0; font-weight: 700; padding-top: 4mm; }
+    .summary-blank { display: inline-block; min-width: 28mm; border-bottom: 1px solid #71808a; height: 5mm; vertical-align: bottom; }
+    .summary-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; margin-top: 10mm; }
+    .summary-panel { border: 1px solid var(--line); border-radius: 3mm; padding: 4mm; }
+    .summary-panel h3 { margin-bottom: 3mm; font-size: 11pt; }
+    .band-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+    .band-table td { padding: 2mm 1mm; border-top: 1px solid var(--line); }
+    .band-table td:first-child { color: var(--accent); font-family: "Courier New", monospace; font-weight: 700; width: 35%; }
+    .summary-notes { margin-top: 10mm; }
+    .summary-notes h3 { margin-bottom: 4mm; }
+    .summary-note-line { height: 9mm; border-bottom: 1px solid #c5cfd4; }
   </style>
 </head>
 <body>
@@ -221,6 +256,69 @@ const html = `<!doctype html>
     <p class="cover-foot">This form mirrors the published v2.3 assessment model. For the digital workflow, use the Jal Jeevan Mission Digital Maturity Model application.</p>
   </main>
   ${layerPages}
+  <section class="summary-page">
+    <div class="summary-title">
+      <div class="eyebrow">Score sheet · ${escapeHtml(model.MODEL_VERSION)}</div>
+      <h2>Assessment summary</h2>
+      <p>Carry each layer subtotal here, total them, then read the maturity index below.</p>
+    </div>
+    <table class="summary-table">
+      <thead>
+        <tr><th>Layer</th><th>Subtotal</th><th>Maximum</th></tr>
+      </thead>
+      <tbody>
+        ${model.LAYERS.map((layer, index) => `
+          <tr>
+            <td>${index + 1}. ${escapeHtml(layer.name)}</td>
+            <td><span class="summary-blank"></span></td>
+            <td>${layer.caps.length * 4}</td>
+          </tr>`).join("")}
+        <tr class="summary-total">
+          <td>Total</td>
+          <td><span class="summary-blank"></span></td>
+          <td>${capabilityNumber * 4}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="summary-panels">
+      <div class="summary-panel">
+        <h3>Overall maturity index</h3>
+        <p>Total ÷ ${capabilityNumber * 4} × 100 = <span class="summary-blank"></span> %</p>
+        <table class="band-table">
+          <tbody>
+            <tr><td>0–20%</td><td>Nascent</td></tr>
+            <tr><td>21–40%</td><td>Emerging</td></tr>
+            <tr><td>41–60%</td><td>Developing</td></tr>
+            <tr><td>61–80%</td><td>Mature</td></tr>
+            <tr><td>81–100%</td><td>Leading</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="summary-panel">
+        <h3>Layer maturity index</h3>
+        <p>Read each layer subtotal out of its maximum above.</p>
+        <table class="band-table">
+          <tbody>
+            <tr><td>0–20%</td><td>Nascent</td></tr>
+            <tr><td>21–40%</td><td>Emerging</td></tr>
+            <tr><td>41–60%</td><td>Developing</td></tr>
+            <tr><td>61–80%</td><td>Mature</td></tr>
+            <tr><td>81–100%</td><td>Leading</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="summary-notes">
+      <h3>Notes · evidence · systems referenced</h3>
+      <div class="summary-note-line"></div>
+      <div class="summary-note-line"></div>
+      <div class="summary-note-line"></div>
+      <div class="summary-note-line"></div>
+      <div class="summary-note-line"></div>
+    </div>
+  </section>
 </body>
 </html>`;
 
