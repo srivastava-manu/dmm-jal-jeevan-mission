@@ -98,17 +98,18 @@ const layerPages = model.LAYERS.map((layer, layerIndex) => {
 
 const scaleRows = model.SCALE.map(
   (item) => `
-    <tr style="background:${scoreColors[item.n].bg};color:${scoreColors[item.n].fg}">
-      <td class="scale-number">${item.n}</td>
-      <td><strong>${escapeHtml(item.t)}</strong><br><span>${escapeHtml(item.d)}</span></td>
+    <tr>
+      <td><span class="score-chip" style="background:${scoreColors[item.n].bg};color:${scoreColors[item.n].fg}">${item.n}</span></td>
+      <td class="scale-title"><strong>${escapeHtml(item.t)}</strong></td>
+      <td><span>${escapeHtml(item.d)}</span></td>
     </tr>`,
 ).join("");
 
 const maturityBandRows = maturityBands
   .map(
     ([range, name], index) => `
-      <tr style="background:${scoreColors[index].bg};color:${scoreColors[index].fg}">
-        <td>${range}</td><td>${name}</td>
+      <tr>
+        <td><span class="band-chip" style="background:${scoreColors[index].bg}"></span>${range}</td><td><strong>${name}</strong></td>
       </tr>`,
   )
   .join("");
@@ -157,23 +158,28 @@ const html = `<!doctype html>
       border-radius: 99px; background: var(--accent-soft); color: var(--accent);
       font-size: 9pt; font-weight: 700;
     }
-    .form-meta { margin-top: 17mm; border: 1px solid var(--line); border-radius: 4mm; padding: 6mm; }
+    .form-meta { margin-top: 12mm; border: 1px solid var(--line); border-radius: 4mm; padding: 5mm; }
     .form-meta h2 { font-size: 13pt; margin-bottom: 5mm; }
-    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7mm 9mm; }
-    .field { display: flex; align-items: end; gap: 3mm; min-height: 9mm; }
-    .field label { font-size: 9pt; font-weight: 700; white-space: nowrap; }
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm 6mm; }
+    .field { display: flex; align-items: end; gap: 2mm; min-height: 8mm; }
+    .field label { font-size: 8pt; font-weight: 700; white-space: nowrap; }
     .field .blank { height: 6mm; flex: 1; border-bottom: 1px solid #8997a0; }
-    .instructions { margin-top: 12mm; }
+    .instructions { margin-top: 9mm; }
     .instructions h2 { font-size: 14pt; margin-bottom: 3mm; }
-    .instructions ol { margin: 0 0 6mm 5mm; padding-left: 5mm; }
-    .instructions li { margin: 2mm 0; }
-    .scale-table { width: 100%; display: grid; margin-top: 4mm; font-size: 8.2pt; }
-    .scale-table tbody { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 5mm; }
-    .scale-table tr { display: grid; grid-template-columns: 9mm 1fr; border: 1px solid var(--line); border-radius: 2mm; }
-    .scale-table td { border: 0; padding: 2mm 1.5mm; vertical-align: top; }
-    .scale-number { width: 10mm; color: var(--accent); font-size: 13pt; font-weight: 700; text-align: center; }
-    .scale-table span { color: currentColor; opacity: .86; }
-    .scale-number { color: currentColor; }
+    .instructions ol { margin: 0 0 4mm 5mm; padding-left: 5mm; }
+    .instructions li { margin: 1.5mm 0; }
+    .scale-table { width: 100%; border-collapse: collapse; margin-top: 3mm; font-size: 8.2pt; }
+    .scale-table tbody { display: table-row-group; }
+    .scale-table tr { display: table-row; border: 0; }
+    .scale-table td { border: 0; padding: 1.5mm 2mm 1.5mm 0; vertical-align: top; }
+    .scale-table td:first-child { width: 9mm; }
+    .scale-table .scale-title { width: 40mm; padding-right: 4mm; }
+    .score-chip, .band-chip {
+      display: inline-grid; place-items: center; vertical-align: middle;
+      width: 5.5mm; height: 5.5mm; border-radius: 1.2mm; font-weight: 700;
+    }
+    .score-chip { font-size: 9pt; }
+    .scale-table span { color: var(--ink); }
     .cover-foot { margin-top: auto; padding-top: 10mm; color: var(--muted); font-size: 8.5pt; }
     .layer-section { break-after: page; }
     .layer-heading {
@@ -233,7 +239,8 @@ const html = `<!doctype html>
     .summary-panel h3 { margin-bottom: 3mm; font-size: 11pt; }
     .band-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
     .band-table td { padding: 2mm 1mm; border-top: 1px solid var(--line); }
-    .band-table td:first-child { color: currentColor; font-family: "Courier New", monospace; font-weight: 700; width: 35%; }
+    .band-table td:first-child { color: var(--muted); font-family: "Courier New", monospace; font-weight: 700; width: 55%; }
+    .band-chip { width: 4.5mm; height: 4.5mm; margin-right: 2mm; }
     .summary-notes { margin-top: 10mm; }
     .summary-notes h3 { margin-bottom: 4mm; }
     .summary-note-line { height: 9mm; border-bottom: 1px solid #c5cfd4; }

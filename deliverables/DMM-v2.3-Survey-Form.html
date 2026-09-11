@@ -42,23 +42,28 @@
       border-radius: 99px; background: var(--accent-soft); color: var(--accent);
       font-size: 9pt; font-weight: 700;
     }
-    .form-meta { margin-top: 17mm; border: 1px solid var(--line); border-radius: 4mm; padding: 6mm; }
+    .form-meta { margin-top: 12mm; border: 1px solid var(--line); border-radius: 4mm; padding: 5mm; }
     .form-meta h2 { font-size: 13pt; margin-bottom: 5mm; }
-    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7mm 9mm; }
-    .field { display: flex; align-items: end; gap: 3mm; min-height: 9mm; }
-    .field label { font-size: 9pt; font-weight: 700; white-space: nowrap; }
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm 6mm; }
+    .field { display: flex; align-items: end; gap: 2mm; min-height: 8mm; }
+    .field label { font-size: 8pt; font-weight: 700; white-space: nowrap; }
     .field .blank { height: 6mm; flex: 1; border-bottom: 1px solid #8997a0; }
-    .instructions { margin-top: 12mm; }
+    .instructions { margin-top: 9mm; }
     .instructions h2 { font-size: 14pt; margin-bottom: 3mm; }
-    .instructions ol { margin: 0 0 6mm 5mm; padding-left: 5mm; }
-    .instructions li { margin: 2mm 0; }
-    .scale-table { width: 100%; display: grid; margin-top: 4mm; font-size: 8.2pt; }
-    .scale-table tbody { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 5mm; }
-    .scale-table tr { display: grid; grid-template-columns: 9mm 1fr; border: 1px solid var(--line); border-radius: 2mm; }
-    .scale-table td { border: 0; padding: 2mm 1.5mm; vertical-align: top; }
-    .scale-number { width: 10mm; color: var(--accent); font-size: 13pt; font-weight: 700; text-align: center; }
-    .scale-table span { color: currentColor; opacity: .86; }
-    .scale-number { color: currentColor; }
+    .instructions ol { margin: 0 0 4mm 5mm; padding-left: 5mm; }
+    .instructions li { margin: 1.5mm 0; }
+    .scale-table { width: 100%; border-collapse: collapse; margin-top: 3mm; font-size: 8.2pt; }
+    .scale-table tbody { display: table-row-group; }
+    .scale-table tr { display: table-row; border: 0; }
+    .scale-table td { border: 0; padding: 1.5mm 2mm 1.5mm 0; vertical-align: top; }
+    .scale-table td:first-child { width: 9mm; }
+    .scale-table .scale-title { width: 40mm; padding-right: 4mm; }
+    .score-chip, .band-chip {
+      display: inline-grid; place-items: center; vertical-align: middle;
+      width: 5.5mm; height: 5.5mm; border-radius: 1.2mm; font-weight: 700;
+    }
+    .score-chip { font-size: 9pt; }
+    .scale-table span { color: var(--ink); }
     .cover-foot { margin-top: auto; padding-top: 10mm; color: var(--muted); font-size: 8.5pt; }
     .layer-section { break-after: page; }
     .layer-heading {
@@ -118,7 +123,8 @@
     .summary-panel h3 { margin-bottom: 3mm; font-size: 11pt; }
     .band-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
     .band-table td { padding: 2mm 1mm; border-top: 1px solid var(--line); }
-    .band-table td:first-child { color: currentColor; font-family: "Courier New", monospace; font-weight: 700; width: 35%; }
+    .band-table td:first-child { color: var(--muted); font-family: "Courier New", monospace; font-weight: 700; width: 55%; }
+    .band-chip { width: 4.5mm; height: 4.5mm; margin-right: 2mm; }
     .summary-notes { margin-top: 10mm; }
     .summary-notes h3 { margin-bottom: 4mm; }
     .summary-note-line { height: 9mm; border-bottom: 1px solid #c5cfd4; }
@@ -154,25 +160,30 @@
       </ol>
       <table class="scale-table">
         <tbody>
-    <tr style="background:#DE9D9B;color:#5c2320">
-      <td class="scale-number">0</td>
-      <td><strong>Does not exist</strong><br><span>No digital system for this capability. Handled on paper, in spreadsheets, or not at all.</span></td>
+    <tr>
+      <td><span class="score-chip" style="background:#DE9D9B;color:#5c2320">0</span></td>
+      <td class="scale-title"><strong>Does not exist</strong></td>
+      <td><span>No digital system for this capability. Handled on paper, in spreadsheets, or not at all.</span></td>
     </tr>
-    <tr style="background:#ECB576;color:#5f3a10">
-      <td class="scale-number">1</td>
-      <td><strong>Under development</strong><br><span>A system has been sanctioned, procured or is in development. Nothing is in productive use yet.</span></td>
+    <tr>
+      <td><span class="score-chip" style="background:#ECB576;color:#5f3a10">1</span></td>
+      <td class="scale-title"><strong>Under development</strong></td>
+      <td><span>A system has been sanctioned, procured or is in development. Nothing is in productive use yet.</span></td>
     </tr>
-    <tr style="background:#FBE6A2;color:#5f4c0a">
-      <td class="scale-number">2</td>
-      <td><strong>Pilot complete</strong><br><span>Live and working with real data in a limited setting — one or a few districts, or a small user group — for at least one full reporting cycle. Not yet rolled out further.</span></td>
+    <tr>
+      <td><span class="score-chip" style="background:#FBE6A2;color:#5f4c0a">2</span></td>
+      <td class="scale-title"><strong>Pilot complete</strong></td>
+      <td><span>Live and working with real data in a limited setting — one or a few districts, or a small user group — for at least one full reporting cycle. Not yet rolled out further.</span></td>
     </tr>
-    <tr style="background:#DCE9D5;color:#33502a">
-      <td class="scale-number">3</td>
-      <td><strong>Functional at limited scale</strong><br><span>In routine production use across part of the state by the intended users. Gaps remain — some districts still manual, or some workflow steps still offline.</span></td>
+    <tr>
+      <td><span class="score-chip" style="background:#DCE9D5;color:#33502a">3</span></td>
+      <td class="scale-title"><strong>Functional at limited scale</strong></td>
+      <td><span>In routine production use across part of the state by the intended users. Gaps remain — some districts still manual, or some workflow steps still offline.</span></td>
     </tr>
-    <tr style="background:#58A65C;color:#ffffff">
-      <td class="scale-number">4</td>
-      <td><strong>Fully functional at state scale</strong><br><span>In routine use across effectively all districts by effectively all intended users. The data is authoritative, no parallel manual register is maintained, and the system is owned and monitored.</span></td>
+    <tr>
+      <td><span class="score-chip" style="background:#58A65C;color:#ffffff">4</span></td>
+      <td class="scale-title"><strong>Fully functional at state scale</strong></td>
+      <td><span>In routine use across effectively all districts by effectively all intended users. The data is authoritative, no parallel manual register is maintained, and the system is owned and monitored.</span></td>
     </tr></tbody>
       </table>
     </section>
@@ -1711,20 +1722,20 @@
         <p>Total ÷ 144 × 100 = <span class="summary-blank"></span> %</p>
         <table class="band-table">
           <tbody>
-      <tr style="background:#DE9D9B;color:#5c2320">
-        <td>0–20%</td><td>Nascent</td>
+      <tr>
+        <td><span class="band-chip" style="background:#DE9D9B"></span>0–20%</td><td><strong>Nascent</strong></td>
       </tr>
-      <tr style="background:#ECB576;color:#5f3a10">
-        <td>21–40%</td><td>Emerging</td>
+      <tr>
+        <td><span class="band-chip" style="background:#ECB576"></span>21–40%</td><td><strong>Emerging</strong></td>
       </tr>
-      <tr style="background:#FBE6A2;color:#5f4c0a">
-        <td>41–60%</td><td>Developing</td>
+      <tr>
+        <td><span class="band-chip" style="background:#FBE6A2"></span>41–60%</td><td><strong>Developing</strong></td>
       </tr>
-      <tr style="background:#DCE9D5;color:#33502a">
-        <td>61–80%</td><td>Mature</td>
+      <tr>
+        <td><span class="band-chip" style="background:#DCE9D5"></span>61–80%</td><td><strong>Mature</strong></td>
       </tr>
-      <tr style="background:#58A65C;color:#ffffff">
-        <td>81–100%</td><td>Leading</td>
+      <tr>
+        <td><span class="band-chip" style="background:#58A65C"></span>81–100%</td><td><strong>Leading</strong></td>
       </tr></tbody>
         </table>
       </div>
@@ -1733,20 +1744,20 @@
         <p>Read each layer subtotal out of its maximum above.</p>
         <table class="band-table">
           <tbody>
-      <tr style="background:#DE9D9B;color:#5c2320">
-        <td>0–20%</td><td>Nascent</td>
+      <tr>
+        <td><span class="band-chip" style="background:#DE9D9B"></span>0–20%</td><td><strong>Nascent</strong></td>
       </tr>
-      <tr style="background:#ECB576;color:#5f3a10">
-        <td>21–40%</td><td>Emerging</td>
+      <tr>
+        <td><span class="band-chip" style="background:#ECB576"></span>21–40%</td><td><strong>Emerging</strong></td>
       </tr>
-      <tr style="background:#FBE6A2;color:#5f4c0a">
-        <td>41–60%</td><td>Developing</td>
+      <tr>
+        <td><span class="band-chip" style="background:#FBE6A2"></span>41–60%</td><td><strong>Developing</strong></td>
       </tr>
-      <tr style="background:#DCE9D5;color:#33502a">
-        <td>61–80%</td><td>Mature</td>
+      <tr>
+        <td><span class="band-chip" style="background:#DCE9D5"></span>61–80%</td><td><strong>Mature</strong></td>
       </tr>
-      <tr style="background:#58A65C;color:#ffffff">
-        <td>81–100%</td><td>Leading</td>
+      <tr>
+        <td><span class="band-chip" style="background:#58A65C"></span>81–100%</td><td><strong>Leading</strong></td>
       </tr></tbody>
         </table>
       </div>
