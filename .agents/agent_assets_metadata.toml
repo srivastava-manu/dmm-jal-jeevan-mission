@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "b3BpzhXX8AYbqfWB_2hfC"
+uri = "file://deliverables/DMM-Development-Document.docx"
+type = "word_document"
+title = "DMM Development Document"
+description = "Development baseline for the Jal Jeevan Mission Digital Maturity Model tool, covering objectives, users, requirements, scoring rules, technical architecture, data model, API surface, security, deployment, testing, and roadmap."
+logical_id = "c39710b4-66ac-49c9-983a-9bfc814e043a"
+content_hash = "sha256:c75d852b094b95a775924f3e45750e581f309064435105c16080e6d8d3d77c30"
+size = 12871
+mtime_ms = 1789106050844
+storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:ba9d7656-9f05-4e2d-a45e-c24fad3e9f03/c39710b4-66ac-49c9-983a-9bfc814e043a/a713b641-6382-45ab-8704-404dd161eb7e"
+storage_version_token = "1789106064202168"
+content_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
